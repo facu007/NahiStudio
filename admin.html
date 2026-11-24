@@ -1861,6 +1861,12 @@
                 <option value="fotos/imgi_15_846504117_18106174985269189_2305949659410720467_n.jpg">02 Tattoo · Fine Line Caligrafía Infinito</option>
                 <option value="fotos/imgi_10_832478316_1138317815289557_8357992302156346057_n.jpg">02 Tattoo · Femme Spots Botánico</option>
                 <option value="fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg">Retrato · Nahi en Espacio Muna</option>
+                <option value="fotos/igexport-DfYbk6ptM3G.mp4">🎬 Video 01 Nails · Transición Animal Print & Chrome</option>
+                <option value="fotos/igexport-De0QjOPN0VR.mp4">🎬 Video 01 Nails · Gothic Chrome & Tachas</option>
+                <option value="fotos/igexport-Dc1nPj0sBE7.mp4">🎬 Video 02 Tattoo · Sesión Runa de Protección</option>
+                <option value="fotos/igexport-Dd7r8REtC7P.mp4">🎬 Video 02 Tattoo · Femme Spots & Fine Line</option>
+                <option value="fotos/igexport-De-jsVethEQ.mp4">🎬 Video 02 Tattoo · Sesión Grabado en Espalda</option>
+                <option value="fotos/igexport-Dd2I_0qAa9o.mp4">🎬 Video 02 Tattoo · Delicate Mini Tattoos</option>
               </select>
             </div>
           </div>
@@ -2308,7 +2314,9 @@
             <div>
               <!-- Imagen Preview fija -->
               <div class="relative h-60 bg-black overflow-hidden">
-                <img src="${safeImg}" alt="${safeTitle}" class="w-full h-full object-cover">
+                ${/\.(mp4|webm|mov)(\?.*)?$/i.test(safeImg)
+                    ? `<video src="${safeImg}" autoplay muted loop playsinline preload="metadata" class="w-full h-full object-cover"></video>`
+                    : `<img src="${safeImg}" alt="${safeTitle}" class="w-full h-full object-cover">`}
                 
                 <!-- Badge Superior -->
                 <div class="absolute top-3 left-3 z-10">

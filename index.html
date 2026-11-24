@@ -900,6 +900,7 @@
     <div class="p-6 flex flex-col gap-4">
       <div class="atelier-card w-full max-h-[65vh] overflow-hidden bg-surface border border-outline-variant flex items-center justify-center">
         <img id="modal-img" src="" alt="" class="max-h-[65vh] w-auto object-contain">
+        <video id="modal-video" src="" controls playsinline loop class="hidden max-h-[65vh] w-auto object-contain"></video>
       </div>
       <p id="modal-desc" class="text-sm text-on-surface-variant leading-relaxed"></p>
     </div>
@@ -1006,22 +1007,23 @@
       const sidePhotos = getPhotosForSide(side);
       const copy = SIDE_COPY[side] || SIDE_COPY.nails;
 
+      const stillSidePhotos = sidePhotos.filter(p => !isVideoAsset(p.imageUrl));
       // 1. Cambiar foto de fondo del Hero según la cara de la moneda
       const heroBg = document.getElementById('hero-bg-image');
       if (heroBg) {
-        const chosenBg = (sidePhotos[0] && sidePhotos[0].imageUrl) ? sidePhotos[0].imageUrl : copy.defaultHeroBg;
+        const chosenBg = (stillSidePhotos[0] && stillSidePhotos[0].imageUrl) ? stillSidePhotos[0].imageUrl : copy.defaultHeroBg;
         heroBg.src = chosenBg;
       }
 
-      // 2. Actualizar fotos dentro de las caras de la moneda si hay fotos cargadas desde el Admin
-      const nailPhotos = getPhotosForSide('nails');
-      const tattooPhotos = getPhotosForSide('tattoo');
+      // 2. Actualizar fotos dentro de las caras de la moneda
+      const nailStills = getPhotosForSide('nails').filter(p => !isVideoAsset(p.imageUrl));
+      const tattooStills = getPhotosForSide('tattoo').filter(p => !isVideoAsset(p.imageUrl));
       const frontCoinImg = document.getElementById('coin-front-photo');
       const backCoinImg = document.getElementById('coin-back-photo');
-      if (frontCoinImg && nailPhotos[0]?.imageUrl) frontCoinImg.src = nailPhotos[0].imageUrl;
-      if (backCoinImg && tattooPhotos[0]?.imageUrl) backCoinImg.src = tattooPhotos[0].imageUrl;
+      if (frontCoinImg && nailStills[0]?.imageUrl) frontCoinImg.src = nailStills[0].imageUrl;
+      if (backCoinImg && tattooStills[0]?.imageUrl) backCoinImg.src = tattooStills[0].imageUrl;
 
-      // 3. Renderizar las 3 miniaturas destacadas del Hero correspondientes a la cara activa
+      // 3. Renderizar las 3 miniaturas destacadas del Hero (incluyendo reel en video de la cara activa)
       const thumbsContainer = document.getElementById('hero-face-thumbnails');
       if (!thumbsContainer) return;
 
@@ -1032,6 +1034,14 @@
         const safeBadge = (p.badge || '').replace(/"/g, '&quot;');
         const safeDesc = (p.description || '').replace(/"/g, '&quot;');
         const safeImg = (p.imageUrl || '').replace(/"/g, '&quot;');
+        const isVid = isVideoAsset(safeImg);
+        const mediaEl = isVid
+          ? `<video src="${safeImg}" autoplay muted loop playsinline preload="metadata" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"></video>
+             <span class="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/65 text-white flex items-center justify-center">
+               <span class="material-symbols-outlined text-xs">play_arrow</span>
+             </span>`
+          : `<img src="${safeImg}" alt="${safeTitle}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">`;
+
         return `
           <button type="button"
                   class="lightbox-trigger atelier-card group relative aspect-square overflow-hidden border border-outline-variant bg-surface-container text-left focus:outline-none"
@@ -1040,7 +1050,7 @@
                   data-tag="${safeBadge}"
                   data-desc="${safeDesc}"
                   data-tattoo-action="${isTattoo ? 'true' : 'false'}">
-            <img src="${safeImg}" alt="${safeTitle}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            ${mediaEl}
             <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-2">
               <span class="block text-[11px] text-white font-medium truncate">${p.title || ''}</span>
             </div>
@@ -1156,16 +1166,39 @@
     // =========================================================================
     const modal = document.getElementById('detail-modal');
     const modalImg = document.getElementById('modal-img');
+    const modalVideo = document.getElementById('modal-video');
     const modalTitle = document.getElementById('modal-title');
     const modalTag = document.getElementById('modal-tag');
     const modalDesc = document.getElementById('modal-desc');
     const modalConsultBtn = document.getElementById('modal-consult-btn');
     const modalBookNailsBtn = document.getElementById('modal-book-nails-btn');
 
+    function isVideoAsset(url) {
+      return /\.(mp4|webm|mov)(\?.*)?$/i.test(String(url || ''));
+    }
+
     function openLightboxItem(photo, isTattoo) {
       if (!modal) return;
-      modalImg.src = photo.imageUrl || '';
-      modalImg.alt = photo.title || '';
+      const src = photo.imageUrl || '';
+      const isVid = isVideoAsset(src);
+
+      if (isVid && modalVideo) {
+        modalImg.classList.add('hidden');
+        modalImg.src = '';
+        modalVideo.classList.remove('hidden');
+        modalVideo.src = src;
+        modalVideo.play().catch(() => {});
+      } else {
+        if (modalVideo) {
+          modalVideo.pause();
+          modalVideo.src = '';
+          modalVideo.classList.add('hidden');
+        }
+        modalImg.classList.remove('hidden');
+        modalImg.src = src;
+        modalImg.alt = photo.title || '';
+      }
+
       modalTitle.textContent = photo.title || '';
       modalTag.textContent = photo.badge || (isTattoo ? 'Cara B · Tattoo Art' : 'Cara A · Nail Art');
       modalDesc.textContent = photo.description || '';
@@ -1225,7 +1258,17 @@
                       data-desc="${safeDesc}"
                       data-tattoo-action="false">
                 <div class="${aspectCls} w-full overflow-hidden bg-surface-container-low relative">
-                  <img src="${safeImg}" alt="${safeTitle}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                  ${isVideoAsset(safeImg)
+                    ? `<video src="${safeImg}" autoplay muted loop playsinline preload="metadata" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"></video>
+                       <span class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/70 text-white text-[10px] uppercase tracking-wider flex items-center gap-1">
+                         <span class="material-symbols-outlined text-xs">play_circle</span> Video en vivo
+                       </span>`
+                    : `${isVideoAsset(safeImg)
+                    ? `<video src="${safeImg}" autoplay muted loop playsinline preload="metadata" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"></video>
+                       <span class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/75 border border-accent/60 text-white text-[10px] uppercase tracking-wider flex items-center gap-1">
+                         <span class="material-symbols-outlined text-xs">play_circle</span> Video Sesión
+                       </span>`
+                    : `<img src="${safeImg}" alt="${safeTitle}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">`}`}
                 </div>
                 <div class="p-5 flex items-center justify-between gap-3">
                   <div>
@@ -1446,7 +1489,13 @@
     }
 
     // Modal controls
-    const closeModal = () => modal && modal.close();
+    const closeModal = () => {
+      if (modalVideo) {
+        modalVideo.pause();
+        modalVideo.src = '';
+      }
+      if (modal) modal.close();
+    };
     document.getElementById('modal-close-btn')?.addEventListener('click', closeModal);
     document.getElementById('modal-dismiss-btn')?.addEventListener('click', closeModal);
     modalConsultBtn?.addEventListener('click', () => {

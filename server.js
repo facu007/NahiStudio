@@ -897,6 +897,8 @@ const mimeTypes = {
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
   '.webp': 'image/webp',
+  '.mp4': 'video/mp4',
+  '.webm': 'video/webm',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon'
 };
@@ -1771,134 +1773,206 @@ async function handleApiRequest(req, res, pathname, queryParams) {
   {
     "id": "nahi_nail_1",
     "title": "Crimson French & Tattoo",
-    "badge": "01 / NAIL ART — TRABAJO REAL",
+    "badge": "Cara A · Nail Art de Autor",
     "category": "nails",
     "description": "Almendradas con french rojo carmesí profundo en diálogo con tatuaje ornamental de muñeca.",
     "imageUrl": "fotos/imgi_25_539976307_17854872333514079_3988514524600607766_n.webp",
+    "mediaType": "image",
     "isFeatured": true,
     "isHero": true,
     "sortOrder": 1
   },
   {
-    "id": "nahi_nail_2",
-    "title": "Sculpted 3D & Pearl",
-    "badge": "01 / NAIL ART — RELIEVE 3D",
+    "id": "nahi_nail_vid_1",
+    "title": "Reel · Transición Animal Print & Chrome",
+    "badge": "Cara A · Video en Atelier",
     "category": "nails",
-    "description": "Diseño escultórico con volumen metálico dorado, perlas y detalles marinos sobre base lechosa.",
-    "imageUrl": "fotos/imgi_22_504060229_17842497063514079_4107614235171648365_n.webp",
+    "description": "Transición en cámara de preparación de estructura coffin a diseño animal print sobre base champagne metálica.",
+    "imageUrl": "fotos/igexport-DfYbk6ptM3G.mp4",
+    "mediaType": "video",
     "isFeatured": true,
     "isHero": true,
     "sortOrder": 2
   },
   {
-    "id": "nahi_nail_3",
-    "title": "Reflective Obsidian",
-    "badge": "01 / NAIL ART — GLITTER",
+    "id": "nahi_nail_2",
+    "title": "Sculpted 3D & Perlas",
+    "badge": "Cara A · Relieve Escultórico",
     "category": "nails",
-    "description": "Glitter reflectivo oscuro con destellos plateados en forma almendra.",
-    "imageUrl": "fotos/imgi_6_928715819_1678752167229555_3258636658814047340_n.jpg",
+    "description": "Diseño escultórico con volumen metálico dorado, perlas y detalles marinos sobre base lechosa.",
+    "imageUrl": "fotos/imgi_22_504060229_17842497063514079_4107614235171648365_n.webp",
+    "mediaType": "image",
     "isFeatured": true,
-    "isHero": false,
+    "isHero": true,
     "sortOrder": 3
   },
   {
-    "id": "nahi_nail_4",
-    "title": "Chrome Animal Print",
-    "badge": "01 / NAIL ART — COFFIN",
+    "id": "nahi_nail_vid_2",
+    "title": "Reel · Gothic Chrome & Tachas en Movimiento",
+    "badge": "Cara A · Video en Vivo",
     "category": "nails",
-    "description": "Base metálica champagne con diseño animal print en negro intenso sobre estructura coffin.",
-    "imageUrl": "fotos/imgi_9_857436431_17930539812514079_2849828327181330972_n.jpg",
+    "description": "Detalle en movimiento del set negro profundo con lettering gótico a mano alzada, cruces cromadas y tachas metálicas.",
+    "imageUrl": "fotos/igexport-De0QjOPN0VR.mp4",
+    "mediaType": "video",
     "isFeatured": true,
     "isHero": false,
     "sortOrder": 4
   },
   {
-    "id": "nahi_nail_5",
-    "title": "Editorial French & Red",
-    "badge": "01 / NAIL ART — EDITORIAL",
+    "id": "nahi_nail_3",
+    "title": "Reflective Obsidian Glitter",
+    "badge": "Cara A · Destello Reflectivo",
     "category": "nails",
-    "description": "French clásico reinterpretado con líneas orgánicas y acento rojo carmesí.",
-    "imageUrl": "fotos/imgi_31_628792993_17875531770514079_7101006345959160330_n.webp",
+    "description": "Glitter reflectivo oscuro con destellos plateados en forma almendra.",
+    "imageUrl": "fotos/imgi_6_928715819_1678752167229555_3258636658814047340_n.jpg",
+    "mediaType": "image",
     "isFeatured": true,
     "isHero": false,
     "sortOrder": 5
   },
   {
+    "id": "nahi_nail_4",
+    "title": "Chrome Animal Print Coffin",
+    "badge": "Cara A · Estructura Coffin",
+    "category": "nails",
+    "description": "Base metálica champagne con diseño animal print en negro intenso sobre estructura coffin.",
+    "imageUrl": "fotos/imgi_9_857436431_17930539812514079_2849828327181330972_n.jpg",
+    "mediaType": "image",
+    "isFeatured": true,
+    "isHero": false,
+    "sortOrder": 6
+  },
+  {
+    "id": "nahi_nail_5",
+    "title": "Editorial French & Red",
+    "badge": "Cara A · French Clásico",
+    "category": "nails",
+    "description": "French clásico reinterpretado con líneas orgánicas y acento rojo carmesí.",
+    "imageUrl": "fotos/imgi_31_628792993_17875531770514079_7101006345959160330_n.webp",
+    "mediaType": "image",
+    "isFeatured": true,
+    "isHero": false,
+    "sortOrder": 7
+  },
+  {
     "id": "nahi_nail_6",
     "title": "Gothic Chrome & Studs",
-    "badge": "01 / NAIL ART — GRUNGE",
+    "badge": "Cara A · Nail Art de Autor",
     "category": "nails",
     "description": "Nail art negro profundo con lettering gótico, tachas metálicas y líneas cromadas.",
     "imageUrl": "fotos/imgi_13_861911954_1131761712629862_1954115592653772609_n.jpg",
+    "mediaType": "image",
     "isFeatured": true,
-    "isHero": true,
-    "sortOrder": 6
+    "isHero": false,
+    "sortOrder": 8
   },
   {
     "id": "nahi_tattoo_1",
     "title": "Cupido Blackwork & Puntillismo",
-    "badge": "02 / TATTOO ART — BLACKWORK",
+    "badge": "Cara B · Blackwork",
     "category": "tattoo",
     "description": "Cupido clásico en clave blackwork con sombreado de arrastre y puntillismo de alta definición.",
     "imageUrl": "fotos/imgi_28_771909433_18096793385269189_6790519837572543665_n.jpg",
+    "mediaType": "image",
     "isFeatured": true,
     "isHero": true,
-    "sortOrder": 7
+    "sortOrder": 9
+  },
+  {
+    "id": "nahi_tattoo_vid_1",
+    "title": "Reel · Sesión Runa de Protección en Estudio",
+    "badge": "Cara B · Video de Sesión",
+    "category": "tattoo",
+    "description": "Proceso real en camilla tatuando una Runa de Protección en estilo brushstroke blackwork.",
+    "imageUrl": "fotos/igexport-Dc1nPj0sBE7.mp4",
+    "mediaType": "video",
+    "isFeatured": true,
+    "isHero": true,
+    "sortOrder": 10
   },
   {
     "id": "nahi_tattoo_2",
     "title": "León Oriental Fu Dog & Geometría",
-    "badge": "02 / TATTOO ART — CUSTOM",
+    "badge": "Cara B · Proyecto a Medida",
     "category": "tattoo",
     "description": "Pieza de pecho a gran escala: guardián oriental con líneas sólidas y esfera de geometría sagrada.",
     "imageUrl": "fotos/imgi_18_831313350_18104431136269189_151488612152529768_n.jpg",
+    "mediaType": "image",
     "isFeatured": true,
     "isHero": true,
-    "sortOrder": 8
+    "sortOrder": 11
+  },
+  {
+    "id": "nahi_tattoo_vid_2",
+    "title": "Reel · Femme Spots & Fine Line Collection",
+    "badge": "Cara B · Video Fine Line",
+    "category": "tattoo",
+    "description": "Recorrido en video por diseños delicados de trazo fino: botánico en esternón, micro-lettering y coquette bow.",
+    "imageUrl": "fotos/igexport-Dd7r8REtC7P.mp4",
+    "mediaType": "video",
+    "isFeatured": true,
+    "isHero": false,
+    "sortOrder": 12
   },
   {
     "id": "nahi_tattoo_3",
     "title": "Lettering Distorsión — Viejo Karma",
-    "badge": "02 / TATTOO ART — LETTERING",
+    "badge": "Cara B · Lettering",
     "category": "tattoo",
     "description": "Tipografía experimental con efecto onda y firma caligráfica en tinta negra intensa.",
     "imageUrl": "fotos/imgi_11_902024821_18111104054269189_4890881016085880301_n.jpg",
+    "mediaType": "image",
     "isFeatured": true,
     "isHero": false,
-    "sortOrder": 9
+    "sortOrder": 13
+  },
+  {
+    "id": "nahi_tattoo_vid_3",
+    "title": "Reel · Sesión Grabado Clásico en Espalda",
+    "badge": "Cara B · Proceso en Vivo",
+    "category": "tattoo",
+    "description": "Nahi tatuando en vivo una pieza de gran formato con líneas de grabado clásico sobre espalda.",
+    "imageUrl": "fotos/igexport-De-jsVethEQ.mp4",
+    "mediaType": "video",
+    "isFeatured": true,
+    "isHero": false,
+    "sortOrder": 14
   },
   {
     "id": "nahi_tattoo_4",
     "title": "Fine Line & Caligrafía Infinito",
-    "badge": "02 / TATTOO ART — FINE LINE",
+    "badge": "Cara B · Fine Line",
     "category": "tattoo",
     "description": "Trazo fino caligráfico con destellos astrales, micro-luna y línea ornamental.",
     "imageUrl": "fotos/imgi_15_846504117_18106174985269189_2305949659410720467_n.jpg",
+    "mediaType": "image",
     "isFeatured": true,
     "isHero": false,
-    "sortOrder": 10
+    "sortOrder": 15
+  },
+  {
+    "id": "nahi_tattoo_vid_4",
+    "title": "Reel · Delicate Mini Tattoos & Ornamental",
+    "badge": "Cara B · Video Mini Tattoos",
+    "category": "tattoo",
+    "description": "Tatuajes ornamentales simétricos y micro-caligrafía delicada en empeine y tobillo.",
+    "imageUrl": "fotos/igexport-Dd2I_0qAa9o.mp4",
+    "mediaType": "video",
+    "isFeatured": true,
+    "isHero": false,
+    "sortOrder": 16
   },
   {
     "id": "nahi_tattoo_5",
     "title": "Femme Spots — Botánico Ornamental",
-    "badge": "02 / TATTOO ART — FINE LINE",
+    "badge": "Cara B · Botánico",
     "category": "tattoo",
     "description": "Diseño botánico simétrico de trazo delicado adaptado a la anatomía del esternón.",
     "imageUrl": "fotos/imgi_10_832478316_1138317815289557_8357992302156346057_n.jpg",
+    "mediaType": "image",
     "isFeatured": true,
     "isHero": false,
-    "sortOrder": 11
-  },
-  {
-    "id": "nahi_tattoo_6",
-    "title": "Flash Sheets & Custom Designs",
-    "badge": "02 / FLASH BOOK — DISPONIBLES",
-    "category": "flash",
-    "description": "Mesa de trabajo y láminas flash del estudio. Tocá para consultar disponibilidad y tamaño.",
-    "imageUrl": "assets/images/tattoo_flash_02.jpg",
-    "isFeatured": true,
-    "isHero": false,
-    "sortOrder": 12
+    "sortOrder": 17
   }
 ];
 
@@ -2554,7 +2628,26 @@ const server = http.createServer(async (req, res) => {
 
     const ext = path.extname(filePath).toLowerCase();
     const contentType = mimeTypes[ext] || 'application/octet-stream';
-    res.writeHead(200, { 'Content-Type': contentType });
+    if ((ext === '.mp4' || ext === '.webm') && req.headers.range) {
+      const range = req.headers.range;
+      const parts = range.replace(/bytes=/, '').split('-');
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : stats.size - 1;
+      const chunksize = (end - start) + 1;
+      res.writeHead(206, {
+        'Content-Range': `bytes ${start}-${end}/${stats.size}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunksize,
+        'Content-Type': contentType
+      });
+      fs.createReadStream(filePath, { start, end }).pipe(res);
+      return;
+    }
+    res.writeHead(200, {
+      'Content-Type': contentType,
+      'Content-Length': stats.size,
+      'Accept-Ranges': 'bytes'
+    });
     fs.createReadStream(filePath).pipe(res);
   });
 });
