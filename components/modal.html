@@ -1,0 +1,39 @@
+<!-- Modal (Containment) -->
+
+<!-- Variant: Standard -->
+<div class="flex flex-wrap items-center gap-gutter-md">
+      <!-- COMPONENT: modal-standard -->
+      <dialog
+        data-component-id="modal-standard"
+        data-component-type="modal"
+        data-component-variant="standard"
+        aria-labelledby="modal-standard-01-title"
+        aria-describedby="modal-standard-01-desc modal-standard-01-body"
+        class="bg-surface-container border border-secondary text-on-surface p-gutter-lg max-w-2xl w-full rounded-none backdrop:bg-background/85"
+      >
+        <header class="flex items-start justify-between gap-gutter-md pb-gutter-md border-b border-outline-variant">
+          <div>
+            <h2 id="modal-standard-01-title" data-design-text-token="headline-md" class="font-headline text-headline-md text-on-surface">Detalle de obra</h2>
+            <p id="modal-standard-01-desc" data-design-text-token="label-sm" class="font-label text-label-sm text-outline uppercase">02 — TATTOO ART / FLASH EDITABLE</p>
+          </div>
+          <button type="button" aria-label="Cerrar diálogo" class="inline-flex items-center justify-center w-9 h-9 border border-outline-variant text-on-surface hover:border-primary">
+            <span class="material-symbols-outlined text-body-lg" aria-hidden="true">close</span>
+          </button>
+        </header>
+
+        <div id="modal-standard-01-body" class="py-gutter-lg">
+          <p data-design-text-token="body-md" class="font-body text-body-md text-on-surface-variant">
+            Vista ampliada de la pieza seleccionada con notas de técnica, tamaño sugerido y acceso directo a consulta.
+          </p>
+        </div>
+
+        <footer class="pt-gutter-md border-t border-outline-variant flex items-center justify-end gap-gutter-sm">
+          <button type="button" class="px-gutter-md py-gutter-sm border border-outline-variant text-on-surface-variant font-label text-label-md uppercase">
+            <span data-design-text-token="label-md">Cerrar</span>
+          </button>
+          <button type="button" class="px-gutter-md py-gutter-sm bg-primary text-on-primary font-label text-label-md uppercase">
+            <span data-design-text-token="label-md">Consultar diseño</span>
+          </button>
+        </footer>
+      </dialog>
+    </div>

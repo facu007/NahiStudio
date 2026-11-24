@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nahi Studio | Turnos Online & Reservas</title>
+  <meta name="description" content="Pedí tu turno online en Nahi Studio con calendario interactivo en tiempo real.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="supabase-client.js?v=20261102"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            background: "#111111",
+            surface: "#181818",
+            primary: "#C7C7C7",
+            "primary-bright": "#8B2635",
+            "primary-light": "#F1ECE5",
+            secondary: "#D4AF37",
+          },
+          fontFamily: {
+            display: ["'Bodoni Moda'", "serif"],
+            body: ["'Plus Jakarta Sans'", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    html[data-side="nails"] {
+      --turnos-font-display: 'Cormorant Garamond', Georgia, serif;
+      --turnos-bg: #FBF7F2;
+      --turnos-card: #FFFFFF;
+      --turnos-subcard: #F5EFE8;
+      --turnos-text: #261C1A;
+      --turnos-muted: #6E5A54;
+      --turnos-accent: #8C3B45;
+      --turnos-border: #DFD1C4;
+    }
+    html[data-side="tattoo"] {
+      --turnos-font-display: 'Cinzel Decorative', Georgia, serif;
+      --turnos-bg: #0D0A0B;
+      --turnos-card: #181315;
+      --turnos-subcard: #110D0E;
+      --turnos-text: #EFE6DD;
+      --turnos-muted: #B9A5A8;
+      --turnos-accent: #8E1D2C;
+      --turnos-border: #362528;
+    }
+    html[data-side="nails"] body {
+      background-color: #FBF7F2 !important;
+      color: #261C1A !important;
+    }
+    html[data-side="nails"] header {
+      background-color: rgba(251, 247, 242, 0.92) !important;
+      border-color: #DFD1C4 !important;
+    }
+    html[data-side="nails"] .neon-card-glow,
+    html[data-side="nails"] .neon-card {
+      background-color: #FFFFFF !important;
+      border: 1px solid #DFD1C4 !important;
+      box-shadow: 0 12px 30px rgba(84, 56, 50, 0.08) !important;
+    }
+    html[data-side="nails"] .vasca-svc-card,
+    html[data-side="nails"] .cal-day:not(.selected),
+    html[data-side="nails"] .slot-btn:not(.selected),
+    html[data-side="nails"] input,
+    html[data-side="nails"] textarea {
+      background-color: #F5EFE8 !important;
+      color: #261C1A !important;
+      border-color: #DFD1C4 !important;
+    }
+    html[data-side="nails"] .text-white,
+    html[data-side="nails"] .text-\[#F1ECE5\] {
+      color: #261C1A !important;
+    }
+    html[data-side="nails"] .text-\[#d8c4d6\],
+    html[data-side="nails"] .text-gray-300,
+    html[data-side="nails"] .text-gray-400 {
+      color: #6E5A54 !important;
+    }
+    .font-display {
+      font-family: var(--turnos-font-display, 'Cormorant Garamond', serif) !important;
+    }
+
+    .neon-card-glow {
+      border: 1.5px solid rgba(255, 62, 150, 0.5);
+      box-shadow: 0 0 35px 2px rgba(255, 62, 150, 0.25), inset 0 0 25px rgba(255, 62, 150, 0.08);
+    }
+    .brush-ribbon {
+      background: linear-gradient(90deg, #8B2635 0%, #a83244 48%, #8B2635 100%);
+      box-shadow: 0 4px 20px rgba(255, 45, 133, 0.45);
+      clip-path: polygon(3% 0%, 98% 3%, 97% 96%, 1% 92%);
+    }
+    /* Estilos Vasca: Calendario & Turnos */
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #f5edf5;
+      background: #181818;
+      border: 1px solid rgba(255, 62, 150, 0.15);
+      user-select: none;
+    }
+    .cal-day:hover:not(.disabled):not(.empty) {
+      background: rgba(255, 62, 150, 0.25);
+      border-color: #C7C7C7;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    .cal-day.today {
+      border: 2px solid #F1ECE5;
+      color: #F1ECE5;
+      font-weight: 800;
+    }
+    .cal-day.selected {
+      background: linear-gradient(135deg, #8B2635 0%, #D4AF37 100%) !important;
+      color: #fff !important;
+      border-color: #ffffff !important;
+      box-shadow: 0 4px 15px rgba(255, 45, 133, 0.6);
+      font-weight: 900;
+      transform: scale(1.05);
+    }
+    .cal-day.disabled {
+      opacity: 0.22;
+      cursor: not-allowed;
+      pointer-events: none;
+      background: transparent;
+      border-color: transparent;
+      color: #7a6275;
+    }
+    .cal-day.empty {
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .slot-btn {
+      padding: 0.65rem 0.75rem;
+      border-radius: 0.75rem;
+      background: #111111;
+      border: 1px solid rgba(255, 62, 150, 0.35);
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .slot-btn:hover {
+      background: rgba(255, 62, 150, 0.2);
+      border-color: #C7C7C7;
+      transform: translateY(-1px);
+    }
+    .slot-btn.selected {
+      background: linear-gradient(135deg, #8B2635 0%, #D4AF37 100%);
+      border-color: #ffffff;
+      box-shadow: 0 4px 15px rgba(255, 45, 133, 0.5);
+      color: #fff;
+    }
+  </style>
+</head>
+<body class="bg-[#111111] text-[#f5edf5] font-body min-h-screen relative overflow-x-hidden selection:bg-[#C7C7C7] selection:text-white">
+
+  <!-- ================= TOPBAR TURNOS ================= -->
+  <header class="sticky top-0 z-50 bg-[#111111]/90 backdrop-blur-xl border-b border-[#C7C7C7]/20 shadow-lg shadow-black/50">
+    <div class="flex justify-between items-center max-w-5xl mx-auto px-4 sm:px-6 py-3.5">
+      <a class="flex items-center gap-2 group" href="index.html">
+        <span class="font-display font-bold text-lg sm:text-xl tracking-wider text-white uppercase group-hover:text-[#C7C7C7] transition-colors">
+          NAHI STUDIO
+        </span>
+        <span class="text-[#C7C7C7] text-xs">♡</span>
+      </a>
+
+      <div class="flex items-center gap-3">
+        <!-- Supabase Status Badge -->
+        <div id="supabase-status-badge"></div>
+
+        <a href="index.html" class="inline-flex items-center gap-1 text-xs text-[#d8c4d6] hover:text-[#C7C7C7] font-medium transition-colors">
+          <span class="material-symbols-outlined text-sm">home</span>
+          <span>Sitio</span>
+        </a>
+
+        <!-- User Auth Status Button -->
+        <div id="auth-status-container">
+          <a href="login.html" id="auth-link-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#1E1E1E] border border-[#C7C7C7]/40 text-xs font-bold text-[#F1ECE5] hover:bg-[#8B2635] hover:text-white transition-all">
+            <span class="material-symbols-outlined text-sm">login</span>
+            <span>Iniciar Sesión</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN BOOKING APP (ESTILO PROYECTO VASCA) ================= -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 relative z-10 space-y-8">
+    
+    <!-- Hero / Header de Turnos -->
+    <div class="text-center max-w-xl mx-auto space-y-3">
+      <div id="turnos-page-ribbon" class="brush-ribbon px-4 sm:px-5 py-2 rounded inline-block text-xs font-bold text-white tracking-widest uppercase mb-1 shadow-md">
+        AGENDA ONLINE • NAHI STUDIO ♡
+      </div>
+      <h1 id="turnos-page-title" class="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white">
+        Pedir Turno
+      </h1>
+      <p id="turnos-page-subtitle" class="text-xs sm:text-sm text-[#d8c4d6] leading-relaxed">
+        Elegí tu tratamiento, seleccioná fecha en el calendario y asegurá tu horario en tiempo real.
+      </p>
+
+      <!-- Tabs Principales: Reservar vs Mis Turnos (Estilo Vasca) -->
+      <div class="flex items-center justify-center gap-2 pt-3">
+        <button type="button" id="tab-btn-book" onclick="vascaBooking.switchTab('book')" class="px-5 sm:px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider bg-gradient-to-r from-[#8B2635] to-[#D4AF37] text-white shadow-lg shadow-[#8B2635]/40 transition-all">
+          <span class="flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">calendar_month</span>
+            <span>Reservar Turno</span>
+          </span>
+        </button>
+        <button type="button" id="tab-btn-mine" onclick="vascaBooking.switchTab('mine')" class="px-5 sm:px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider bg-[#1E1E1E] text-[#d8c4d6] border border-white/10 hover:border-[#C7C7C7]/50 transition-all">
+          <span class="flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">event_available</span>
+            <span>Mis Turnos</span>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- VISTA 1: WIZARD DE RESERVA PASO A PASO -->
+    <div id="view-booking-wizard" class="space-y-8">
+      
+      
+      <!-- CONMUTADOR DE CARA DE LA MONEDA EN EL TURNERO (CARA A NAILS vs CARA B TATTOO) -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-2xl border border-[#C7C7C7]/30 bg-[#181818] neon-card">
+        <div class="flex items-center gap-2.5">
+          <span class="material-symbols-outlined text-[#D4AF37]">flip_camera_android</span>
+          <div>
+            <p class="font-display font-bold text-base text-white" id="turnos-active-side-title">Cara A — Atelier de Nail Art</p>
+            <p class="text-xs text-[#d8c4d6]" id="turnos-active-side-desc">Mostrando servicios y turnos de uñas. Cambiá de cara para sesiones de Tattoo.</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" id="turnos-side-nails" onclick="vascaBooking.setSide('nails')" class="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-[#8B2635] text-white transition-all">
+            ✧ Cara A · Nails
+          </button>
+          <button type="button" id="turnos-side-tattoo" onclick="vascaBooking.setSide('tattoo')" class="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-black/30 text-[#d8c4d6] border border-white/15 transition-all">
+            ✒ Cara B · Tattoo
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 1: Elegí el servicio -->
+      <section class="neon-card-glow rounded-3xl bg-[#181818] p-5 sm:p-7 md:p-8 shadow-2xl space-y-5" id="step-service">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-[#8B2635] text-white font-extrabold text-sm flex items-center justify-center shadow">1</span>
+            <div>
+              <h2 class="font-display font-bold text-lg sm:text-xl text-white">Elegí tu servicio</h2>
+              <p class="text-xs text-[#d8c4d6]">Hacé clic en el tratamiento que deseás realizarte</p>
+            </div>
+          </div>
+          <span class="text-xs text-[#F1ECE5] font-bold uppercase tracking-wider hidden sm:block">Paso 1 de 4</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5" id="vasca-services-list">
+          <!-- Renderizado dinámicamente -->
+        </div>
+      </section>
+
+      <!-- STEP 2: Profesional -->
+      <section class="neon-card rounded-3xl bg-[#181818] p-5 sm:p-7 shadow-2xl space-y-4" id="step-professional">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-[#8B2635] text-white font-extrabold text-sm flex items-center justify-center shadow">2</span>
+            <div>
+              <h2 class="font-display font-bold text-lg sm:text-xl text-white">Profesional a cargo</h2>
+              <p class="text-xs text-[#d8c4d6]">Atención 100% personalizada y dedicada</p>
+            </div>
+          </div>
+          <span class="text-xs text-[#F1ECE5] font-bold uppercase tracking-wider hidden sm:block">Paso 2 de 4</span>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-gradient-to-r from-[#1E1E1E] to-[#120d15] border-2 border-[#C7C7C7] flex items-center justify-between shadow-lg">
+          <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-[#F1ECE5] flex-shrink-0">
+              <img id="turnos-prof-img" src="fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg" alt="Nahiara Ciamprone" class="w-full h-full object-cover object-top">
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <p id="turnos-prof-name" class="font-display font-bold text-base text-white">Nahiara Ciamprone</p>
+                <span class="text-[#C7C7C7] text-xs">👑</span>
+              </div>
+              <p id="turnos-prof-role" class="text-xs text-[#D4AF37] font-semibold">Nail Artist &amp; Tattoo Artist • Espacio Muna</p>
+              <p id="turnos-prof-sub" class="text-[11px] text-gray-300">Two Sides · One Identity</p>
+            </div>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-[#25D366]/20 border border-[#25D366] text-[#25D366] text-xs font-bold flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#25D366] animate-pulse"></span>
+            Disponible
+          </span>
+        </div>
+      </section>
+
+      <!-- STEP 3: Elegí fecha y hora (CALENDARIO INTERACTIVO VASCA) -->
+      <section class="neon-card-glow rounded-3xl bg-[#181818] p-5 sm:p-7 md:p-8 shadow-2xl space-y-6" id="step-datetime">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-[#8B2635] text-white font-extrabold text-sm flex items-center justify-center shadow">3</span>
+            <div>
+              <h2 class="font-display font-bold text-lg sm:text-xl text-white">Elegí fecha y horario</h2>
+              <p class="text-xs text-[#d8c4d6]">Hacé clic en un día disponible para ver sus horarios libres</p>
+            </div>
+          </div>
+          <span class="text-xs text-[#F1ECE5] font-bold uppercase tracking-wider hidden sm:block">Paso 3 de 4</span>
+        </div>
+
+        <!-- Cartelera Rápida de Fechas Publicadas por Nahi -->
+        <div id="published-dates-bar" class="hidden p-4 rounded-2xl bg-[#111111]/90 border border-[#C7C7C7]/40 space-y-2.5">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-[#F1ECE5] flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-[#25D366] animate-pulse"></span>
+              <span>Próximas Fechas Publicadas en Vivo</span>
+            </span>
+            <span class="text-[11px] text-gray-400">Elegí una fecha publicada o buscá en el calendario</span>
+          </div>
+          <div id="published-dates-chips" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+          
+          <!-- Calendario Interactivo -->
+          <div class="md:col-span-7 p-4 sm:p-5 rounded-2xl bg-[#111111] border border-[#C7C7C7]/30 shadow-inner">
+            <div class="flex items-center justify-between mb-4">
+              <button type="button" id="cal-prev" onclick="vascaBooking.changeMonth(-1)" class="w-8 h-8 rounded-full bg-[#1E1E1E] hover:bg-[#8B2635] text-white border border-white/10 flex items-center justify-center transition-all" aria-label="Mes anterior">
+                <span class="material-symbols-outlined text-base">chevron_left</span>
+              </button>
+              <span id="cal-month-year" class="font-display font-extrabold text-base sm:text-lg text-white tracking-wide">
+                Cargando...
+              </span>
+              <button type="button" id="cal-next" onclick="vascaBooking.changeMonth(1)" class="w-8 h-8 rounded-full bg-[#1E1E1E] hover:bg-[#8B2635] text-white border border-white/10 flex items-center justify-center transition-all" aria-label="Mes siguiente">
+                <span class="material-symbols-outlined text-base">chevron_right</span>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-7 gap-1 text-center text-xs font-bold text-[#D4AF37] mb-2">
+              <span>Do</span><span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sa</span>
+            </div>
+
+            <div class="grid grid-cols-7 gap-1.5" id="calendar-grid">
+              <!-- Renderizado por vascaBooking.renderCalendar() -->
+            </div>
+
+            <input type="hidden" id="book-date" value="">
+          </div>
+
+          <!-- Columna Horarios Disponibles -->
+          <div class="md:col-span-5 p-4 sm:p-5 rounded-2xl bg-[#111111] border border-[#C7C7C7]/30 flex flex-col justify-between h-full min-h-[300px]">
+            <div>
+              <div class="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
+                <p class="font-display font-bold text-sm text-white">Horarios Disponibles</p>
+                <span id="selected-date-badge" class="text-[11px] text-[#F1ECE5] font-semibold">Elegí un día</span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2" id="time-slots">
+                <p class="text-xs text-gray-400 col-span-2 py-8 text-center italic">
+                  Seleccioná un día en el calendario para ver los horarios libres.
+                </p>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-white/10 mt-4 text-[11px] text-[#d8c4d6] flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm text-[#C7C7C7]">schedule</span>
+              <span>Atención: Mar a Sáb 10:00 a 19:30 hs</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- STEP 4: Tus datos personales & Resumen -->
+      <section class="neon-card-glow rounded-3xl bg-[#181818] p-5 sm:p-7 md:p-8 shadow-2xl space-y-6" id="step-info">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full bg-[#8B2635] text-white font-extrabold text-sm flex items-center justify-center shadow">4</span>
+            <div>
+              <h2 class="font-display font-bold text-lg sm:text-xl text-white">Tus datos de reserva</h2>
+              <p class="text-xs text-[#d8c4d6]">Ingresá tus datos para agendar el turno</p>
+            </div>
+          </div>
+          <span class="text-xs text-[#F1ECE5] font-bold uppercase tracking-wider hidden sm:block">Paso 4 de 4</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold uppercase tracking-wider text-[#F1ECE5]">
+              Nombre completo *
+            </label>
+            <input type="text" id="book-name" required placeholder="Ej. Valentina Gómez" oninput="vascaBooking.checkShowSummary()" class="w-full bg-[#111111] border border-[#C7C7C7]/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C7C7C7] text-sm placeholder:text-white/30">
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold uppercase tracking-wider text-[#F1ECE5]">
+              Teléfono / WhatsApp *
+            </label>
+            <input type="tel" id="book-phone" required placeholder="Ej. 291 1234567" oninput="vascaBooking.checkShowSummary()" class="w-full bg-[#111111] border border-[#C7C7C7]/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C7C7C7] text-sm placeholder:text-white/30">
+            <p class="text-[11px] text-[#25D366] font-semibold flex items-center gap-1 mt-1">
+              <span class="material-symbols-outlined text-xs">chat</span> Te contactamos por WhatsApp para confirmar tu turno y enviarte la dirección
+            </p>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold uppercase tracking-wider text-[#F1ECE5]">
+              Instagram (Opcional)
+            </label>
+            <input type="text" id="book-ig" placeholder="@tu_usuario" class="w-full bg-[#111111] border border-[#C7C7C7]/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C7C7C7] text-sm placeholder:text-white/30">
+          </div>
+
+          <div class="space-y-1.5 sm:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-[#F1ECE5]">
+              Notas u Observaciones (Opcional)
+            </label>
+            <textarea id="book-notes" rows="2" placeholder="Ej. Tengo extensiones previas de otro estudio / Ojos sensibles..." class="w-full bg-[#111111] border border-[#C7C7C7]/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C7C7C7] text-sm placeholder:text-white/30"></textarea>
+          </div>
+        </div>
+
+        <!-- RESUMEN EN VIVO (SUMMARY CARD PROYECTO VASCA) -->
+        <div id="booking-summary-box" class="p-5 rounded-2xl bg-[#111111] border-2 border-[#C7C7C7] shadow-xl space-y-4">
+          <div class="flex items-center justify-between border-b border-white/10 pb-3">
+            <h4 class="font-display font-bold text-base text-white flex items-center gap-2">
+              <span>📋</span> Resumen de tu Turno
+            </h4>
+            <span class="px-2.5 py-0.5 rounded-full bg-[#8B2635]/20 text-[#F1ECE5] text-[11px] font-bold">Por Confirmar</span>
+          </div>
+
+          <div class="space-y-2 text-xs sm:text-sm text-[#d8c4d6]" id="summary-details">
+            <!-- Renderizado en vivo por vascaBooking.renderSummary() -->
+          </div>
+
+          <!-- SEÑA OBLIGATORIA DEL 20% -->
+          <div id="deposit-box" class="p-4 rounded-2xl bg-[#181818] border border-amber-400/50 space-y-3">
+            <div class="flex items-start gap-2">
+              <span class="material-symbols-outlined text-amber-300 text-xl">payments</span>
+              <div>
+                <p class="text-sm font-bold text-white">Seña obligatoria del 20%: <span id="deposit-amount" class="text-amber-300 font-display font-extrabold">$0</span></p>
+                <p class="text-[11px] text-[#d8c4d6]">Para reservar, transferí la seña y adjuntá el comprobante. El resto se abona el día del turno. Tu turno queda <strong class="text-amber-300">pendiente</strong> hasta que Nahi verifique la transferencia.</p>
+              </div>
+            </div>
+
+            <div id="deposit-bank-info" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <!-- Renderizado por vascaBooking.renderDepositInfo() -->
+            </div>
+
+            <label id="deposit-dropzone" class="block p-3 rounded-xl bg-[#111111] border-2 border-dashed border-amber-400/40 hover:border-amber-300 cursor-pointer text-center transition-colors">
+              <span class="material-symbols-outlined text-amber-300">upload_file</span>
+              <span id="deposit-file-label" class="block text-xs font-bold text-white">Adjuntar comprobante de la seña *</span>
+              <span class="block text-[10px] text-gray-400">Captura o PDF de la transferencia (máx. 8 MB)</span>
+              <input type="file" id="deposit-file-input" accept="image/*,application/pdf" class="hidden" onchange="vascaBooking.onDepositFileChange(event)">
+            </label>
+          </div>
+
+          <div class="pt-3">
+            <button type="button" id="btn-confirm-booking" onclick="vascaBooking.confirmBooking()" class="w-full inline-flex justify-center items-center gap-2.5 bg-gradient-to-r from-[#8B2635] to-[#D4AF37] hover:brightness-110 text-white py-4 px-6 rounded-full font-bold text-sm uppercase tracking-wider shadow-xl shadow-[#8B2635]/40 transition-all active:scale-[0.98]">
+              <span class="material-symbols-outlined text-lg">check_circle</span>
+              <span>Enviar Seña y Reservar Turno</span>
+            </button>
+            <div id="booking-status-msg" class="text-center text-xs mt-2 font-semibold"></div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- STEP 5: ÉXITO Y CONFIRMACIÓN (PROYECTO VASCA) -->
+      <section class="hidden neon-card-glow rounded-3xl bg-[#181818] p-6 sm:p-10 text-center space-y-6 shadow-2xl" id="step-success">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-[#25D366]/20 border-2 border-[#25D366] flex items-center justify-center text-[#25D366] text-3xl sm:text-4xl shadow-xl shadow-[#25D366]/30">
+          ✓
+        </div>
+
+        <div class="space-y-2 max-w-md mx-auto">
+          <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-white">
+            ¡Reserva Recibida!
+          </h2>
+          <p id="success-msg" class="text-sm sm:text-base text-[#F1ECE5] font-bold"></p>
+          <p class="text-xs text-amber-300 font-semibold">Tu turno queda pendiente hasta que Nahi verifique la seña del 20%.</p>
+          
+          <!-- Botón de WhatsApp Directo de la clienta hacia Nahi -->
+          <div class="pt-3">
+            <a id="success-wa-btn" href="#" target="_blank" class="w-full inline-flex justify-center items-center gap-2.5 bg-[#25D366] hover:bg-[#20ba59] text-white py-3.5 px-6 rounded-full font-bold text-xs uppercase tracking-wider shadow-lg shadow-[#25D366]/40 transition-all active:scale-95">
+              <span class="material-symbols-outlined text-base">chat</span>
+              <span>Avisarle a Nahi por WhatsApp</span>
+            </a>
+            <p class="text-[11px] text-[#d8c4d6] mt-2">
+              Tocá el botón para enviarle los datos de tu turno directo a su WhatsApp y agilizar la confirmación.
+            </p>
+          </div>
+        </div>
+
+        <!-- Botones de Acción de Éxito -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3.5 max-w-lg mx-auto pt-2">
+          <!-- Agregar a Google Calendar -->
+          <a id="success-cal-btn" href="#" target="_blank" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-gradient-to-r from-[#8B2635] to-[#D4AF37] hover:brightness-110 text-white py-3.5 px-6 rounded-full font-bold text-xs uppercase tracking-wider shadow-lg shadow-[#8B2635]/30 transition-all active:scale-95">
+            <span class="material-symbols-outlined text-sm">calendar_today</span>
+            <span>Sumar a Google Calendar</span>
+          </a>
+        </div>
+
+        <div class="pt-4 border-t border-white/10 flex items-center justify-center gap-4">
+          <button type="button" onclick="vascaBooking.resetBooking()" class="text-xs text-[#d8c4d6] hover:text-[#C7C7C7] underline">
+            Reservar otro turno
+          </button>
+          <span class="text-white/20">•</span>
+          <button type="button" onclick="vascaBooking.switchTab('mine')" class="text-xs text-[#F1ECE5] font-bold hover:underline">
+            Ver mis turnos agendados
+          </button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- VISTA 2: MIS TURNOS AGENDADOS (PROYECTO VASCA) -->
+    <div id="view-my-appointments" class="hidden space-y-6">
+      <section class="neon-card rounded-3xl bg-[#181818] p-5 sm:p-7 md:p-8 shadow-2xl space-y-6">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+          <div>
+            <h2 class="font-display font-bold text-lg sm:text-xl text-white">Mis Reservas Activas</h2>
+            <p class="text-xs text-[#d8c4d6]">Turnos agendados desde este dispositivo</p>
+          </div>
+          <button type="button" onclick="vascaBooking.switchTab('book')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#1E1E1E] border border-[#C7C7C7]/40 text-xs font-bold text-[#F1ECE5] hover:bg-[#8B2635] hover:text-white transition-all">
+            <span class="material-symbols-outlined text-sm">add</span>
+            <span>Nuevo Turno</span>
+          </button>
+        </div>
+
+        <div id="my-appointments-banner" class="hidden px-4 py-3 rounded-2xl bg-[#111111] border border-[#C7C7C7]/50 text-xs text-[#F1ECE5] font-semibold"></div>
+        <div id="my-appointments-list" class="space-y-3.5">
+          <!-- Renderizado por vascaBooking.loadMyBookings() -->
+        </div>
+      </section>
+    </div>
+
+  </main>
+
+  <!-- ================= JAVASCRIPT ================= -->
+  <script>
+    const vascaBooking = {
+      services: [
+        {
+          id: 'clasicas',
+          name: 'Extensiones Clásicas 1:1 (Pelo a Pelo)',
+          duration: 90,
+          price: 24000,
+          desc: 'Aislación milimétrica individual para una mirada abierta, ordenada y elegante.',
+          badge: 'Efecto Rímel',
+          icon: '👁️'
+        },
+        {
+          id: 'hibridas',
+          name: 'Volumen Híbrido Glam',
+          duration: 120,
+          price: 34000,
+          desc: 'Mix perfecto de clásica y abanicos livianos, densidad suave aterciopelada.',
+          badge: '★ Look Más Pedido',
+          icon: '✨'
+        },
+        {
+          id: 'ruso',
+          name: 'Volumen Ruso / Mega Volumen',
+          duration: 135,
+          price: 39000,
+          desc: 'Abanicos artesanales hechos a mano 2D a 6D, máxima tupidez y retención.',
+          badge: '👑 Máximo Volumen',
+          icon: '💎'
+        },
+        {
+          id: 'lifting',
+          name: 'Lifting de Pestañas + Keratina Botox',
+          duration: 60,
+          price: 18500,
+          desc: 'Curvatura natural desde la raíz con nutrición profunda y tinte negro azabache.',
+          badge: '🌿 100% Natural',
+          icon: '🤍'
+        },
+        {
+          id: 'laminado',
+          name: 'Laminado & Diseño de Cejas',
+          duration: 50,
+          price: 16000,
+          desc: 'Alisado de vello rebelde con visagismo y perfilado orgánico simétrico.',
+          badge: '🦋 Simetría Orgánica',
+          icon: '🌸'
+        },
+        {
+          id: 'combo_vip',
+          name: 'Combo Total Mirada VIP (Lifting + Cejas)',
+          duration: 90,
+          price: 32000,
+          desc: 'Lifting completo con nutrición botox + laminado y perfilado de cejas.',
+          badge: '🎀 Promo Estrella',
+          icon: '👑'
+        }
+      ],
+
+      professional: {
+        id: 'mica',
+        name: 'Nahiara Ciamprone',
+        role: 'Master Lash Artist & Creadora',
+        location: 'Espacio Muna'
+      },
+
+      selected: {
+        service: null,
+        date: null,
+        time: null,
+        endTime: null
+      },
+
+      currentCalDate: new Date(),
+      activeSide: 'nails',
+      allServices: [],
+      publishedDays: [],
+      publishedDatesSet: new Set(),
+      paymentInfo: null,
+      selectedReceiptFile: null,
+      _initialized: false,
+      _submitting: false,
+
+      async init() {
+        if (this._initialized) return;
+        this._initialized = true;
+        this.checkAuth();
+
+        if (window.NahiBackend) {
+          try {
+            const [fetched, pubDays, payInfo, siteContent] = await Promise.all([
+              window.NahiBackend.getServices(),
+              window.NahiBackend.schedules ? window.NahiBackend.schedules.getPublishedDays(true) : Promise.resolve([]),
+              window.NahiBackend.payments ? window.NahiBackend.payments.getInfo() : Promise.resolve(null),
+              window.NahiBackend.content ? window.NahiBackend.content.getAll() : Promise.resolve(null)
+            ]);
+            if (fetched && fetched.length) {
+              this.allServices = fetched;
+              this.services = fetched;
+            }
+            if (Array.isArray(pubDays)) {
+              this.publishedDays = pubDays;
+              this.publishedDatesSet = new Set(pubDays.map(d => d.date));
+            }
+            if (payInfo) {
+              this.paymentInfo = payInfo;
+            }
+            if (siteContent) {
+              const bs = siteContent.bookingSection || {};
+              const ab = siteContent.about || {};
+              const setTxt = (id, v) => { const el = document.getElementById(id); if (el && v) el.textContent = v; };
+              setTxt('turnos-page-ribbon', bs.turnosPageRibbon);
+              setTxt('turnos-page-title', bs.turnosPageTitle);
+              setTxt('turnos-page-subtitle', bs.turnosPageSubtitle);
+              setTxt('turnos-prof-name', ab.photoCardName);
+              setTxt('turnos-prof-role', ab.photoTopBadge);
+              setTxt('turnos-prof-sub', ab.photoCardRole);
+              const profImg = document.getElementById('turnos-prof-img');
+              if (profImg && ab.photoUrl) profImg.src = ab.photoUrl;
+            }
+          } catch(e) {}
+        }
+
+        const initParams = new URLSearchParams(window.location.search);
+        const initialSide = initParams.get('side') || localStorage.getItem('nahi_active_side') || 'nails';
+        if (!this.allServices || !this.allServices.length) this.allServices = [...this.services];
+        this.setSide(initialSide);
+        this.renderPublishedDatesBar();
+        
+        // URL param selector si viene de un link específico (ej. ?service=lifting&date=YYYY-MM-DD&time=HH:MM)
+        const urlParams = new URLSearchParams(window.location.search);
+        const requestedService = urlParams.get('service');
+        const requestedDate = urlParams.get('date');
+        const requestedTime = urlParams.get('time');
+
+        if (requestedService) {
+          this.selectServiceByName(requestedService);
+        } else if (this.services.length > 0) {
+          this.selectService((this.services[1] || this.services[0]).id);
+        }
+
+        if (requestedDate && /^\d{4}-\d{2}-\d{2}$/.test(requestedDate)) {
+          this.selected.date = requestedDate;
+          const [ry, rm] = requestedDate.split('-').map(Number);
+          this.currentCalDate = new Date(ry, rm - 1, 1);
+          const inputDate = document.getElementById('book-date');
+          if (inputDate) inputDate.value = requestedDate;
+        } else if (this.publishedDays.length > 0) {
+          // Preseleccionar automáticamente la primera fecha con horarios publicados libres
+          const firstWithFree = this.publishedDays.find(d => (d.slots || []).some(s => !s.isBooked)) || this.publishedDays[0];
+          if (firstWithFree) {
+            this.selected.date = firstWithFree.date;
+            const [ry, rm] = firstWithFree.date.split('-').map(Number);
+            this.currentCalDate = new Date(ry, rm - 1, 1);
+            const inputDate = document.getElementById('book-date');
+            if (inputDate) inputDate.value = firstWithFree.date;
+          }
+        }
+
+        this.renderCalendar();
+        if (this.selected.date) {
+          await this.loadSlots();
+          if (requestedTime) {
+            this.selectTime(requestedTime);
+          }
+        }
+        this.loadMyBookings();
+      },
+
+      renderPublishedDatesBar() {
+        const bar = document.getElementById('published-dates-bar');
+        const chips = document.getElementById('published-dates-chips');
+        if (!bar || !chips) return;
+        if (!this.publishedDays || this.publishedDays.length === 0) {
+          bar.classList.add('hidden');
+          return;
+        }
+        bar.classList.remove('hidden');
+        chips.innerHTML = this.publishedDays.map(day => {
+          const free = (day.slots || []).filter(s => !s.isBooked).length;
+          const isSel = this.selected.date === day.date;
+          return `
+            <button type="button" onclick="vascaBooking.pickPublishedDate('${day.date}')"
+              class="px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all border ${isSel ? 'bg-[#8B2635] text-white border-[#C7C7C7] shadow-lg shadow-[#8B2635]/30' : 'bg-[#181818] text-[#d8c4d6] border-white/15 hover:border-[#C7C7C7]/60 hover:text-white'}">
+              <span class="capitalize">${this.formatDate(day.date)}</span>
+              <span class="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold ${free > 0 ? 'bg-[#25D366]/20 text-[#25D366]' : 'bg-red-500/20 text-red-300'}">
+                ${free > 0 ? `${free} libres` : 'Completo'}
+              </span>
+            </button>
+          `;
+        }).join('');
+      },
+
+      async pickPublishedDate(dateStr) {
+        this.selected.date = dateStr;
+        this.selected.time = null;
+        const [ry, rm] = dateStr.split('-').map(Number);
+        this.currentCalDate = new Date(ry, rm - 1, 1);
+        const inputDate = document.getElementById('book-date');
+        if (inputDate) inputDate.value = dateStr;
+        this.renderCalendar();
+        this.renderPublishedDatesBar();
+        await this.loadSlots();
+      },
+
+      checkAuth() {
+        const savedUserStr = localStorage.getItem('nahi_current_user');
+        const container = document.getElementById('auth-status-container');
+        if (savedUserStr && container) {
+          try {
+            const user = JSON.parse(savedUserStr);
+            if (user && user.name) {
+              const isAdmin = user.role === 'admin' || user.email?.includes('admin') || user.email?.includes('mica');
+              container.innerHTML = `
+                <div class="flex items-center gap-2">
+                  ${isAdmin ? `
+                    <a href="admin.html" class="px-2.5 py-1 rounded-full bg-[#8B2635]/20 border border-[#C7C7C7]/50 text-[#F1ECE5] text-[11px] font-bold hover:bg-[#8B2635] hover:text-white transition-all">
+                      Panel Admin
+                    </a>
+                  ` : ''}
+                  <span class="text-xs text-[#F1ECE5] font-bold hidden sm:inline">Hola, ${user.name}</span>
+                  <button type="button" onclick="vascaBooking.logout()" class="px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/10 text-[11px] text-gray-300 hover:text-white transition-all">
+                    Salir
+                  </button>
+                </div>
+              `;
+
+              // Pre-fill datos automáticamente
+              const nameField = document.getElementById('book-name');
+              const phoneField = document.getElementById('book-phone');
+
+              if (nameField && user.name) nameField.value = user.name;
+              if (phoneField && user.phone) phoneField.value = user.phone;
+            }
+          } catch(e) {}
+        }
+      },
+
+      logout() {
+        localStorage.removeItem('nahi_current_user');
+        localStorage.removeItem('vasca_token');
+        window.location.reload();
+      },
+
+      switchTab(tab) {
+        const wizard = document.getElementById('view-booking-wizard');
+        const myAppts = document.getElementById('view-my-appointments');
+        const btnBook = document.getElementById('tab-btn-book');
+        const btnMine = document.getElementById('tab-btn-mine');
+
+        if (tab === 'book') {
+          if (wizard) wizard.classList.remove('hidden');
+          if (myAppts) myAppts.classList.add('hidden');
+          if (btnBook) {
+            btnBook.className = 'px-5 sm:px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider bg-gradient-to-r from-[#8B2635] to-[#D4AF37] text-white shadow-lg shadow-[#8B2635]/40 transition-all';
+          }
+          if (btnMine) {
+            btnMine.className = 'px-5 sm:px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider bg-[#1E1E1E] text-[#d8c4d6] border border-white/10 hover:border-[#C7C7C7]/50 transition-all';
+          }
+        } else {
+          if (wizard) wizard.classList.add('hidden');
+          if (myAppts) myAppts.classList.remove('hidden');
+          if (btnMine) {
+            btnMine.className = 'px-5 sm:px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider bg-gradient-to-r from-[#8B2635] to-[#D4AF37] text-white shadow-lg shadow-[#8B2635]/40 transition-all';
+          }
+          if (btnBook) {
+            btnBook.className = 'px-5 sm:px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider bg-[#1E1E1E] text-[#d8c4d6] border border-white/10 hover:border-[#C7C7C7]/50 transition-all';
+          }
+          this.loadMyBookings();
+        }
+      },
+
+      
+      setSide(side) {
+        const target = (side === 'tattoo') ? 'tattoo' : 'nails';
+        this.activeSide = target;
+        document.documentElement.setAttribute('data-side', target);
+        localStorage.setItem('nahi_active_side', target);
+
+        const btnNails = document.getElementById('turnos-side-nails');
+        const btnTattoo = document.getElementById('turnos-side-tattoo');
+        const sideTitle = document.getElementById('turnos-active-side-title');
+        const sideDesc = document.getElementById('turnos-active-side-desc');
+
+        if (target === 'nails') {
+          if (btnNails) btnNails.className = 'px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-[#8B2635] text-[#FBF7F2] shadow transition-all';
+          if (btnTattoo) btnTattoo.className = 'px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-black/10 text-[#6E5A54] border border-[#DFD1C4] transition-all';
+          if (sideTitle) sideTitle.textContent = 'Cara A — Atelier de Nail Art';
+          if (sideDesc) sideDesc.textContent = 'Mostrando servicios y turnos de uñas. Girá a la Cara B para sesiones de Tattoo.';
+        } else {
+          if (btnTattoo) btnTattoo.className = 'px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-[#8B2635] text-white shadow transition-all';
+          if (btnNails) btnNails.className = 'px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-black/30 text-[#d8c4d6] border border-white/15 transition-all';
+          if (sideTitle) sideTitle.textContent = 'Cara B — Estudio de Tattoo Art';
+          if (sideDesc) sideDesc.textContent = 'Mostrando sesiones de tatuaje y Flash Book. Girá a la Cara A para Nail Art.';
+        }
+
+        const sourceList = (this.allServices && this.allServices.length) ? this.allServices : this.services;
+        const filtered = sourceList.filter(s => {
+          const c = (s.category || '').toLowerCase();
+          if (target === 'tattoo') return c === 'tattoo' || c === 'flash';
+          return c !== 'tattoo' && c !== 'flash';
+        });
+
+        this.services = filtered.length > 0 ? filtered : sourceList;
+        this.renderServices();
+        if (this.services.length > 0) {
+          this.selectService(this.services[0].id);
+        }
+      },
+
+      renderServices() {
+        const container = document.getElementById('vasca-services-list');
+        if (!container) return;
+
+        container.innerHTML = this.services.map(svc => `
+          <div class="vasca-svc-card cursor-pointer p-4 rounded-2xl bg-[#111111] border-2 border-white/10 hover:border-[#C7C7C7]/80 transition-all duration-200 ${this.selected.service && this.selected.service.id === svc.id ? 'border-[#C7C7C7] bg-[#1E1E1E]/90 shadow-lg shadow-[#C7C7C7]/20' : ''}" 
+               data-id="${svc.id}" 
+               onclick="vascaBooking.selectService('${svc.id}')">
+            <div class="flex items-center justify-between gap-2 mb-1.5">
+              <span class="text-xs font-black text-[#F1ECE5] px-2.5 py-0.5 rounded-full bg-[#8B2635]/20 border border-[#C7C7C7]/40">
+                ${svc.badge}
+              </span>
+              <span class="text-xs text-white/60 font-semibold flex items-center gap-1">
+                <span class="material-symbols-outlined text-[13px] text-[#D4AF37]">schedule</span> ${svc.duration} min
+              </span>
+            </div>
+            <h3 class="font-display font-bold text-sm sm:text-base text-white tracking-wide flex items-center gap-1.5">
+              <span>${svc.icon}</span> ${svc.name}
+            </h3>
+            <p class="text-xs text-[#d8c4d6] mt-1 line-clamp-2 leading-relaxed">
+              ${svc.desc}
+            </p>
+            <div class="flex items-center justify-between pt-3 mt-2 border-t border-white/5">
+              <span class="font-display font-black text-sm sm:text-base text-white">$${svc.price.toLocaleString('es-AR')}</span>
+              <span class="text-xs text-[#C7C7C7] font-bold flex items-center gap-0.5">
+                Seleccionar <span class="material-symbols-outlined text-xs">arrow_forward</span>
+              </span>
+            </div>
+          </div>
+        `).join('');
+      },
+
+      selectService(id) {
+        this.selected.service = this.services.find(s => s.id === id);
+        document.querySelectorAll('.vasca-svc-card').forEach(card => {
+          const isSelected = card.dataset.id === id;
+          card.classList.toggle('border-[#C7C7C7]', isSelected);
+          card.classList.toggle('bg-[#1E1E1E]/90', isSelected);
+          card.classList.toggle('shadow-lg', isSelected);
+          card.classList.toggle('shadow-[#C7C7C7]/20', isSelected);
+          card.classList.toggle('border-white/10', !isSelected);
+        });
+
+        if (this.selected.date) {
+          this.loadSlots();
+        }
+        this.checkShowSummary();
+      },
+
+      selectServiceByName(namePart) {
+        const norm = (str) => String(str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+        const q = norm(namePart);
+
+        let found = this.services.find(s =>
+          norm(s.name).includes(q) ||
+          norm(s.id).includes(q) ||
+          norm(s.slug).includes(q) ||
+          norm(s.category).includes(q)
+        );
+
+        if (!found) {
+          const keywordRules = [
+            { match: ['lifting', 'botox', 'keratina'], term: 'lifting' },
+            { match: ['hibrid', 'light russian'], term: 'hibrid' },
+            { match: ['ruso', '3d', '5d', 'mega'], term: 'ruso' },
+            { match: ['clasica', 'pelo a pelo', 'mantenimiento', 'service'], term: 'clasica' },
+            { match: ['ceja', 'laminado', 'perfilado'], term: 'ceja' }
+          ];
+          const rule = keywordRules.find(r => r.match.some(k => q.includes(k)));
+          if (rule) {
+            found = this.services.find(s => norm(s.name).includes(rule.term) || norm(s.category).includes(rule.term));
+          }
+        }
+
+        const fallbackSvc = this.services[1] || this.services[0];
+        if (found) {
+          this.selectService(found.id);
+        } else if (fallbackSvc) {
+          this.selectService(fallbackSvc.id);
+        }
+      },
+
+      renderCalendar() {
+        const grid = document.getElementById('calendar-grid');
+        const monthYear = document.getElementById('cal-month-year');
+        if (!grid || !monthYear) return;
+
+        grid.innerHTML = '';
+        const year = this.currentCalDate.getFullYear();
+        const month = this.currentCalDate.getMonth();
+
+        const monthNames = [
+          'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+        monthYear.textContent = `${monthNames[month]} ${year}`;
+
+        const firstDay = new Date(year, month, 1).getDay(); // 0 = Domingo
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        for (let i = 0; i < firstDay; i++) {
+          const empty = document.createElement('div');
+          empty.className = 'cal-day empty';
+          grid.appendChild(empty);
+        }
+
+        const now = new Date();
+        const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const cell = document.createElement('div');
+          const cellDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          const dayOfWeek = new Date(year, month, day).getDay();
+
+          cell.className = 'cal-day';
+          cell.textContent = day;
+
+          if (cellDateStr === todayStr) {
+            cell.classList.add('today');
+          }
+
+          const isExplicitlyPublished = this.publishedDatesSet && this.publishedDatesSet.has(cellDateStr);
+          if (cellDateStr < todayStr || (dayOfWeek === 0 && !isExplicitlyPublished)) {
+            cell.classList.add('disabled');
+            if (dayOfWeek === 0) cell.title = 'Estudio cerrado los domingos';
+          } else {
+            if (isExplicitlyPublished) {
+              cell.title = 'Horarios publicados disponibles';
+              cell.style.boxShadow = 'inset 0 -3px 0 #25D366';
+            }
+            if (this.selected.date === cellDateStr) {
+              cell.classList.add('selected');
+            }
+            cell.addEventListener('click', () => {
+              this.selected.date = cellDateStr;
+              this.selected.time = null;
+              document.querySelectorAll('.cal-day.selected').forEach(el => el.classList.remove('selected'));
+              cell.classList.add('selected');
+
+              const inputDate = document.getElementById('book-date');
+              if (inputDate) inputDate.value = cellDateStr;
+
+              this.renderPublishedDatesBar();
+              this.loadSlots();
+            });
+          }
+          grid.appendChild(cell);
+        }
+      },
+
+      changeMonth(offset) {
+        this.currentCalDate.setMonth(this.currentCalDate.getMonth() + offset);
+        this.renderCalendar();
+      },
+
+      formatDate(dateStr) {
+        if (!dateStr) return '';
+        const [year, month, day] = dateStr.split('-').map(Number);
+        const d = new Date(year, month - 1, day, 12, 0, 0);
+        return d.toLocaleDateString('es-AR', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long'
+        });
+      },
+
+      async loadSlots() {
+        const slotsContainer = document.getElementById('time-slots');
+        const badge = document.getElementById('selected-date-badge');
+        if (!slotsContainer) return;
+
+        if (!this.selected.date) {
+          slotsContainer.innerHTML = '<p class="text-xs text-gray-400 col-span-2 py-8 text-center italic">Seleccioná un día en el calendario.</p>';
+          return;
+        }
+
+        if (badge) {
+          badge.textContent = this.formatDate(this.selected.date);
+        }
+
+        slotsContainer.innerHTML = '<p class="text-xs text-[#F1ECE5] col-span-2 py-6 text-center italic">Consultando disponibilidad en Supabase...</p>';
+
+        let slotsData = [];
+        if (window.NahiBackend) {
+          try {
+            slotsData = await window.NahiBackend.getAvailableSlots(this.selected.date, this.selected.service ? this.selected.service.id : null);
+          } catch(e) {}
+        }
+
+        if (!slotsData || !slotsData.length) {
+          const baseSlots = ['10:00', '11:30', '14:00', '15:30', '17:00', '18:30'];
+          slotsData = baseSlots.map(time => ({ time, available: true }));
+        }
+
+        slotsContainer.innerHTML = slotsData.map(slot => {
+          if (!slot.available) {
+            return `
+              <button type="button" disabled class="slot-btn opacity-40 cursor-not-allowed border-red-500/30 bg-red-950/20 text-red-300/70 line-through">
+                ${slot.time} hs • Ocupado
+              </button>
+            `;
+          }
+          return `
+            <button type="button" 
+                    class="slot-btn ${this.selected.time === slot.time ? 'selected' : ''}" 
+                    onclick="vascaBooking.selectTime('${slot.time}')">
+              ${slot.time} hs
+            </button>
+          `;
+        }).join('');
+      },
+
+      selectTime(time) {
+        this.selected.time = time;
+        const duration = this.selected.service ? this.selected.service.duration : 90;
+        
+        const [h, m] = time.split(':').map(Number);
+        const totalMinutes = h * 60 + m + duration;
+        const endH = Math.floor(totalMinutes / 60);
+        const endM = totalMinutes % 60;
+        this.selected.endTime = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+
+        document.querySelectorAll('.slot-btn').forEach(btn => {
+          btn.classList.toggle('selected', btn.textContent.trim().startsWith(time));
+        });
+
+        this.checkShowSummary();
+
+        const infoEl = document.getElementById('step-info');
+        if (infoEl) {
+          infoEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      },
+
+      checkShowSummary() {
+        const summaryBox = document.getElementById('booking-summary-box');
+        if (summaryBox) {
+          this.renderSummary();
+        }
+      },
+
+      renderSummary() {
+        const summaryDetails = document.getElementById('summary-details');
+        if (!summaryDetails) return;
+
+        const svc = this.selected.service || this.services[0];
+        const dateFormatted = this.selected.date ? this.formatDate(this.selected.date) : 'A seleccionar';
+        const timeFormatted = this.selected.time ? `${this.selected.time} a ${this.selected.endTime || '---'} hs` : 'A seleccionar';
+
+        const depositPct = (window.NahiBackend && window.NahiBackend.payments) ? window.NahiBackend.payments.depositPercentage : 20;
+        const depositAmount = (window.NahiBackend && window.NahiBackend.payments)
+          ? window.NahiBackend.payments.calcDeposit(svc.price)
+          : Math.ceil(((svc.price || 0) * (depositPct / 100)) / 100) * 100;
+        const remainder = Math.max(0, (svc.price || 0) - depositAmount);
+
+        summaryDetails.innerHTML = `
+          <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+            <span class="text-gray-400">Tratamiento:</span>
+            <span class="font-bold text-white">${svc.name}</span>
+          </div>
+          <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+            <span class="text-gray-400">Especialista:</span>
+            <span class="font-bold text-[#F1ECE5]">${this.professional.name} (Master Artist)</span>
+          </div>
+          <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+            <span class="text-gray-400">Fecha elegida:</span>
+            <span class="font-bold text-white capitalize">${dateFormatted}</span>
+          </div>
+          <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+            <span class="text-gray-400">Horario de cita:</span>
+            <span class="font-bold text-[#F1ECE5]">${timeFormatted}</span>
+          </div>
+          <div class="flex items-center justify-between py-2 border-b border-white/10 text-sm sm:text-base">
+            <span class="font-bold text-white">Inversión Total:</span>
+            <span class="font-display font-extrabold text-[#F1ECE5]">$${svc.price.toLocaleString('es-AR')}</span>
+          </div>
+          <div class="flex items-center justify-between py-1.5 border-b border-white/5 text-xs">
+            <span class="text-amber-300 font-bold">Seña requerida (${depositPct}%):</span>
+            <span class="font-bold text-amber-300">$${depositAmount.toLocaleString('es-AR')}</span>
+          </div>
+          <div class="flex items-center justify-between py-1 text-xs text-gray-400">
+            <span>Resta abonar en el estudio:</span>
+            <span class="text-gray-300 font-semibold">$${remainder.toLocaleString('es-AR')}</span>
+          </div>
+        `;
+
+        this.renderDepositInfo(depositAmount);
+      },
+
+      renderDepositInfo(depositAmount) {
+        const depAmtEl = document.getElementById('deposit-amount');
+        if (depAmtEl) depAmtEl.textContent = `$${depositAmount.toLocaleString('es-AR')}`;
+
+        const bankBox = document.getElementById('deposit-bank-info');
+        if (!bankBox) return;
+
+        const info = this.paymentInfo || { alias: 'NAHI.STUDIO', holder: 'Nahiara Ciamprone', bank: 'Mercado Pago / Banco' };
+        const alias = info.alias || 'NAHI.STUDIO';
+        const cbu = info.cbu || '';
+        const holder = info.holder || 'Nahiara Ciamprone';
+        const bank = info.bank || 'Transferencia';
+
+        bankBox.innerHTML = `
+          <div class="p-2.5 rounded-xl bg-[#111111] border border-white/10 space-y-1">
+            <span class="text-[10px] text-gray-400 uppercase tracking-wider block">Alias para transferir</span>
+            <div class="flex items-center justify-between gap-1">
+              <span class="font-mono font-bold text-amber-300 select-all">${alias}</span>
+              <button type="button" onclick="navigator.clipboard.writeText('${alias}'); alert('Alias copiado: ${alias}');" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[10px] font-bold text-white transition-all">Copiar</button>
+            </div>
+          </div>
+          ${cbu ? `
+          <div class="p-2.5 rounded-xl bg-[#111111] border border-white/10 space-y-1">
+            <span class="text-[10px] text-gray-400 uppercase tracking-wider block">CBU / CVU</span>
+            <div class="flex items-center justify-between gap-1">
+              <span class="font-mono text-xs text-white select-all">${cbu}</span>
+              <button type="button" onclick="navigator.clipboard.writeText('${cbu}'); alert('CBU copiado');" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[10px] font-bold text-white transition-all">Copiar</button>
+            </div>
+          </div>
+          ` : `
+          <div class="p-2.5 rounded-xl bg-[#111111] border border-white/10 space-y-1">
+            <span class="text-[10px] text-gray-400 uppercase tracking-wider block">Titular de cuenta</span>
+            <p class="font-bold text-white">${holder} <span class="text-gray-400 font-normal">(${bank})</span></p>
+          </div>
+          `}
+        `;
+      },
+
+      onDepositFileChange(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        this.selectedReceiptFile = file;
+        const sizeKb = Math.round(file.size / 1024);
+        const lbl = document.getElementById('deposit-file-label');
+        if (lbl) {
+          lbl.textContent = `✓ Comprobante listo: ${file.name} (${sizeKb} KB)`;
+          lbl.className = 'block text-xs font-bold text-emerald-300';
+        }
+        const drop = document.getElementById('deposit-dropzone');
+        if (drop) {
+          drop.classList.add('border-emerald-400', 'bg-emerald-500/10');
+          drop.classList.remove('border-dashed', 'border-amber-400/40');
+        }
+      },
+
+      async confirmBooking() {
+        const nameInput = document.getElementById('book-name');
+        const phoneInput = document.getElementById('book-phone');
+        const igInput = document.getElementById('book-ig');
+        const notesInput = document.getElementById('book-notes');
+        const statusMsg = document.getElementById('booking-status-msg');
+
+        const name = nameInput ? nameInput.value.trim() : '';
+        const phone = phoneInput ? phoneInput.value.trim() : '';
+
+        if (!this.selected.service) {
+          statusMsg.textContent = 'Por favor, seleccioná un servicio.';
+          statusMsg.className = 'text-center text-xs mt-2 text-[#8B2635] font-bold';
+          return;
+        }
+
+        if (!this.selected.date) {
+          statusMsg.textContent = 'Por favor, elegí un día en el calendario.';
+          statusMsg.className = 'text-center text-xs mt-2 text-[#8B2635] font-bold';
+          return;
+        }
+
+        if (!this.selected.time) {
+          statusMsg.textContent = 'Por favor, elegí un horario disponible.';
+          statusMsg.className = 'text-center text-xs mt-2 text-[#8B2635] font-bold';
+          return;
+        }
+
+        if (!name || !phone) {
+          statusMsg.textContent = 'Por favor, completá tu nombre y teléfono / WhatsApp.';
+          statusMsg.className = 'text-center text-xs mt-2 text-[#8B2635] font-bold';
+          if (!name && nameInput) nameInput.focus();
+          else if (phoneInput) phoneInput.focus();
+          return;
+        }
+
+        if (!this.selectedReceiptFile) {
+          statusMsg.textContent = 'Por favor adjuntá el comprobante de transferencia de la seña (20%) para reservar tu lugar.';
+          statusMsg.className = 'text-center text-xs mt-2 text-amber-300 font-bold';
+          const drop = document.getElementById('deposit-dropzone');
+          if (drop) {
+            drop.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            drop.classList.add('animate-pulse');
+            setTimeout(() => drop.classList.remove('animate-pulse'), 1500);
+          }
+          return;
+        }
+
+        if (this._submitting) return;
+        this._submitting = true;
+
+        statusMsg.textContent = 'Subiendo comprobante de la seña y registrando tu turno...';
+        statusMsg.className = 'text-center text-xs mt-2 text-[#F1ECE5]';
+
+        let receiptPath = null;
+        const depositAmount = (window.NahiBackend && window.NahiBackend.payments)
+          ? window.NahiBackend.payments.calcDeposit(this.selected.service.price)
+          : Math.ceil(((this.selected.service.price || 0) * 0.2) / 100) * 100;
+
+        try {
+          if (window.NahiBackend && window.NahiBackend.payments) {
+            receiptPath = await window.NahiBackend.payments.uploadReceipt(this.selectedReceiptFile, this.selected.date);
+          }
+        } catch (upErr) {
+          this._submitting = false;
+          statusMsg.textContent = upErr.message || 'Error al subir el comprobante. Intentá nuevamente.';
+          statusMsg.className = 'text-center text-xs mt-2 text-[#8B2635] font-bold';
+          return;
+        }
+
+        const appointment = {
+          service: this.selected.service,
+          serviceId: this.selected.service.id,
+          price: this.selected.service.price,
+          depositArs: depositAmount,
+          depositReceipt: receiptPath,
+          duration: this.selected.service.duration,
+          date: this.selected.date,
+          time: this.selected.time,
+          endTime: this.selected.endTime,
+          professional: this.professional.name,
+          name: name,
+          phone: phone,
+          clientIg: igInput ? igInput.value.trim() : '',
+          email: '',
+          notes: (notesInput ? notesInput.value.trim() : '') + (igInput && igInput.value ? ` [IG: ${igInput.value.trim()}]` : '')
+        };
+
+        let bookingResult = null;
+        if (window.NahiBackend) {
+          try {
+            bookingResult = await window.NahiBackend.createAppointment(appointment);
+          } catch(e) {
+            console.warn('Booking backend sync error:', e);
+            this._submitting = false;
+            statusMsg.textContent = e.message || 'No se pudo completar la reserva. Intentá con otro horario.';
+            statusMsg.className = 'text-center text-xs mt-2 text-[#8B2635] font-bold';
+            this.selected.time = null;
+            await this.loadSlots();
+            return;
+          }
+        }
+        this._submitting = false;
+        statusMsg.textContent = '';
+
+        // Preparar Google Calendar URL
+        const calStart = `${this.selected.date.replace(/-/g, '')}T${this.selected.time.replace(':', '')}00`;
+        const calEnd = `${this.selected.date.replace(/-/g, '')}T${this.selected.endTime.replace(':', '')}00`;
+        const calText = encodeURIComponent(`Turno: ${this.selected.service.name} - Nahi Studio`);
+        const calDetails = encodeURIComponent(`Turno de belleza con Nahiara Ciamprone en Nahi Studio. Clienta: ${name}. Tel: ${phone}.`);
+        const calLocation = encodeURIComponent('Espacio Muna');
+        const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${calText}&dates=${calStart}/${calEnd}&details=${calDetails}&location=${calLocation}`;
+
+        const calBtn = document.getElementById('success-cal-btn');
+        if (calBtn) calBtn.href = calUrl;
+
+        const dateFormatted = this.formatDate(this.selected.date);
+        const successMsg = document.getElementById('success-msg');
+        if (successMsg) {
+          successMsg.textContent = `${this.selected.service.name} • ${dateFormatted} a las ${this.selected.time} hs`;
+        }
+
+        // Configurar enlace directo a WhatsApp de Nahi con los datos del turno y seña
+        const waStudioNumber = (this.paymentInfo && this.paymentInfo.whatsapp) ? this.paymentInfo.whatsapp.replace(/\D/g, '') : '5492914491141';
+        const waText = encodeURIComponent(`¡Hola Nahi! 👋 Acabo de solicitar mi turno en la web y transferir la seña:\n\n` +
+          `✨ *Tratamiento:* ${this.selected.service.name}\n` +
+          `📅 *Fecha:* ${dateFormatted}\n` +
+          `⏰ *Horario:* ${this.selected.time} hs\n` +
+          `👤 *Nombre:* ${name}\n` +
+          `📱 *Tel:* ${phone}\n` +
+          `💵 *Seña (20%):* $${depositAmount.toLocaleString('es-AR')}\n\n` +
+          `Ya adjunté el comprobante en la página. ¿Me confirmás el turno? ¡Muchas gracias! 💕`);
+        const waBtn = document.getElementById('success-wa-btn');
+        if (waBtn) {
+          waBtn.href = `https://wa.me/${waStudioNumber}?text=${waText}`;
+        }
+
+        document.getElementById('step-service').classList.add('hidden');
+        document.getElementById('step-professional').classList.add('hidden');
+        document.getElementById('step-datetime').classList.add('hidden');
+        document.getElementById('step-info').classList.add('hidden');
+        
+        const successStep = document.getElementById('step-success');
+        if (successStep) {
+          successStep.classList.remove('hidden');
+          successStep.scrollIntoView({ behavior: 'smooth' });
+        }
+      },
+
+      resetBooking() {
+        document.getElementById('step-service').classList.remove('hidden');
+        document.getElementById('step-professional').classList.remove('hidden');
+        document.getElementById('step-datetime').classList.remove('hidden');
+        document.getElementById('step-info').classList.remove('hidden');
+        document.getElementById('step-success').classList.add('hidden');
+
+        this.selected.time = null;
+        this.selected.endTime = null;
+        document.querySelectorAll('.slot-btn.selected').forEach(b => b.classList.remove('selected'));
+        this.checkShowSummary();
+
+        const step1 = document.getElementById('step-service');
+        if (step1) step1.scrollIntoView({ behavior: 'smooth' });
+      },
+
+      async loadMyBookings() {
+        const container = document.getElementById('my-appointments-list');
+        if (!container) return;
+
+        container.innerHTML = `
+          <div class="py-8 text-center text-xs text-gray-400">
+            <span class="material-symbols-outlined text-2xl animate-spin text-[#C7C7C7]">progress_activity</span>
+            <p class="mt-1">Cargando tus citas...</p>
+          </div>
+        `;
+
+        let appointments = [];
+        if (window.NahiBackend) {
+          try {
+            appointments = await window.NahiBackend.getMyAppointments();
+          } catch(e) {}
+        }
+        if (!appointments || !appointments.length) {
+          appointments = JSON.parse(localStorage.getItem('nahi_studio_turnos') || '[]');
+        }
+
+        if (!appointments.length) {
+          container.innerHTML = `
+            <div class="text-center py-10 space-y-3">
+              <span class="text-4xl">🗓️</span>
+              <p class="text-sm font-bold text-white">Todavía no tenés turnos agendados en este dispositivo.</p>
+              <p class="text-xs text-[#d8c4d6]">Reservá tu turno desde la pestaña superior para tener tu lugar exclusivo.</p>
+              <button type="button" onclick="vascaBooking.switchTab('book')" class="inline-flex items-center gap-2 bg-[#8B2635] hover:bg-[#a83244] text-white px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-md">
+                <span>Reservar Ahora</span>
+              </button>
+            </div>
+          `;
+          return;
+        }
+
+        const cancelledCount = appointments.filter(a => a.status === 'cancelled').length;
+        const bulkClearHtml = cancelledCount > 0 ? `
+          <div class="flex items-center justify-between p-3 rounded-xl bg-red-950/30 border border-red-500/30 mb-3">
+            <span class="text-xs text-red-200">Tenés <strong>${cancelledCount}</strong> turno(s) cancelado(s) en tu historial.</span>
+            <button type="button" onclick="vascaBooking.deleteCancelledBookings()" class="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold flex items-center gap-1 transition-all shadow">
+              <span class="material-symbols-outlined text-sm">delete_sweep</span>
+              <span>Eliminar cancelados</span>
+            </button>
+          </div>
+        ` : '';
+
+        container.innerHTML = bulkClearHtml + appointments.map(apt => {
+          const calStart = apt.date ? `${apt.date.replace(/-/g, '')}T${apt.time.replace(':', '')}00` : '';
+          const calEnd = apt.date && apt.endTime ? `${apt.date.replace(/-/g, '')}T${apt.endTime.replace(':', '')}00` : '';
+          const serviceName = apt.service?.name || apt.service || 'Tratamiento de Pestañas';
+          const calText = encodeURIComponent(`Turno: ${serviceName} - Nahi Studio`);
+          const calDetails = encodeURIComponent(`Turno agendado en Nahi Studio para ${apt.clientName || ''}.`);
+          const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${calText}&dates=${calStart}/${calEnd}&details=${calDetails}&location=${encodeURIComponent('Espacio Muna')}`;
+
+          const statusBadgeMap = {
+            confirmed: { label: 'Confirmado', cls: 'bg-[#25D366]/20 border border-[#25D366] text-[#25D366]' },
+            completed: { label: 'Completado', cls: 'bg-blue-500/20 border border-blue-400 text-blue-300' },
+            cancelled: { label: 'Cancelado', cls: 'bg-red-500/20 border border-red-500/50 text-red-300' },
+            pending: { label: 'Agendado', cls: 'bg-[#8B2635]/20 border border-[#C7C7C7] text-[#F1ECE5]' }
+          };
+          const stBadge = statusBadgeMap[apt.status] || statusBadgeMap.pending;
+
+          return `
+            <div class="p-4 sm:p-5 rounded-2xl bg-[#111111] border border-[#C7C7C7]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-md ${apt.status === 'cancelled' ? 'opacity-60' : ''}">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full ${stBadge.cls} text-[10px] font-black uppercase">
+                    ${stBadge.label}
+                  </span>
+                  <span class="text-xs font-bold text-white capitalize">${this.formatDate(apt.date)}</span>
+                </div>
+                <h4 class="font-display font-bold text-base text-white">${serviceName}</h4>
+                <p class="text-xs text-[#F1ECE5]">⏰ Horario: ${apt.time} a ${apt.endTime || '---'} hs • Profesional: Nahiara Ciamprone</p>
+                <p class="text-[11px] text-gray-400">A nombre de: ${apt.clientName || 'Clienta'} (${apt.clientPhone || ''})</p>
+              </div>
+
+              <div class="flex items-center gap-2 flex-wrap">
+                ${apt.status !== 'cancelled' ? `
+                <a href="${calUrl}" target="_blank" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-[#1E1E1E] hover:bg-[#8B2635] text-white border border-white/10 text-xs font-bold transition-all flex items-center gap-1.5" title="Sincronizar calendario">
+                  <span class="material-symbols-outlined text-sm">calendar_today</span>
+                  <span class="hidden sm:inline">Calendario</span>
+                </a>
+                <button type="button" onclick="vascaBooking.cancelBooking('${apt.id}')" class="p-2 rounded-xl bg-red-950/40 hover:bg-red-600/60 text-red-300 border border-red-500/30 text-xs transition-all" title="Cancelar turno">
+                  <span class="material-symbols-outlined text-sm">cancel</span>
+                </button>
+                ` : `
+                <button type="button" onclick="vascaBooking.deleteBooking('${apt.id}')" class="px-3 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold flex items-center gap-1 transition-all shadow" title="Eliminar este turno cancelado">
+                  <span class="material-symbols-outlined text-sm">delete</span>
+                  <span>Eliminar</span>
+                </button>
+                `}
+              </div>
+            </div>
+          `;
+        }).join('');
+      },
+
+      async deleteBooking(id) {
+        if (!confirm('¿Eliminar este turno cancelado para que no aparezca más en Mis Turnos?')) return;
+        if (window.NahiBackend && window.NahiBackend.turnos && window.NahiBackend.turnos.deleteAppointment) {
+          try {
+            await window.NahiBackend.turnos.deleteAppointment(id);
+          } catch (e) {}
+        }
+        let existing = JSON.parse(localStorage.getItem('nahi_studio_turnos') || '[]');
+        existing = existing.filter(a => a.id !== id && a.supabaseId !== id);
+        localStorage.setItem('nahi_studio_turnos', JSON.stringify(existing));
+        this.loadMyBookings();
+      },
+
+      async deleteCancelledBookings() {
+        if (!confirm('¿Eliminar todos los turnos cancelados de tu lista?')) return;
+        if (window.NahiBackend && window.NahiBackend.turnos && window.NahiBackend.turnos.deleteCancelledAppointments) {
+          try {
+            await window.NahiBackend.turnos.deleteCancelledAppointments();
+          } catch (e) {}
+        }
+        let existing = JSON.parse(localStorage.getItem('nahi_studio_turnos') || '[]');
+        existing = existing.filter(a => a.status !== 'cancelled');
+        localStorage.setItem('nahi_studio_turnos', JSON.stringify(existing));
+        this.loadMyBookings();
+      },
+
+      async cancelBooking(id) {
+        if (!confirm('¿Deseás cancelar este turno? Se liberará el horario y recibirás un correo de confirmación de cancelación.')) return;
+        let cancelRes = null;
+        if (window.NahiBackend) {
+          try {
+            cancelRes = await window.NahiBackend.cancelAppointment(id);
+          } catch(e) {}
+        }
+        let existing = JSON.parse(localStorage.getItem('nahi_studio_turnos') || '[]');
+        existing = existing.filter(a => a.id !== id && a.supabaseId !== id);
+        localStorage.setItem('nahi_studio_turnos', JSON.stringify(existing));
+
+        const banner = document.getElementById('my-appointments-banner');
+        if (banner) {
+          const sentTo = cancelRes && cancelRes.emailNotification && cancelRes.emailNotification.to;
+          banner.textContent = sentTo
+            ? `✓ Tu turno fue cancelado y enviamos el comprobante de cancelación a ${sentTo}.`
+            : '✓ Tu turno fue cancelado y el horario quedó liberado.';
+          banner.classList.remove('hidden');
+          setTimeout(() => banner.classList.add('hidden'), 6500);
+        }
+
+        if (this.selected.date) {
+          this.loadSlots();
+        }
+        this.loadMyBookings();
+      }
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => vascaBooking.init());
+    } else {
+      vascaBooking.init();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'background': '#111111',
+        'on-background': '#F1ECE5',
+        'surface': '#111111',
+        'on-surface': '#F1ECE5',
+        'surface-container-low': '#181818',
+        'surface-container': '#1E1E1E',
+        'surface-container-high': '#282828',
+        'on-surface-variant': '#C7C7C7',
+        'outline': '#8C8C8C',
+        'outline-variant': '#333333',
+        'primary': '#F1ECE5',
+        'on-primary': '#111111',
+        'secondary': '#C7C7C7',
+        'on-secondary': '#111111',
+        'accent': '#8B2635',
+        'on-accent': '#F1ECE5',
+        'error': '#FFB4AB',
+        'on-error': '#690005',
+      },
+      borderRadius: {
+        'none': '0px',
+        'sm': '2px',
+        'DEFAULT': '4px',
+        'md': '8px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '16px',
+        'gutter-lg': '24px',
+        'gutter-xl': '32px',
+        'section': '64px',
+        'page-margin': '24px',
+      },
+      fontFamily: {
+        'display': ['"Playfair Display"', 'sans-serif'],
+        'headline': ['"Playfair Display"', 'sans-serif'],
+        'title': ['"Raleway"', 'sans-serif'],
+        'body': ['"Raleway"', 'sans-serif'],
+        'label': ['"Spline Sans Mono"', 'sans-serif'],
+      },
+      fontSize: {
+        'display-lg': ['64px', { lineHeight: '68px', letterSpacing: '-1.5px', fontWeight: '500' }],
+        'display-lg-mobile': ['32px', { lineHeight: '36px', letterSpacing: '-0.5px', fontWeight: '500' }],
+        'display-md': ['44px', { lineHeight: '48px', letterSpacing: '-0.75px', fontWeight: '500' }],
+        'display-md-mobile': ['28px', { lineHeight: '32px', letterSpacing: '-0.25px', fontWeight: '500' }],
+        'headline-lg': ['32px', { lineHeight: '38px', letterSpacing: '-0.25px', fontWeight: '500' }],
+        'headline-md': ['24px', { lineHeight: '30px', letterSpacing: '0px', fontWeight: '500' }],
+        'title-md': ['18px', { lineHeight: '24px', letterSpacing: '0.25px', fontWeight: '600' }],
+        'body-lg': ['16px', { lineHeight: '26px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-md': ['14px', { lineHeight: '22px', letterSpacing: '0.1px', fontWeight: '400' }],
+        'label-lg': ['13px', { lineHeight: '18px', letterSpacing: '1.5px', fontWeight: '500' }],
+        'label-md': ['11px', { lineHeight: '16px', letterSpacing: '1.2px', fontWeight: '500' }],
+        'label-sm': ['10px', { lineHeight: '14px', letterSpacing: '1px', fontWeight: '400' }],
+      },
+      transitionDuration: {
+        'state-change': '180ms',
+        'surface-enter': '400ms',
+        'coin-flip': '700ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'coin-flip': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+        'surface-enter': 'cubic-bezier(0.16, 1, 0.3, 1)',
+        'coin-flip': 'cubic-bezier(0.22, 1, 0.36, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;

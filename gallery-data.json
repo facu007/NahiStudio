@@ -1,0 +1,134 @@
+[
+  {
+    "id": "nahi_nail_1",
+    "title": "Crimson French & Tattoo",
+    "badge": "01 / NAIL ART — TRABAJO REAL",
+    "category": "nails",
+    "description": "Almendradas con french rojo carmesí profundo en diálogo con tatuaje ornamental de muñeca.",
+    "imageUrl": "fotos/imgi_25_539976307_17854872333514079_3988514524600607766_n.webp",
+    "isFeatured": true,
+    "isHero": true,
+    "sortOrder": 1
+  },
+  {
+    "id": "nahi_nail_2",
+    "title": "Sculpted 3D & Pearl",
+    "badge": "01 / NAIL ART — RELIEVE 3D",
+    "category": "nails",
+    "description": "Diseño escultórico con volumen metálico dorado, perlas y detalles marinos sobre base lechosa.",
+    "imageUrl": "fotos/imgi_22_504060229_17842497063514079_4107614235171648365_n.webp",
+    "isFeatured": true,
+    "isHero": true,
+    "sortOrder": 2
+  },
+  {
+    "id": "nahi_nail_3",
+    "title": "Reflective Obsidian",
+    "badge": "01 / NAIL ART — GLITTER",
+    "category": "nails",
+    "description": "Glitter reflectivo oscuro con destellos plateados en forma almendra.",
+    "imageUrl": "fotos/imgi_6_928715819_1678752167229555_3258636658814047340_n.jpg",
+    "isFeatured": true,
+    "isHero": false,
+    "sortOrder": 3
+  },
+  {
+    "id": "nahi_nail_4",
+    "title": "Chrome Animal Print",
+    "badge": "01 / NAIL ART — COFFIN",
+    "category": "nails",
+    "description": "Base metálica champagne con diseño animal print en negro intenso sobre estructura coffin.",
+    "imageUrl": "fotos/imgi_9_857436431_17930539812514079_2849828327181330972_n.jpg",
+    "isFeatured": true,
+    "isHero": false,
+    "sortOrder": 4
+  },
+  {
+    "id": "nahi_nail_5",
+    "title": "Editorial French & Red",
+    "badge": "01 / NAIL ART — EDITORIAL",
+    "category": "nails",
+    "description": "French clásico reinterpretado con líneas orgánicas y acento rojo carmesí.",
+    "imageUrl": "fotos/imgi_31_628792993_17875531770514079_7101006345959160330_n.webp",
+    "isFeatured": true,
+    "isHero": false,
+    "sortOrder": 5
+  },
+  {
+    "id": "nahi_nail_6",
+    "title": "Gothic Chrome & Studs",
+    "badge": "01 / NAIL ART — GRUNGE",
+    "category": "nails",
+    "description": "Nail art negro profundo con lettering gótico, tachas metálicas y líneas cromadas.",
+    "imageUrl": "fotos/imgi_13_861911954_1131761712629862_1954115592653772609_n.jpg",
+    "isFeatured": true,
+    "isHero": true,
+    "sortOrder": 6
+  },
+  {
+    "id": "nahi_tattoo_1",
+    "title": "Cupido Blackwork & Puntillismo",
+    "badge": "02 / TATTOO ART — BLACKWORK",
+    "category": "tattoo",
+    "description": "Cupido clásico en clave blackwork con sombreado de arrastre y puntillismo de alta definición.",
+    "imageUrl": "fotos/imgi_28_771909433_18096793385269189_6790519837572543665_n.jpg",
+    "isFeatured": true,
+    "isHero": true,
+    "sortOrder": 7
+  },
+  {
+    "id": "nahi_tattoo_2",
+    "title": "León Oriental Fu Dog & Geometría",
+    "badge": "02 / TATTOO ART — CUSTOM",
+    "category": "tattoo",
+    "description": "Pieza de pecho a gran escala: guardián oriental con líneas sólidas y esfera de geometría sagrada.",
+    "imageUrl": "fotos/imgi_18_831313350_18104431136269189_151488612152529768_n.jpg",
+    "isFeatured": true,
+    "isHero": true,
+    "sortOrder": 8
+  },
+  {
+    "id": "nahi_tattoo_3",
+    "title": "Lettering Distorsión — Viejo Karma",
+    "badge": "02 / TATTOO ART — LETTERING",
+    "category": "tattoo",
+    "description": "Tipografía experimental con efecto onda y firma caligráfica en tinta negra intensa.",
+    "imageUrl": "fotos/imgi_11_902024821_18111104054269189_4890881016085880301_n.jpg",
+    "isFeatured": true,
+    "isHero": false,
+    "sortOrder": 9
+  },
+  {
+    "id": "nahi_tattoo_4",
+    "title": "Fine Line & Caligrafía Infinito",
+    "badge": "02 / TATTOO ART — FINE LINE",
+    "category": "tattoo",
+    "description": "Trazo fino caligráfico con destellos astrales, micro-luna y línea ornamental.",
+    "imageUrl": "fotos/imgi_15_846504117_18106174985269189_2305949659410720467_n.jpg",
+    "isFeatured": true,
+    "isHero": false,
+    "sortOrder": 10
+  },
+  {
+    "id": "nahi_tattoo_5",
+    "title": "Femme Spots — Botánico Ornamental",
+    "badge": "02 / TATTOO ART — FINE LINE",
+    "category": "tattoo",
+    "description": "Diseño botánico simétrico de trazo delicado adaptado a la anatomía del esternón.",
+    "imageUrl": "fotos/imgi_10_832478316_1138317815289557_8357992302156346057_n.jpg",
+    "isFeatured": true,
+    "isHero": false,
+    "sortOrder": 11
+  },
+  {
+    "id": "nahi_tattoo_6",
+    "title": "Flash Sheets & Custom Designs",
+    "badge": "02 / FLASH BOOK — DISPONIBLES",
+    "category": "flash",
+    "description": "Mesa de trabajo y láminas flash del estudio. Tocá para consultar disponibilidad y tamaño.",
+    "imageUrl": "assets/images/tattoo_flash_02.jpg",
+    "isFeatured": true,
+    "isHero": false,
+    "sortOrder": 12
+  }
+]

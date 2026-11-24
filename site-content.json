@@ -1,0 +1,340 @@
+{
+  "services": [
+    {
+      "id": "22222222-2222-2222-2222-222222222201",
+      "name": "Esculpidas & Nail Art Editorial",
+      "slug": "esculpidas-nail-art",
+      "badge": "01 — NAIL ART",
+      "desc": "Construcción escultural a medida con diseño personalizado: efectos cromo, relieve 3D, perlas, gothic lettering o french editorial.",
+      "duration": 120,
+      "durationLabel": "120 min",
+      "price": 28000,
+      "deposit": 5600,
+      "icon": "💎",
+      "category": "nails",
+      "isActive": true,
+      "sortOrder": 1
+    },
+    {
+      "id": "22222222-2222-2222-2222-222222222202",
+      "name": "Kapping / Capping Gel + Diseño",
+      "slug": "kapping-gel-diseno",
+      "badge": "01 — NAIL ART",
+      "desc": "Baño de gel fortificador sobre el largo de tu uña natural para máxima resistencia, nivelación perfecta y nail art a elección.",
+      "duration": 90,
+      "durationLabel": "90 min",
+      "price": 24000,
+      "deposit": 4800,
+      "icon": "✨",
+      "category": "nails",
+      "isActive": true,
+      "sortOrder": 2
+    },
+    {
+      "id": "22222222-2222-2222-2222-222222222203",
+      "name": "Esmaltado Semipermanente + Nail Art",
+      "slug": "semipermanente-nail-art",
+      "badge": "01 — NAIL ART",
+      "desc": "Manicuría combinada de alta precisión con esmaltado de larga duración, french, glitter reflectivo o detalles cromados.",
+      "duration": 75,
+      "durationLabel": "75 min",
+      "price": 20000,
+      "deposit": 4000,
+      "icon": "🖤",
+      "category": "nails",
+      "isActive": true,
+      "sortOrder": 3
+    },
+    {
+      "id": "22222222-2222-2222-2222-222222222204",
+      "name": "Service / Mantenimiento Nail Art",
+      "slug": "service-mantenimiento-nails",
+      "badge": "01 — NAIL ART",
+      "desc": "Balance de estructura, retiro de crecimiento y renovación completa del diseño (recomendado cada 21 días).",
+      "duration": 90,
+      "durationLabel": "90 min",
+      "price": 22000,
+      "deposit": 4400,
+      "icon": "🔄",
+      "category": "nails",
+      "isActive": true,
+      "sortOrder": 4
+    },
+    {
+      "id": "22222222-2222-2222-2222-222222222205",
+      "name": "Tattoo Fine Line / Mini & Flash",
+      "slug": "tattoo-fine-line-flash",
+      "badge": "02 — TATTOO ART",
+      "desc": "Tatuajes delicados de trazo fino, caligrafía, botánicos, micro-tattoos o diseños seleccionados del Flash Book del estudio.",
+      "duration": 90,
+      "durationLabel": "60-90 min",
+      "price": 35000,
+      "deposit": 7000,
+      "icon": "🖋️",
+      "category": "tattoo",
+      "isActive": true,
+      "sortOrder": 5
+    },
+    {
+      "id": "22222222-2222-2222-2222-222222222206",
+      "name": "Tattoo Blackwork & Diseño Custom",
+      "slug": "tattoo-blackwork-custom",
+      "badge": "02 — TATTOO ART",
+      "desc": "Sesión de tatuaje personalizado en tinta negra, puntillismo, lettering experimental u ornamental a medida.",
+      "duration": 150,
+      "durationLabel": "120-180 min",
+      "price": 55000,
+      "deposit": 11000,
+      "icon": "🩸",
+      "category": "tattoo",
+      "isActive": true,
+      "sortOrder": 6
+    }
+  ],
+  "promosSection": {
+    "pill": "TWO SIDES • PACKS & EXPERIENCIAS",
+    "title": "Combiná tus dos caras en el estudio",
+    "subtitle": "Propuestas pensadas para llevar la experiencia completa de Nail Art y Tattoo Art en Espacio Muna.",
+    "bannerTag": "Agenda Online 24/7",
+    "bannerTitle": "Reservá tu Horario en Tiempo Real",
+    "bannerSubtitle": "Espacio Muna — Nahi Ciamprone Studio",
+    "bannerBtnText": "Abrir Agenda Online",
+    "items": [
+      {
+        "id": "promo_1",
+        "badge": "01 — Cara Nails",
+        "duration": "120 min",
+        "title": "Full Set Esculpidas + Chrome / 3D",
+        "desc": "Estructura completa a medida con relieve 3D, perlas o efecto cromado editorial.",
+        "priceLabel": "Valor Sesión",
+        "price": 28000,
+        "ribbonText": "Belleza, precisión y arquitectura escultural",
+        "btnText": "Reservar Nails",
+        "serviceLink": "esculpidas",
+        "isVip": false,
+        "vipBadge": ""
+      },
+      {
+        "id": "promo_2",
+        "badge": "01 + 02 — Dual Identity",
+        "duration": "180 min",
+        "title": "Experiencia Dual: Nails + Mini Tattoo",
+        "desc": "Las dos caras de Nahi Studio en una misma cita: set de Nail Art + tatuaje fine-line o pieza flash.",
+        "priceLabel": "Pack Especial Dual",
+        "price": 52000,
+        "ribbonText": "Two Sides. One Identity.",
+        "btnText": "Reservar Pack Dual",
+        "serviceLink": "tattoo",
+        "isVip": true,
+        "vipBadge": "★ TWO SIDES VIP ★"
+      },
+      {
+        "id": "promo_3",
+        "badge": "02 — Cara Tattoo",
+        "duration": "90 min",
+        "title": "Flash Tattoo Session",
+        "desc": "Elegí tu pieza del Flash Book disponible con diseño exclusivo en tinta negra y trazo fino.",
+        "priceLabel": "Desde",
+        "price": 35000,
+        "ribbonText": "Tinta, carácter y expresión",
+        "btnText": "Reservar Tattoo",
+        "serviceLink": "flash",
+        "isVip": false,
+        "vipBadge": ""
+      }
+    ]
+  },
+  "coursesSection": {
+    "pill": "NAHI STUDIO • WORKSHOPS & FORMACIÓN",
+    "title": "Talleres & Perfeccionamiento",
+    "subtitle": "Formación personalizada en técnicas de Nail Art editorial, estructura y expresión artística.",
+    "trustBadges": [
+      { "icon": "💎", "title": "Práctica Real", "subtitle": "Acompañamiento 1 a 1 en estudio" },
+      { "icon": "🖤", "title": "Materiales Incluidos", "subtitle": "Todo listo para trabajar en clase" },
+      { "icon": "📜", "title": "Certificado", "subtitle": "Diploma de asistencia Nahi Studio" },
+      { "icon": "💬", "title": "Seguimiento", "subtitle": "Consultas post-taller directas" }
+    ],
+    "courses": [
+      {
+        "id": "33333333-3333-3333-3333-333333333301",
+        "slug": "workshop-nail-art-3d-chrome",
+        "badge": "01 — NAIL ART WORKSHOP",
+        "duration": "1 Jornada Intensiva",
+        "title": "Workshop: Nail Art Editorial, Cromo & 3D",
+        "subtitle": "Diseño avanzado • Relieves, encapsulados, efectos metálicos y trazos",
+        "desc": "Dominá las técnicas de diseño que definen la identidad visual de Nahi Studio: manejo de geles 3D, polvos cromados sin manchas, french orgánico y composición.",
+        "syllabus": [
+          "Preparación de superficie para cromos espejo y efectos metálicos",
+          "Volumen 3D, relieves orgánicos y adherencia de perlas/tachas",
+          "Trazos finos, lettering gótico y equilibrio visual del set",
+          "Fotografía editorial de manos con luz dramática"
+        ],
+        "priceLabel": "Inversión",
+        "price": 65000,
+        "priceNote": "Cupos personalizados • Materiales incluidos",
+        "modalityFilter": "presencial",
+        "btnText": "Consultar por WhatsApp",
+        "whatsappText": "Hola Nahi! Quiero info del Workshop de Nail Art Editorial, Cromo & 3D",
+        "isActive": true,
+        "sortOrder": 1
+      }
+    ]
+  },
+  "hero": {
+    "statusPill": "NAHI CIAMPRONE STUDIO • ESPACIO MUNA",
+    "scriptTitle": "Two Sides. One Identity.",
+    "mainTitleLine1": "TWO SIDES.",
+    "mainTitleHighlight": "ONE IDENTITY.",
+    "ribbonTop": "RESERVÁ TU TURNO EN",
+    "ribbonBrand": "NAHI STUDIO",
+    "description": "Dos formas de expresión. Una misma esencia. Precisión escultural en uñas y carácter en tinta negra, unificados bajo una sola mirada artística.",
+    "primaryBtnText": "01 — Explorar Nail Art",
+    "secondaryBtnText": "02 — Explorar Tattoo Art",
+    "guarantees": [
+      "01 — Nail Art Editorial",
+      "02 — Blackwork & Fine Line",
+      "Espacio Muna"
+    ],
+    "styles": [
+      {
+        "id": "nails-crimson",
+        "name": "01 · Crimson French",
+        "badge": "01 / NAIL ART",
+        "title": "Crimson French & Tattoo",
+        "detail": "Almendradas con french rojo carmesí profundo en diálogo con tatuaje ornamental",
+        "price": "$24.000",
+        "time": "90 min",
+        "img": "fotos/imgi_25_539976307_17854872333514079_3988514524600607766_n.webp"
+      },
+      {
+        "id": "nails-3d",
+        "name": "01 · Sculpted 3D",
+        "badge": "01 / NAIL ART",
+        "title": "Sculpted 3D & Pearl",
+        "detail": "Volumen metálico dorado, perlas y relieve escultórico hecho a mano",
+        "price": "$28.000",
+        "time": "120 min",
+        "img": "fotos/imgi_22_504060229_17842497063514079_4107614235171648365_n.webp"
+      },
+      {
+        "id": "tattoo-cupido",
+        "name": "02 · Cupido Tattoo",
+        "badge": "02 / TATTOO ART",
+        "title": "Cupido Blackwork",
+        "detail": "Tatuaje en tinta negra con puntillismo fino y contraste clásico",
+        "price": "$45.000",
+        "time": "120 min",
+        "img": "fotos/imgi_28_771909433_18096793385269189_6790519837572543665_n.jpg"
+      },
+      {
+        "id": "tattoo-fudog",
+        "name": "02 · Oriental Custom",
+        "badge": "02 / TATTOO ART",
+        "title": "León Fu Dog & Geometría",
+        "detail": "Línea sólida y geometría sagrada en proyecto personalizado a gran escala",
+        "price": "$55.000",
+        "time": "150 min",
+        "img": "fotos/imgi_18_831313350_18104431136269189_151488612152529768_n.jpg"
+      }
+    ]
+  },
+  "servicesSection": {
+    "pill": "01 — NAIL ART",
+    "title": "Arquitectura, cromo & detalle editorial.",
+    "subtitle": "Trabajos reales de Nahi Ciamprone. Tocá cualquier fotografía para ampliarla en detalle.",
+    "ctaCardTitle": "¿Querés ver todos los horarios disponibles?",
+    "ctaCardDesc": "Abriremos nuestro turnero online en tiempo real para que elijas día y horario.",
+    "ctaCardBtn": "Abrir Turnero Online"
+  },
+  "gallerySection": {
+    "pill": "02 — TATTOO ART",
+    "title": "Flash book, tinta & proyectos a medida.",
+    "subtitle": "Blackwork, fine line, caligrafía y diseños personalizados. Tocá cualquier pieza para verla en detalle o consultar.",
+    "instagramBtnText": "Ver más trabajos en Instagram @nahi.ciamprone"
+  },
+  "about": {
+    "photoUrl": "fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg",
+    "photoTopBadge": "NAIL ARTIST & TATTOO ARTIST",
+    "photoCardName": "Nahiara Ciamprone",
+    "photoCardRole": "NAHI STUDIO • ESPACIO MUNA",
+    "photoCardSub": "Two Sides. One Identity.",
+    "stat1Value": "CARA 01",
+    "stat1Label": "Nail Art Editorial & 3D",
+    "stat2Value": "CARA 02",
+    "stat2Label": "Blackwork & Fine Line Tattoo",
+    "headerPill": "SOBRE LA ARTISTA",
+    "headline": "ONE ARTIST. TWO EXPRESSIONS.",
+    "subheadline": "Dos disciplinas, un mismo pulso estético en Espacio Muna.",
+    "introParagraph1": "Soy Nahiara Ciamprone, creadora de NAHI STUDIO. Mi trabajo habita el cruce entre dos mundos que comparten la misma obsesión por el trazo, la forma y la identidad: el Nail Art escultural y el Tattoo Art.",
+    "introParagraph2": "En Espacio Muna diseño tanto estructuras en uñas con relieves 3D, cromos metálicos y estética editorial, como tatuajes en tinta negra, fine-line, lettering experimental y piezas custom pensadas para acompañar el cuerpo.",
+    "boxTitle": "Las Dos Caras de Nahi Studio",
+    "specialties": [
+      { "icon": "💎", "text": "Cara 01 — Nail Art: Esculpidas, Relieve 3D, Chrome & Editorial French" },
+      { "icon": "✨", "text": "Cara 01 — Kapping Gel & Semipermanente con diseño de autor" },
+      { "icon": "🖋️", "text": "Cara 02 — Tattoo Art: Fine Line, Botánicos & Micro-Tattoos" },
+      { "icon": "🩸", "text": "Cara 02 — Blackwork, Puntillismo de arrastre & Lettering" },
+      { "icon": "📖", "text": "Flash Book con diseños propios listos para tatuar" },
+      { "icon": "🖤", "text": "Atención personalizada con turno previo en Espacio Muna" }
+    ],
+    "quote": "\"TWO SIDES. ONE SOUL. ENDLESS WAYS TO CREATE.\"",
+    "closingParagraph1": "Cara A — Nails: Belleza, precisión, creatividad y detalle.",
+    "closingParagraph2": "Cara B — Tattoos: Tinta, personalidad, expresión y carácter.",
+    "closingSignature": "NAHIARA CIAMPRONE — ESPACIO MUNA"
+  },
+  "bookingSection": {
+    "pill": "AGENDA ONLINE EN TIEMPO REAL",
+    "title": "Reservá tu Turno o Sesión",
+    "subtitle": "Elegí tu servicio de Nail Art o sesión de Tattoo Art, seleccioná fecha en el calendario interactivo y asegurá tu horario.",
+    "primaryBtnText": "Abrir Turnero Online",
+    "secondaryBtnText": "Panel Admin",
+    "features": [
+      { "icon": "🗓️", "title": "Calendario en Vivo", "desc": "Horarios reales actualizados por Nahi." },
+      { "icon": "💎", "title": "01 · Nail Art", "desc": "Esculpidas, Kapping, Semipermanente y 3D." },
+      { "icon": "🖋️", "title": "02 · Tattoo Art", "desc": "Sesiones Flash, Fine Line y Blackwork." }
+    ],
+    "turnosPageRibbon": "AGENDA ONLINE • NAHI STUDIO",
+    "turnosPageTitle": "Reservar Turno",
+    "turnosPageSubtitle": "Elegí tu servicio de Nail Art o Tattoo Art, seleccioná fecha en el calendario y asegurá tu horario en tiempo real.",
+    "turnosHoursNote": "Atención en Espacio Muna con turno previo"
+  },
+  "location": {
+    "pill": "UBICACIÓN & CONTACTO",
+    "title": "Espacio Muna",
+    "subtitle": "Atención personalizada con turno previo para Nail Art y Tattoo Art.",
+    "addressTitle": "Estudio",
+    "addressText": "Espacio Muna",
+    "addressNote": "Dirección exacta enviada al confirmar tu turno por WhatsApp",
+    "hoursTitle": "Horarios",
+    "hoursLine1": "Con Turno Previo",
+    "hoursLine2": "Consultá disponibilidad en la agenda online o por WhatsApp",
+    "studioPhotoUrl": "fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg",
+    "whatsappNumber": "",
+    "instagramHandle": "@nahi.ciamprone",
+    "instagramUrl": "https://www.instagram.com/nahi.ciamprone/",
+    "brandName": "NAHI STUDIO",
+    "footerSubtitle": "TWO SIDES. ONE SOUL. ENDLESS WAYS TO CREATE.",
+    "footerCopyright": "© 2026 NAHI STUDIO — NAHI CIAMPRONE. TODOS LOS DERECHOS RESERVADOS."
+  },
+  "faqs": {
+    "pill": "INFORMACIÓN ÚTIL",
+    "title": "Preguntas Frecuentes",
+    "subtitle": "Todo lo que necesitás saber antes de tu turno de Nail Art o sesión de Tattoo.",
+    "items": [
+      {
+        "id": "faq_1",
+        "question": "¿Cómo reservo un turno de Nail Art?",
+        "answer": "Podés reservar directamente desde el Turnero Online eligiendo fecha y horario disponible, o enviando tu solicitud por WhatsApp desde la sección 01 — Nail Art."
+      },
+      {
+        "id": "faq_2",
+        "question": "¿Cómo cotizo un tatuaje o reservo un diseño del Flash Book?",
+        "answer": "En la sección 02 — Tattoo Art podés tocar cualquier pieza para verla en detalle y usar el formulario 'Contame tu idea' indicando zona del cuerpo, tamaño aproximado en cm y tu idea o referencia."
+      },
+      {
+        "id": "faq_3",
+        "question": "¿Dónde se encuentra el estudio?",
+        "answer": "Atiendo en Espacio Muna con cita previa. Al confirmar tu reserva recibís todos los detalles de llegada y preparación."
+      }
+    ]
+  }
+}

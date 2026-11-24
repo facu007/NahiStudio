@@ -1,0 +1,248 @@
+{
+  "surface": {
+    "light": {
+      "surface": "#1E1E1E",
+      "background": "#111111",
+      "foreground": "#F1ECE5",
+      "onSurface": "#C7C7C7",
+      "outline": "#333333"
+    },
+    "dark": {
+      "surface": "#1E1E1E",
+      "onSurface": "#C7C7C7",
+      "outline": "#333333",
+      "foreground": "#F1ECE5",
+      "background": "#111111"
+    }
+  },
+  "spacing": [
+    {
+      "value": "24px",
+      "name": "gutter-lg",
+      "id": "gutter-lg"
+    },
+    {
+      "value": "16px",
+      "name": "gutter-md",
+      "id": "gutter-md"
+    },
+    {
+      "value": "8px",
+      "name": "gutter-sm",
+      "id": "gutter-sm"
+    },
+    {
+      "name": "gutter-xl",
+      "id": "gutter-xl",
+      "value": "32px"
+    },
+    {
+      "value": "4px",
+      "id": "gutter-xs",
+      "name": "gutter-xs"
+    },
+    {
+      "value": "24px",
+      "name": "page-margin",
+      "id": "page-margin"
+    },
+    {
+      "value": "64px",
+      "name": "section",
+      "id": "section"
+    }
+  ],
+  "type": [
+    {
+      "id": "body-lg",
+      "name": "Body LG",
+      "lineHeight": "26px",
+      "weight": 400,
+      "letterSpacing": "0px",
+      "family": "Raleway",
+      "size": "16px"
+    },
+    {
+      "letterSpacing": "0.1px",
+      "lineHeight": "22px",
+      "size": "14px",
+      "id": "body-md",
+      "weight": 400,
+      "name": "Body MD",
+      "family": "Raleway"
+    },
+    {
+      "letterSpacing": "-1.5px",
+      "name": "Display LG",
+      "weight": 500,
+      "lineHeight": "68px",
+      "size": "64px",
+      "family": "Playfair Display",
+      "id": "display-lg"
+    },
+    {
+      "name": "Display MD",
+      "letterSpacing": "-0.75px",
+      "lineHeight": "48px",
+      "family": "Playfair Display",
+      "size": "44px",
+      "id": "display-md",
+      "weight": 500
+    },
+    {
+      "lineHeight": "38px",
+      "name": "Headline LG",
+      "family": "Playfair Display",
+      "letterSpacing": "-0.25px",
+      "size": "32px",
+      "id": "headline-lg",
+      "weight": 500
+    },
+    {
+      "name": "Headline MD",
+      "letterSpacing": "0px",
+      "family": "Playfair Display",
+      "id": "headline-md",
+      "weight": 500,
+      "lineHeight": "30px",
+      "size": "24px"
+    },
+    {
+      "letterSpacing": "1.5px",
+      "id": "label-lg",
+      "size": "13px",
+      "weight": 500,
+      "family": "Spline Sans Mono",
+      "lineHeight": "18px",
+      "name": "Label LG"
+    },
+    {
+      "weight": 500,
+      "size": "11px",
+      "family": "Spline Sans Mono",
+      "letterSpacing": "1.2px",
+      "lineHeight": "16px",
+      "name": "Label MD",
+      "id": "label-md"
+    },
+    {
+      "lineHeight": "14px",
+      "size": "10px",
+      "letterSpacing": "1px",
+      "name": "Label SM",
+      "id": "label-sm",
+      "family": "Spline Sans Mono",
+      "weight": 400
+    },
+    {
+      "lineHeight": "24px",
+      "size": "18px",
+      "id": "title-md",
+      "letterSpacing": "0.25px",
+      "weight": 600,
+      "family": "Raleway",
+      "name": "Title MD"
+    }
+  ],
+  "colors": [
+    {
+      "role": "accent",
+      "foreground": "#F1ECE5",
+      "value": "#8B2635",
+      "id": "accent",
+      "name": "Accent"
+    },
+    {
+      "value": "#111111",
+      "id": "background",
+      "name": "Background",
+      "foreground": "#F1ECE5",
+      "role": "background"
+    },
+    {
+      "name": "Error",
+      "foreground": "#690005",
+      "role": "error",
+      "value": "#FFB4AB",
+      "id": "error"
+    },
+    {
+      "value": "#8C8C8C",
+      "role": "outline",
+      "name": "Outline",
+      "id": "outline"
+    },
+    {
+      "value": "#333333",
+      "role": "outline-variant",
+      "name": "Outline Variant",
+      "id": "outline-variant"
+    },
+    {
+      "id": "primary",
+      "role": "primary",
+      "value": "#F1ECE5",
+      "foreground": "#111111",
+      "name": "Primary"
+    },
+    {
+      "role": "secondary",
+      "value": "#C7C7C7",
+      "foreground": "#111111",
+      "id": "secondary",
+      "name": "Secondary"
+    },
+    {
+      "foreground": "#F1ECE5",
+      "role": "surface",
+      "id": "surface",
+      "value": "#111111",
+      "name": "Surface"
+    },
+    {
+      "id": "surface-container",
+      "role": "surface-container",
+      "value": "#1E1E1E",
+      "name": "Surface Container"
+    },
+    {
+      "value": "#282828",
+      "id": "surface-container-high",
+      "role": "surface-container-high",
+      "name": "Surface Container High"
+    },
+    {
+      "role": "surface-container-low",
+      "name": "Surface Container Low",
+      "id": "surface-container-low",
+      "value": "#181818"
+    }
+  ],
+  "radius": [
+    {
+      "value": "4px",
+      "id": "DEFAULT",
+      "name": "DEFAULT"
+    },
+    {
+      "value": "9999px",
+      "name": "full",
+      "id": "full"
+    },
+    {
+      "value": "8px",
+      "id": "md",
+      "name": "md"
+    },
+    {
+      "value": "0px",
+      "name": "none",
+      "id": "none"
+    },
+    {
+      "id": "sm",
+      "value": "2px",
+      "name": "sm"
+    }
+  ]
+}

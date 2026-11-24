@@ -1,0 +1,33 @@
+<!-- Input Field (Forms) -->
+
+<!-- Variant: Text -->
+<div class="max-w-md">
+      <!-- COMPONENT: input-field-text -->
+      <label data-component-id="input-field-text" data-component-type="input-field" data-component-variant="text" class="flex flex-col gap-gutter-xs">
+        <span data-design-text-token="label-md" class="font-label text-label-md text-secondary uppercase">Nombre completo</span>
+        <input
+          type="text"
+          placeholder="Tu nombre o apodo"
+          aria-describedby="input-field-text-1-hint"
+          class="w-full bg-surface-container-low border border-outline-variant rounded-none px-gutter-md py-gutter-sm font-body text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:ring-0"
+        >
+        <span id="input-field-text-1-hint" data-design-text-token="label-sm" class="font-label text-label-sm text-outline">Para dirigirnos a vos por WhatsApp</span>
+      </label>
+    </div>
+
+<!-- Variant: With Icon -->
+<div class="max-w-md">
+      <!-- COMPONENT: input-field-icon -->
+      <label data-component-id="input-field-icon" data-component-type="input-field" data-component-variant="with-icon" class="flex flex-col gap-gutter-xs">
+        <span data-design-text-token="label-md" class="font-label text-label-md text-secondary uppercase">WhatsApp o Instagram</span>
+        <div class="relative flex items-center">
+          <span class="material-symbols-outlined absolute left-gutter-md text-outline text-body-lg pointer-events-none" aria-hidden="true">alternate_email</span>
+          <input
+            type="text"
+            placeholder="@tu.usuario o +54 9 ..."
+            class="w-full bg-surface-container-low border border-outline-variant rounded-none pl-10 pr-gutter-md py-gutter-sm font-body text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:ring-0"
+          >
+        </div>
+        <span data-design-text-token="label-sm" class="font-label text-label-sm text-outline">Canal de respuesta directa</span>
+      </label>
+    </div>
