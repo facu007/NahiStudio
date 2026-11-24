@@ -35,7 +35,7 @@
       box-shadow: 0 0 35px 2px rgba(139, 38, 53, 0.25), inset 0 0 25px rgba(139, 38, 53, 0.08);
     }
   </style>
-  <script src="supabase-client.js?v=20261102"></script>
+  <script src="supabase-client.js?v=20261125"></script>
 </head>
 <body class="bg-[#111111] text-[#f5edf5] font-body min-h-screen flex flex-col antialiased selection:bg-[#C7C7C7] selection:text-white">
 
@@ -1883,6 +1883,7 @@
           <!-- Vista Previa en Vivo -->
           <div id="live-preview-box" class="hidden p-3 rounded-2xl bg-[#111111] border border-[#C7C7C7]/30 flex items-center gap-3">
             <img id="live-preview-img" src="" alt="Preview" class="w-16 h-16 rounded-xl object-cover border border-white/20">
+            <video id="live-preview-video" src="" autoplay muted loop playsinline class="hidden w-16 h-16 rounded-xl object-cover border border-white/20"></video>
             <div class="text-xs flex-1 min-w-0">
               <span class="text-[10px] text-[#C7C7C7] font-bold uppercase tracking-wider block" id="live-preview-badge">★ Look Más Pedido</span>
               <p class="font-bold text-white truncate" id="live-preview-title">Título del Look</p>
@@ -2391,7 +2392,7 @@
           editIdInput.value = existing.id;
           titleInput.value = existing.title || '';
           badgeInput.value = existing.badge || '';
-          categoryInput.value = existing.category || 'volumen';
+          categoryInput.value = existing.category || 'nails';
           descInput.value = existing.description || '';
           urlInput.value = existing.imageUrl || '';
         }
@@ -2489,12 +2490,25 @@
 
       const previewBox = document.getElementById('live-preview-box');
       const previewImg = document.getElementById('live-preview-img');
+      const previewVid = document.getElementById('live-preview-video');
       const previewTitle = document.getElementById('live-preview-title');
       const previewBadge = document.getElementById('live-preview-badge');
       const previewDesc = document.getElementById('live-preview-desc');
 
       if (url && !url.startsWith('[Nuevo archivo')) {
-        previewImg.src = url;
+        const isVid = /\.(mp4|webm|mov)(\?.*)?$/i.test(url);
+        if (isVid && previewVid) {
+          previewImg.classList.add('hidden');
+          previewVid.classList.remove('hidden');
+          previewVid.src = url;
+        } else {
+          if (previewVid) {
+            previewVid.pause();
+            previewVid.classList.add('hidden');
+          }
+          previewImg.classList.remove('hidden');
+          previewImg.src = url;
+        }
         previewBox.classList.remove('hidden');
       }
 
@@ -2534,7 +2548,7 @@
           description,
           imageUrl,
           isFeatured: true,
-          isHero: category === 'volumen' || category === 'lifting'
+          isHero: category === 'nails' || category === 'tattoo'
         };
 
         if (id) {
@@ -4519,10 +4533,11 @@
       if (!file) return;
       try {
         const res = await window.MicaBackend.gallery.uploadImage(file);
-        if (res && res.url) {
+        const uploadedUrl = typeof res === 'string' ? res : (res && res.url);
+        if (uploadedUrl) {
           syncHeroStylesFromDom();
           if (adminSiteContent.hero.styles[idx]) {
-            adminSiteContent.hero.styles[idx].img = res.url;
+            adminSiteContent.hero.styles[idx].img = uploadedUrl;
             renderHeroStylesEditor();
           }
         }
@@ -4536,11 +4551,12 @@
       if (!file) return;
       try {
         const res = await window.MicaBackend.gallery.uploadImage(file);
-        if (res && res.url) {
+        const uploadedUrl = typeof res === 'string' ? res : (res && res.url);
+        if (uploadedUrl) {
           const inp = document.getElementById(inputId);
           const prev = document.getElementById(previewId);
-          if (inp) inp.value = res.url;
-          if (prev) prev.src = res.url;
+          if (inp) inp.value = uploadedUrl;
+          if (prev) prev.src = uploadedUrl;
         }
       } catch (err) {
         alert('Error subiendo imagen: ' + err.message);

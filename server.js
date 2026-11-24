@@ -903,8 +903,29 @@ const mimeTypes = {
   '.ico': 'image/x-icon'
 };
 
-// Helper para parsear JSON body en requests POST/PATCH/PUT (soporta fotos hasta 10MB)
+// Helper para parsear JSON body en requests POST/PATCH/PUT (soporta fotos hasta 10MB y pre-parsing de Vercel)
 function parseJsonBody(req) {
+  if (req.body !== undefined && req.body !== null) {
+    if (typeof req.body === 'object' && !Buffer.isBuffer(req.body)) {
+      return Promise.resolve(req.body);
+    }
+    if (typeof req.body === 'string') {
+      try {
+        return Promise.resolve(req.body ? JSON.parse(req.body) : {});
+      } catch (err) {
+        return Promise.reject(new Error('Invalid JSON format'));
+      }
+    }
+    if (Buffer.isBuffer(req.body)) {
+      try {
+        const str = req.body.toString('utf-8');
+        return Promise.resolve(str ? JSON.parse(str) : {});
+      } catch (err) {
+        return Promise.reject(new Error('Invalid JSON format'));
+      }
+    }
+  }
+
   return new Promise((resolve, reject) => {
     let body = '';
     req.on('data', chunk => {
@@ -969,6 +990,73 @@ async function handleApiRequest(req, res, pathname, queryParams) {
       whatsapp: '5492914491141',
       studio: 'Nahi Studio • Bahía Blanca'
     });
+  }
+
+  // 2b. GET /api/payment-info & PUT /api/payment-info (Datos de transferencia para la seña del 20%)
+  if (req.method === 'GET' && pathname === '/api/payment-info') {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('settings')
+          .select('value')
+          .eq('key', 'payment_info')
+          .maybeSingle();
+        if (!error && data && data.value && typeof data.value === 'object') {
+          localDatabase.paymentInfo = data.value;
+          return sendJson(res, 200, { paymentInfo: data.value });
+        }
+      } catch (e) {
+        console.warn('[Supabase] Error leyendo payment_info:', e.message);
+      }
+    }
+    const content = await getSiteContentFull();
+    const fallbackInfo = localDatabase.paymentInfo || content.paymentInfo || {
+      alias: '',
+      cbu: '',
+      holder: 'Nahiara Ciamprone',
+      bank: '',
+      whatsapp: content.location?.whatsappNumber || ''
+    };
+    return sendJson(res, 200, { paymentInfo: fallbackInfo });
+  }
+
+  if ((req.method === 'PUT' || req.method === 'POST') && pathname === '/api/payment-info') {
+    try {
+      const body = await parseJsonBody(req);
+      const clean = {
+        alias: String(body.alias || '').trim(),
+        cbu: String(body.cbu || '').trim(),
+        holder: String(body.holder || 'Nahiara Ciamprone').trim(),
+        bank: String(body.bank || '').trim(),
+        whatsapp: String(body.whatsapp || '').trim()
+      };
+      localDatabase.paymentInfo = clean;
+
+      if (supabase) {
+        try {
+          await supabase.from('settings').upsert({
+            key: 'payment_info',
+            value: clean,
+            description: 'Datos de transferencia para la seña'
+          }, { onConflict: 'key' });
+        } catch (e) {
+          console.warn('[Supabase] Aviso guardando payment_info:', e.message);
+        }
+      }
+
+      try {
+        const currentContent = await getSiteContentFull();
+        currentContent.paymentInfo = clean;
+        if (clean.whatsapp && currentContent.location) {
+          currentContent.location.whatsappNumber = clean.whatsapp;
+        }
+        saveSiteContentLocal(currentContent);
+      } catch (_) {}
+
+      return sendJson(res, 200, { success: true, paymentInfo: clean });
+    } catch (err) {
+      return sendJson(res, 500, { error: err.message });
+    }
   }
 
   // 3. GET /api/services
@@ -1497,11 +1585,15 @@ async function handleApiRequest(req, res, pathname, queryParams) {
         return sendJson(res, 201, { success: true, path: safePath });
       }
 
-      // Sin Supabase: guardar localmente
-      const localDir = path.join(dir, 'receipts', path.dirname(safePath));
-      fs.mkdirSync(localDir, { recursive: true });
-      fs.writeFileSync(path.join(dir, 'receipts', safePath), buffer);
-      return sendJson(res, 201, { success: true, path: safePath });
+      // Sin Supabase: guardar localmente si el disco es escribible; en Vercel devolver data URL
+      try {
+        const localDir = path.join(dir, 'receipts', path.dirname(safePath));
+        fs.mkdirSync(localDir, { recursive: true });
+        fs.writeFileSync(path.join(dir, 'receipts', safePath), buffer);
+        return sendJson(res, 201, { success: true, path: safePath });
+      } catch (fsErr) {
+        return sendJson(res, 201, { success: true, path: String(body.data) });
+      }
     } catch (err) {
       return sendJson(res, 500, { error: err.message });
     }
@@ -1511,23 +1603,19 @@ async function handleApiRequest(req, res, pathname, queryParams) {
   if (req.method === 'GET' && pathname === '/api/receipts/signed') {
     const receiptPath = queryParams.get('path');
     if (!receiptPath) return sendJson(res, 400, { error: 'Falta path.' });
+    if (/^https?:|^data:/.test(receiptPath)) return sendJson(res, 200, { url: receiptPath });
     if (!supabase) return sendJson(res, 404, { error: 'Supabase no configurado.' });
     const { data, error } = await supabase.storage.from('receipts').createSignedUrl(receiptPath, 3600);
     if (error || !data) return sendJson(res, 404, { error: error ? error.message : 'No encontrado' });
     return sendJson(res, 200, { url: data.signedUrl });
   }
 
-  // 10. POST /api/gallery/upload (Subir archivo de imagen a Supabase Storage + respaldo local)
+  // 10. POST /api/gallery/upload (Subir archivo de imagen a Supabase Storage + respaldo local o DataURL en serverless)
   if (req.method === 'POST' && pathname === '/api/gallery/upload') {
     try {
       const body = await parseJsonBody(req);
       if (!body.data) {
         return sendJson(res, 400, { error: 'Falta la imagen codificada en Base64 (body.data).' });
-      }
-
-      const uploadsDir = path.join(dir, 'images', 'uploads');
-      if (!fs.existsSync(uploadsDir)) {
-        fs.mkdirSync(uploadsDir, { recursive: true });
       }
 
       const mimeMatch = String(body.data).match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,/);
@@ -1562,13 +1650,25 @@ async function handleApiRequest(req, res, pathname, queryParams) {
         .replace(/-+/g, '-')
         .slice(0, 40) || 'foto';
       const filename = `ej-${Date.now()}-${safeBase}${ext}`;
-      const targetPath = path.join(uploadsDir, filename);
 
-      // Respaldo local en images/uploads/
-      fs.writeFileSync(targetPath, buffer);
+      let localSaved = false;
       const localUrl = `images/uploads/${filename}`;
-      let finalUrl = localUrl;
-      let storageMode = 'local';
+      try {
+        if (!process.env.VERCEL) {
+          const uploadsDir = path.join(dir, 'images', 'uploads');
+          if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir, { recursive: true });
+          }
+          const targetPath = path.join(uploadsDir, filename);
+          fs.writeFileSync(targetPath, buffer);
+          localSaved = true;
+        }
+      } catch (fsErr) {
+        console.warn('[Upload] Disco de solo lectura (serverless):', fsErr.message);
+      }
+
+      let finalUrl = localSaved ? localUrl : String(body.data);
+      let storageMode = localSaved ? 'local' : 'inline';
 
       // Subir a Supabase Storage (URL pública permanente en CDN)
       if (supabase) {
@@ -2601,8 +2701,11 @@ const server = http.createServer(async (req, res) => {
   }
 
   // Servir archivos estáticos de forma segura (bloqueando archivos sensibles del servidor)
-  let reqPath = decodeURIComponent(pathname);
+  let reqPath = decodeURIComponent(pathname).replace(/\/+$/, '');
   if (reqPath === '/' || reqPath === '') reqPath = '/index.html';
+  if (reqPath === '/admin') reqPath = '/admin.html';
+  if (reqPath === '/turnos') reqPath = '/turnos.html';
+  if (reqPath === '/login') reqPath = '/login.html';
 
   const baseName = path.basename(reqPath).toLowerCase();
   const blockedFiles = new Set(['.env', '.env.example', 'server.js', 'mailer.js', 'email-logs.json', 'package.json', 'package-lock.json']);
@@ -2612,7 +2715,10 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  const filePath = path.resolve(dir, '.' + reqPath);
+  let filePath = path.resolve(dir, '.' + reqPath);
+  if (!path.extname(filePath) && fs.existsSync(filePath + '.html')) {
+    filePath = filePath + '.html';
+  }
   if (!filePath.startsWith(path.resolve(dir))) {
     res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end('403 Forbidden');

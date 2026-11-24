@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth" data-side="nails">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NAHI STUDIO — Two Sides, One Identity | Nail Art &amp; Tattoo Art</title>
-  <meta name="description" content="Nahi Ciamprone — NAHI STUDIO. Dos formas de expresión, una misma esencia: Nail Art de autor y Tattoo Art artesanal en Espacio Muna.">
+  <meta name="description"
+    content="Nahi Ciamprone — NAHI STUDIO. Dos formas de expresión, una misma esencia: Nail Art de autor y Tattoo Art artesanal en Espacio Muna.">
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <script src="supabase-client.js?v=20261124"></script>
+  <script src="supabase-client.js?v=20261125"></script>
   <script id="tailwind-config">
     /** @type {import('tailwindcss').Config} */
     globalThis.tailwind = globalThis.tailwind || {};
@@ -59,8 +61,12 @@
        - Cara 02 (Tattoo Art): Cinzel Decorative & Syne (Tinta / Blackwork / Grabado) + Raleway -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block"
+    rel="stylesheet">
   <style>
     /* =========================================================================
        DOS MUNDOS ARTÍSTICOS & TIPOGRAFÍAS DIFERENTES SEGÚN LA CARA DE LA MONEDA
@@ -130,7 +136,7 @@
       color: var(--color-on-bg);
       font-family: var(--font-body);
       transition: background-color 650ms cubic-bezier(0.22, 1, 0.36, 1),
-                  color 450ms ease;
+        color 450ms ease;
     }
 
     /* Textura sutil de papel de arte / grano analógico */
@@ -149,9 +155,11 @@
       border-radius: var(--card-radius);
       transition: border-radius 500ms ease, background-color 500ms ease, border-color 500ms ease, transform 350ms ease, box-shadow 350ms ease;
     }
+
     html[data-side="nails"] .atelier-card {
       box-shadow: 0 12px 32px -10px rgba(84, 56, 50, 0.08);
     }
+
     html[data-side="tattoo"] .atelier-card {
       box-shadow: 0 14px 36px -10px rgba(0, 0, 0, 0.65);
     }
@@ -166,10 +174,12 @@
       font-family: var(--font-display);
       transition: letter-spacing 400ms ease;
     }
+
     html[data-side="nails"] .side-display-title {
       font-weight: 500;
       letter-spacing: -0.01em;
     }
+
     html[data-side="tattoo"] .side-display-title {
       font-weight: 700;
       letter-spacing: 0.04em;
@@ -178,11 +188,13 @@
     .side-tag {
       font-family: var(--font-label);
     }
+
     html[data-side="nails"] .side-tag {
       font-style: italic;
       font-size: 1.05rem;
       letter-spacing: 0.06em;
     }
+
     html[data-side="tattoo"] .side-tag {
       font-style: normal;
       font-size: 0.76rem;
@@ -191,8 +203,15 @@
     }
 
     .material-symbols-outlined {
-      display: inline-block; width: 1em; height: 1em; line-height: 1 !important;
-      box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle;
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      line-height: 1 !important;
+      box-sizing: content-box;
+      overflow: hidden;
+      white-space: nowrap;
+      direction: ltr;
+      vertical-align: middle;
     }
 
     /* =========================================================================
@@ -202,6 +221,7 @@
       perspective: 1500px;
       position: relative;
     }
+
     .coin-ambient-halo {
       position: absolute;
       inset: -32px;
@@ -211,9 +231,11 @@
       pointer-events: none;
       transition: background 700ms ease, transform 600ms ease;
     }
+
     .coin-stage:hover .coin-ambient-halo {
       transform: scale(1.08);
     }
+
     .coin-3d {
       position: relative;
       width: 100%;
@@ -223,6 +245,7 @@
       will-change: transform;
       user-select: none;
     }
+
     .coin-3d.is-tossing {
       transition: transform 1200ms cubic-bezier(0.15, 0.88, 0.25, 1.05) !important;
     }
@@ -270,18 +293,17 @@
     .coin-sheen {
       position: absolute;
       inset: -40%;
-      background: linear-gradient(
-        115deg,
-        transparent 35%,
-        rgba(255, 255, 255, 0.38) 48%,
-        rgba(255, 255, 255, 0.06) 55%,
-        transparent 65%
-      );
+      background: linear-gradient(115deg,
+          transparent 35%,
+          rgba(255, 255, 255, 0.38) 48%,
+          rgba(255, 255, 255, 0.06) 55%,
+          transparent 65%);
       transform: translateX(-85%) rotate(15deg);
       transition: transform 950ms cubic-bezier(0.22, 1, 0.36, 1);
       pointer-events: none;
       z-index: 20;
     }
+
     .coin-stage:hover .coin-sheen,
     .coin-3d.is-tossing .coin-sheen {
       transform: translateX(85%) rotate(15deg);
@@ -291,6 +313,7 @@
     .face-view-panel {
       transition: opacity 420ms ease, transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     .face-view-panel.is-switching {
       opacity: 0;
       transform: translateY(14px) scale(0.99);
@@ -304,15 +327,18 @@
     }
   </style>
 </head>
+
 <body class="min-h-screen flex flex-col selection:bg-accent selection:text-on-accent">
 
   <!-- ================= ENCABEZADO DE ESTUDIO ARTÍSTICO ================= -->
   <header class="sticky top-0 z-30 bg-background/90 backdrop-blur-md border-b border-outline-variant">
     <div class="max-w-7xl mx-auto px-page-margin py-4 flex items-center justify-between gap-4">
       <a href="#hero" class="flex items-center gap-3 group">
-        <span class="w-3 h-3 rounded-full bg-accent inline-block transition-transform group-hover:scale-125" aria-hidden="true"></span>
+        <span class="w-3 h-3 rounded-full bg-accent inline-block transition-transform group-hover:scale-125"
+          aria-hidden="true"></span>
         <div class="flex flex-col">
-          <span id="header-brand-name" class="side-display-title text-xl sm:text-2xl tracking-wide text-on-surface leading-none">
+          <span id="header-brand-name"
+            class="side-display-title text-xl sm:text-2xl tracking-wide text-on-surface leading-none">
             Nahi Studio
           </span>
           <span id="active-side-subtitle" class="text-[11px] text-secondary tracking-widest uppercase mt-0.5">
@@ -322,18 +348,15 @@
       </a>
 
       <!-- Conmutador de las 2 Caras de la Moneda en el Header -->
-      <div class="flex items-center gap-1.5 bg-surface-container-low p-1 atelier-btn border border-outline-variant" role="group" aria-label="Cambiar cara de la moneda">
-        <button type="button"
-                data-face-btn="nails"
-                onclick="activateStudioSide('nails', true)"
-                class="face-switch-btn is-active atelier-btn px-3.5 sm:px-5 py-1.5 text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5">
+      <div class="flex items-center gap-1.5 bg-surface-container-low p-1 atelier-btn border border-outline-variant"
+        role="group" aria-label="Cambiar cara de la moneda">
+        <button type="button" data-face-btn="nails" onclick="activateStudioSide('nails', true)"
+          class="face-switch-btn is-active atelier-btn px-3.5 sm:px-5 py-1.5 text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5">
           <span>✧</span>
           <span>Cara A · Nail Art</span>
         </button>
-        <button type="button"
-                data-face-btn="tattoo"
-                onclick="activateStudioSide('tattoo', true)"
-                class="face-switch-btn atelier-btn px-3.5 sm:px-5 py-1.5 text-xs sm:text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all flex items-center gap-1.5">
+        <button type="button" data-face-btn="tattoo" onclick="activateStudioSide('tattoo', true)"
+          class="face-switch-btn atelier-btn px-3.5 sm:px-5 py-1.5 text-xs sm:text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all flex items-center gap-1.5">
           <span>✒</span>
           <span>Cara B · Tattoo Art</span>
         </button>
@@ -344,7 +367,9 @@
         <a href="#turnos-activos" class="text-on-surface-variant hover:text-primary transition-colors">Turnos</a>
         <a href="#sobre-nahi" class="text-on-surface-variant hover:text-primary transition-colors">Sobre Nahi</a>
         <a href="#contacto" class="text-on-surface-variant hover:text-primary transition-colors">Espacio Muna</a>
-        <a href="admin.html" class="text-xs px-3 py-1.5 atelier-btn border border-outline-variant text-on-surface-variant hover:border-secondary hover:text-primary transition-colors" title="Panel de Administración">
+        <a href="admin.html"
+          class="text-xs px-3 py-1.5 atelier-btn border border-outline-variant text-on-surface-variant hover:border-secondary hover:text-primary transition-colors"
+          title="Panel de Administración">
           Estudio / Admin
         </a>
       </nav>
@@ -357,14 +382,14 @@
     <section id="hero" class="relative overflow-hidden border-b border-outline-variant">
       <!-- Fondo fotográfico dinámico que cambia al girar entre Nails y Tattoo -->
       <div class="absolute inset-0 z-0">
-        <img id="hero-bg-image"
-             src="fotos/imgi_25_539976307_17854872333514079_3988514524600607766_n.webp"
-             alt="Obra destacada de Nahi Studio"
-             class="w-full h-full object-cover opacity-25 transition-all duration-700 scale-105">
+        <img id="hero-bg-image" src="fotos/imgi_25_539976307_17854872333514079_3988514524600607766_n.webp"
+          alt="Obra destacada de Nahi Studio"
+          class="w-full h-full object-cover opacity-25 transition-all duration-700 scale-105">
         <div class="absolute inset-0" style="background: var(--hero-overlay);"></div>
       </div>
 
-      <div class="relative z-10 max-w-7xl mx-auto px-page-margin py-14 lg:py-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <div
+        class="relative z-10 max-w-7xl mx-auto px-page-margin py-14 lg:py-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
         <!-- Columna Izquierda: Identidad y Fotos Destacadas de la Cara Activa -->
         <div class="lg:col-span-7 flex flex-col gap-6">
@@ -375,12 +400,14 @@
             <span class="h-px flex-1 max-w-[90px] bg-outline-variant" aria-hidden="true"></span>
           </div>
 
-          <h1 id="hero-main-heading" class="side-display-title text-4xl sm:text-6xl lg:text-7xl text-on-surface leading-[1.05] text-balance">
+          <h1 id="hero-main-heading"
+            class="side-display-title text-4xl sm:text-6xl lg:text-7xl text-on-surface leading-[1.05] text-balance">
             Belleza escultural en cada detalle.
           </h1>
 
           <p id="hero-main-paragraph" class="text-base sm:text-lg text-on-surface-variant max-w-xl leading-relaxed">
-            Dos formas de expresión, una misma artista en Espacio Muna. Girá la moneda para descubrir cada universo, su galería de fotos reales y su agenda de turnos.
+            Dos formas de expresión, una misma artista en Espacio Muna. Girá la moneda para descubrir cada universo, su
+            galería de fotos reales y su agenda de turnos.
           </p>
 
           <!-- Trío de miniaturas vivas que cambian automáticamente según la cara de la moneda -->
@@ -398,16 +425,14 @@
 
           <!-- Botones de Acción de la Cara Activa -->
           <div class="flex flex-wrap items-center gap-3 pt-2">
-            <a id="hero-primary-cta"
-               href="#turnos-activos"
-               class="atelier-btn inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-primary text-on-primary text-sm font-medium tracking-wide hover:bg-accent hover:text-on-accent shadow-md">
+            <a id="hero-primary-cta" href="#turnos-activos"
+              class="atelier-btn inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-primary text-on-primary text-sm font-medium tracking-wide hover:bg-accent hover:text-on-accent shadow-md">
               <span id="hero-primary-cta-text">Reservar Turno de Uñas</span>
               <span class="material-symbols-outlined text-base">arrow_downward</span>
             </a>
 
-            <button type="button"
-                    onclick="tossCoin3D()"
-                    class="atelier-btn inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-surface-container border border-outline-variant text-on-surface text-sm font-medium hover:border-secondary">
+            <button type="button" onclick="tossCoin3D()"
+              class="atelier-btn inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-surface-container border border-outline-variant text-on-surface text-sm font-medium hover:border-secondary">
               <span class="material-symbols-outlined text-base">flip_camera_android</span>
               <span id="hero-flip-btn-text">Girar a Cara Tattoo</span>
             </button>
@@ -416,30 +441,35 @@
 
         <!-- Columna Derecha: La Moneda Medallón 3D -->
         <div class="lg:col-span-5 flex flex-col items-center justify-center gap-6">
-          <div id="coin-stage" class="coin-stage w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center" title="Tocá la moneda para girarla y cambiar toda la página">
+          <div id="coin-stage" class="coin-stage w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center"
+            title="Tocá la moneda para girarla y cambiar toda la página">
             <div class="coin-ambient-halo"></div>
 
-            <div id="identity-coin" class="coin-3d cursor-pointer" role="button" tabindex="0" aria-label="Moneda de dos caras: tocá para girar entre Nail Art y Tattoo Art">
+            <div id="identity-coin" class="coin-3d cursor-pointer" role="button" tabindex="0"
+              aria-label="Moneda de dos caras: tocá para girar entre Nail Art y Tattoo Art">
               <div class="coin-edge-ring"></div>
 
               <!-- CARA A: NAIL ART (Delicada, luminosa, con foto real de Nail Art) -->
               <div class="coin-face coin-face-front flex flex-col items-center justify-between p-6 text-center">
                 <div class="coin-sheen"></div>
-                <div class="w-full h-full rounded-full border border-[#C8A28E]/60 flex flex-col items-center justify-between py-5 px-4 relative z-10">
-                  <span style="font-family: 'Cormorant Garamond', serif;" class="italic text-sm tracking-widest text-[#7E564F]">
+                <div
+                  class="w-full h-full rounded-full border border-[#C8A28E]/60 flex flex-col items-center justify-between py-5 px-4 relative z-10">
+                  <span style="font-family: 'Cormorant Garamond', serif;"
+                    class="italic text-sm tracking-widest text-[#7E564F]">
                     Cara A · Atelier
                   </span>
 
                   <!-- Medallón fotográfico central de Nail Art -->
-                  <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-2 border-[#C8A28E] shadow-inner my-1">
+                  <div
+                    class="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-2 border-[#C8A28E] shadow-inner my-1">
                     <img id="coin-front-photo"
-                         src="fotos/imgi_25_539976307_17854872333514079_3988514524600607766_n.webp"
-                         alt="Nail Art por Nahi Ciamprone"
-                         class="w-full h-full object-cover">
+                      src="fotos/imgi_25_539976307_17854872333514079_3988514524600607766_n.webp"
+                      alt="Nail Art por Nahi Ciamprone" class="w-full h-full object-cover">
                   </div>
 
                   <div>
-                    <span style="font-family: 'Cormorant Garamond', serif;" class="block text-2xl sm:text-3xl font-semibold tracking-wide text-[#261C1A]">
+                    <span style="font-family: 'Cormorant Garamond', serif;"
+                      class="block text-2xl sm:text-3xl font-semibold tracking-wide text-[#261C1A]">
                       Nail Art
                     </span>
                     <span class="block text-[11px] tracking-widest uppercase text-[#8C3B45] mt-0.5">
@@ -452,21 +482,23 @@
               <!-- CARA B: TATTOO ART (Tinta negra, carácter grabado, con foto real de Tattoo) -->
               <div class="coin-face coin-face-back flex flex-col items-center justify-between p-6 text-center">
                 <div class="coin-sheen"></div>
-                <div class="w-full h-full rounded-full border border-[#8E1D2C]/75 flex flex-col items-center justify-between py-5 px-4 relative z-10">
-                  <span style="font-family: 'Syne', sans-serif;" class="text-[10px] tracking-[0.25em] uppercase text-[#C86D77]">
+                <div
+                  class="w-full h-full rounded-full border border-[#8E1D2C]/75 flex flex-col items-center justify-between py-5 px-4 relative z-10">
+                  <span style="font-family: 'Syne', sans-serif;"
+                    class="text-[10px] tracking-[0.25em] uppercase text-[#C86D77]">
                     CARA B · ESTUDIO
                   </span>
 
                   <!-- Medallón fotográfico central de Tattoo Art -->
-                  <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-2 border-[#8E1D2C] shadow-inner my-1">
-                    <img id="coin-back-photo"
-                         src="fotos/imgi_28_771909433_18096793385269189_6790519837572543665_n.jpg"
-                         alt="Tattoo Art por Nahi Ciamprone"
-                         class="w-full h-full object-cover">
+                  <div
+                    class="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-2 border-[#8E1D2C] shadow-inner my-1">
+                    <img id="coin-back-photo" src="fotos/imgi_28_771909433_18096793385269189_6790519837572543665_n.jpg"
+                      alt="Tattoo Art por Nahi Ciamprone" class="w-full h-full object-cover">
                   </div>
 
                   <div>
-                    <span style="font-family: 'Cinzel Decorative', serif;" class="block text-xl sm:text-2xl font-bold tracking-wider text-[#EFE6DD]">
+                    <span style="font-family: 'Cinzel Decorative', serif;"
+                      class="block text-xl sm:text-2xl font-bold tracking-wider text-[#EFE6DD]">
                       Tattoo Art
                     </span>
                     <span class="block text-[10px] tracking-[0.2em] uppercase text-[#C86D77] mt-0.5">
@@ -481,9 +513,8 @@
           <!-- Controles artesanales debajo de la moneda -->
           <div class="flex flex-col items-center gap-2 text-center">
             <div class="inline-flex items-center gap-2">
-              <button type="button"
-                      onclick="tossCoin3D()"
-                      class="atelier-btn px-5 py-2 bg-accent text-on-accent text-xs uppercase tracking-widest font-medium hover:opacity-95 shadow">
+              <button type="button" onclick="tossCoin3D()"
+                class="atelier-btn px-5 py-2 bg-accent text-on-accent text-xs uppercase tracking-widest font-medium hover:opacity-95 shadow">
                 Girar la Moneda
               </button>
             </div>
@@ -498,7 +529,8 @@
 
     <!-- ================= CARTELERA EN VIVO DE HORARIOS PUBLICADOS (COMPARTIDA) ================= -->
     <section id="live-schedules-banner" class="hidden border-b border-outline-variant bg-surface-container-low">
-      <div class="max-w-7xl mx-auto px-page-margin py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div
+        class="max-w-7xl mx-auto px-page-margin py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <span class="w-2.5 h-2.5 rounded-full bg-accent animate-pulse"></span>
           <div>
@@ -524,7 +556,8 @@
         <section id="obras-activas" class="border-b border-outline-variant bg-surface">
           <div class="max-w-7xl mx-auto px-page-margin py-section flex flex-col gap-10">
 
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-outline-variant pb-8">
+            <div
+              class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-outline-variant pb-8">
               <div class="space-y-2">
                 <span id="nails-section-pill" class="side-tag text-secondary block">Cara A — Atelier de Uñas</span>
                 <h2 id="nails-section-title" class="side-display-title text-3xl sm:text-5xl text-on-surface">
@@ -535,7 +568,8 @@
                 <p id="nails-section-subtitle" class="text-sm text-on-surface-variant max-w-md">
                   Fotografías reales de sets realizados por Nahi. Tocá cualquier imagen para apreciarla en detalle.
                 </p>
-                <a href="admin.html" class="atelier-btn inline-flex items-center justify-center gap-1.5 px-4 py-2.5 border border-outline-variant bg-surface-container text-xs uppercase tracking-wider text-on-surface-variant hover:border-secondary hover:text-primary whitespace-nowrap">
+                <a href="admin.html"
+                  class="atelier-btn inline-flex items-center justify-center gap-1.5 px-4 py-2.5 border border-outline-variant bg-surface-container text-xs uppercase tracking-wider text-on-surface-variant hover:border-secondary hover:text-primary whitespace-nowrap">
                   <span class="material-symbols-outlined text-sm">add_photo_alternate</span>
                   <span>Subir Fotos</span>
                 </a>
@@ -549,7 +583,8 @@
               </div>
 
               <!-- Menú de Tratamientos & Valores de Nail Art (4 columnas) -->
-              <aside class="lg:col-span-4 atelier-card bg-surface-container border border-outline-variant p-6 sm:p-7 flex flex-col gap-5 sticky top-24">
+              <aside
+                class="lg:col-span-4 atelier-card bg-surface-container border border-outline-variant p-6 sm:p-7 flex flex-col gap-5 sticky top-24">
                 <div class="border-b border-outline-variant pb-4 flex items-center justify-between">
                   <div>
                     <span class="side-tag text-secondary block">Menú de Atelier</span>
@@ -563,10 +598,12 @@
                 </ul>
 
                 <div class="pt-3 border-t border-outline-variant flex flex-col gap-2.5">
-                  <a href="turnos.html?side=nails" class="atelier-btn w-full py-3 px-5 bg-primary text-on-primary text-center text-xs uppercase tracking-widest font-medium hover:bg-accent hover:text-on-accent">
+                  <a href="turnos.html?side=nails"
+                    class="atelier-btn w-full py-3 px-5 bg-primary text-on-primary text-center text-xs uppercase tracking-widest font-medium hover:bg-accent hover:text-on-accent">
                     Abrir Calendario de Turnos (Uñas)
                   </a>
-                  <button type="button" onclick="activateStudioSide('tattoo', true)" class="text-xs text-secondary hover:underline text-center pt-1">
+                  <button type="button" onclick="activateStudioSide('tattoo', true)"
+                    class="text-xs text-secondary hover:underline text-center pt-1">
                     ¿Buscás tatuarte? Girar a la Cara B (Tattoo Art) →
                   </button>
                 </div>
@@ -579,15 +616,18 @@
         <!-- Turnos exclusivos de la Cara A (Nail Art) -->
         <section id="turnos-activos" class="border-b border-outline-variant bg-surface-container-low">
           <div class="max-w-7xl mx-auto px-page-margin py-section">
-            <div class="atelier-card bg-surface-container border border-outline-variant p-7 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div
+              class="atelier-card bg-surface-container border border-outline-variant p-7 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div class="lg:col-span-5 space-y-3">
                 <span class="side-tag text-secondary block">Agenda de Nail Art</span>
                 <h3 class="side-display-title text-3xl sm:text-4xl text-on-surface">Reservá tu cita de uñas</h3>
                 <p class="text-sm text-on-surface-variant leading-relaxed">
-                  Elegí el servicio que querés realizarte y tu fecha preferida para coordinar por WhatsApp, o seleccioná tu horario directamente en el calendario online.
+                  Elegí el servicio que querés realizarte y tu fecha preferida para coordinar por WhatsApp, o seleccioná
+                  tu horario directamente en el calendario online.
                 </p>
                 <div class="pt-2">
-                  <a href="turnos.html?side=nails" class="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-accent font-semibold hover:underline">
+                  <a href="turnos.html?side=nails"
+                    class="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-accent font-semibold hover:underline">
                     <span class="material-symbols-outlined text-base">calendar_month</span>
                     <span>Ver horarios libres en el Turnero Online →</span>
                   </a>
@@ -597,28 +637,35 @@
               <form id="nail-booking-form" class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
                 <label class="flex flex-col gap-1.5">
                   <span class="text-xs uppercase tracking-wider text-on-surface-variant">Tu Nombre</span>
-                  <input id="nail-client-name" type="text" required placeholder="Cómo te llamás" class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0">
+                  <input id="nail-client-name" type="text" required placeholder="Cómo te llamás"
+                    class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0">
                 </label>
 
                 <label class="flex flex-col gap-1.5">
                   <span class="text-xs uppercase tracking-wider text-on-surface-variant">Servicio de Nail Art</span>
-                  <select id="nail-service-select" class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0">
+                  <select id="nail-service-select"
+                    class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0">
                   </select>
                 </label>
 
                 <label class="flex flex-col gap-1.5">
                   <span class="text-xs uppercase tracking-wider text-on-surface-variant">Fecha deseada</span>
-                  <input id="nail-date-input" type="date" class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0">
+                  <input id="nail-date-input" type="date"
+                    class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0">
                 </label>
 
                 <label class="flex flex-col gap-1.5">
-                  <span class="text-xs uppercase tracking-wider text-on-surface-variant">Idea o acabado (opcional)</span>
-                  <input id="nail-notes-input" type="text" placeholder="Ej. French rojo, relieve 3D, kapping..." class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0">
+                  <span class="text-xs uppercase tracking-wider text-on-surface-variant">Idea o acabado
+                    (opcional)</span>
+                  <input id="nail-notes-input" type="text" placeholder="Ej. French rojo, relieve 3D, kapping..."
+                    class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0">
                 </label>
 
                 <div class="sm:col-span-2 flex flex-wrap items-center justify-between gap-4 pt-2">
-                  <span id="nail-booking-feedback" class="text-xs text-outline italic">La reserva se coordina directamente con Nahi.</span>
-                  <button type="submit" class="atelier-btn inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-primary text-on-primary text-xs uppercase tracking-widest font-semibold hover:bg-accent hover:text-on-accent shadow-md">
+                  <span id="nail-booking-feedback" class="text-xs text-outline italic">La reserva se coordina
+                    directamente con Nahi.</span>
+                  <button type="submit"
+                    class="atelier-btn inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-primary text-on-primary text-xs uppercase tracking-widest font-semibold hover:bg-accent hover:text-on-accent shadow-md">
                     <span>Solicitar Turno de Uñas</span>
                     <span class="material-symbols-outlined text-base">arrow_outward</span>
                   </button>
@@ -639,7 +686,8 @@
         <section class="border-b border-outline-variant bg-surface">
           <div class="max-w-7xl mx-auto px-page-margin py-section flex flex-col gap-10">
 
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-outline-variant pb-8">
+            <div
+              class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-outline-variant pb-8">
               <div class="space-y-2">
                 <span id="tattoo-section-pill" class="side-tag text-accent block">Cara B — Estudio de Tatuajes</span>
                 <h2 id="tattoo-section-title" class="side-display-title text-3xl sm:text-5xl text-on-surface">
@@ -648,9 +696,11 @@
               </div>
               <div class="flex flex-col sm:flex-row sm:items-center gap-3">
                 <p class="text-sm text-on-surface-variant max-w-md">
-                  Trabajos en piel y diseños de autor por Nahi Ciamprone. Tocá cualquier pieza para verla en grande y cotizar tu tatuaje.
+                  Trabajos en piel y diseños de autor por Nahi Ciamprone. Tocá cualquier pieza para verla en grande y
+                  cotizar tu tatuaje.
                 </p>
-                <a href="admin.html" class="atelier-btn inline-flex items-center justify-center gap-1.5 px-4 py-2.5 border border-outline-variant bg-surface-container text-xs uppercase tracking-wider text-on-surface-variant hover:border-secondary hover:text-primary whitespace-nowrap">
+                <a href="admin.html"
+                  class="atelier-btn inline-flex items-center justify-center gap-1.5 px-4 py-2.5 border border-outline-variant bg-surface-container text-xs uppercase tracking-wider text-on-surface-variant hover:border-secondary hover:text-primary whitespace-nowrap">
                   <span class="material-symbols-outlined text-sm">add_photo_alternate</span>
                   <span>Subir Tattoo</span>
                 </a>
@@ -664,7 +714,8 @@
               </div>
 
               <!-- Sesiones & Estilos de Tattoo Art (4 columnas) -->
-              <aside class="lg:col-span-4 atelier-card bg-surface-container border border-outline-variant p-6 sm:p-7 flex flex-col gap-5 sticky top-24">
+              <aside
+                class="lg:col-span-4 atelier-card bg-surface-container border border-outline-variant p-6 sm:p-7 flex flex-col gap-5 sticky top-24">
                 <div class="border-b border-outline-variant pb-4 flex items-center justify-between">
                   <div>
                     <span class="side-tag text-accent block">Sesiones de Tinta</span>
@@ -678,10 +729,12 @@
                 </ul>
 
                 <div class="pt-3 border-t border-outline-variant flex flex-col gap-2.5">
-                  <a href="turnos.html?side=tattoo" class="atelier-btn w-full py-3 px-5 bg-accent text-on-accent text-center text-xs uppercase tracking-widest font-medium hover:bg-primary hover:text-on-primary">
+                  <a href="turnos.html?side=tattoo"
+                    class="atelier-btn w-full py-3 px-5 bg-accent text-on-accent text-center text-xs uppercase tracking-widest font-medium hover:bg-primary hover:text-on-primary">
                     Agendar Sesión en Turnero (Tattoo)
                   </a>
-                  <button type="button" onclick="activateStudioSide('nails', true)" class="text-xs text-secondary hover:underline text-center pt-1">
+                  <button type="button" onclick="activateStudioSide('nails', true)"
+                    class="text-xs text-secondary hover:underline text-center pt-1">
                     ¿Buscás Nail Art? Girar a la Cara A (Atelier de Uñas) →
                   </button>
                 </div>
@@ -694,22 +747,26 @@
         <!-- Turnos y Consultas exclusivas de la Cara B (Tattoo Art) -->
         <section id="consulta-tattoo" class="border-b border-outline-variant bg-surface-container-low">
           <div class="max-w-7xl mx-auto px-page-margin py-section">
-            <div class="atelier-card bg-surface-container border border-outline-variant p-7 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div
+              class="atelier-card bg-surface-container border border-outline-variant p-7 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
               <div class="lg:col-span-4 flex flex-col justify-between gap-6">
                 <div class="space-y-3">
                   <span class="side-tag text-accent block">Reserva &amp; Cotización Tattoo</span>
                   <h3 class="side-display-title text-3xl sm:text-4xl text-on-surface">Contame tu idea</h3>
                   <p class="text-sm text-on-surface-variant leading-relaxed">
-                    Completá la ficha con la zona del cuerpo, el tamaño en centímetros y el concepto o pieza flash que te gustaría tatuarte.
+                    Completá la ficha con la zona del cuerpo, el tamaño en centímetros y el concepto o pieza flash que
+                    te gustaría tatuarte.
                   </p>
                 </div>
 
                 <div class="p-4 bg-surface border border-outline-variant space-y-2">
                   <span class="side-tag text-secondary block">Agenda Directa</span>
                   <p class="text-xs text-on-surface-variant">
-                    Si ya conversaste tu diseño con Nahi, podés elegir día y horario directamente en el calendario del estudio:
+                    Si ya conversaste tu diseño con Nahi, podés elegir día y horario directamente en el calendario del
+                    estudio:
                   </p>
-                  <a href="turnos.html?side=tattoo" class="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-accent font-semibold hover:underline pt-1">
+                  <a href="turnos.html?side=tattoo"
+                    class="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-accent font-semibold hover:underline pt-1">
                     <span class="material-symbols-outlined text-sm">calendar_month</span>
                     <span>Abrir Calendario de Sesiones Tattoo →</span>
                   </a>
@@ -719,37 +776,48 @@
               <form id="tattoo-consultation-form" class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <label class="flex flex-col gap-1.5">
                   <span class="text-xs uppercase tracking-wider text-on-surface-variant">Nombre *</span>
-                  <input id="tattoo-name" type="text" required placeholder="Tu nombre" class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0">
+                  <input id="tattoo-name" type="text" required placeholder="Tu nombre"
+                    class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0">
                 </label>
 
                 <label class="flex flex-col gap-1.5">
                   <span class="text-xs uppercase tracking-wider text-on-surface-variant">WhatsApp o Instagram *</span>
-                  <input id="tattoo-contact" type="text" required placeholder="@usuario o teléfono" class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0">
+                  <input id="tattoo-contact" type="text" required placeholder="@usuario o teléfono"
+                    class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0">
                 </label>
 
                 <label class="flex flex-col gap-1.5">
                   <span class="text-xs uppercase tracking-wider text-on-surface-variant">Zona del cuerpo *</span>
-                  <input id="tattoo-zone" type="text" required placeholder="Ej. antebrazo, esternón, espalda, brazo" class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0">
+                  <input id="tattoo-zone" type="text" required placeholder="Ej. antebrazo, esternón, espalda, brazo"
+                    class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0">
                 </label>
 
                 <label class="flex flex-col gap-1.5">
                   <span class="text-xs uppercase tracking-wider text-on-surface-variant">Tamaño aproximado (cm) *</span>
-                  <input id="tattoo-size" type="text" required placeholder="Ej. 8 x 10 cm" class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0">
+                  <input id="tattoo-size" type="text" required placeholder="Ej. 8 x 10 cm"
+                    class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0">
                 </label>
 
                 <label class="sm:col-span-2 flex flex-col gap-1.5">
-                  <span class="text-xs uppercase tracking-wider text-on-surface-variant">Idea del tatuaje o pieza Flash *</span>
-                  <textarea id="tattoo-idea" rows="3" required placeholder="Describí el concepto, estilo (Blackwork, Fine Line, Lettering) o el diseño de la galería que te interesa..." class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0"></textarea>
+                  <span class="text-xs uppercase tracking-wider text-on-surface-variant">Idea del tatuaje o pieza Flash
+                    *</span>
+                  <textarea id="tattoo-idea" rows="3" required
+                    placeholder="Describí el concepto, estilo (Blackwork, Fine Line, Lettering) o el diseño de la galería que te interesa..."
+                    class="atelier-card w-full bg-surface border border-outline-variant px-4 py-3 text-sm text-on-surface focus:border-primary focus:ring-0"></textarea>
                 </label>
 
                 <label class="sm:col-span-2 flex flex-col gap-1.5">
-                  <span class="text-xs uppercase tracking-wider text-on-surface-variant">Imagen de referencia (opcional)</span>
-                  <input id="tattoo-ref" type="file" accept="image/*" class="atelier-card w-full bg-surface border border-outline-variant px-4 py-2.5 text-xs text-on-surface-variant file:mr-4 file:py-1.5 file:px-3 file:border-0 file:bg-surface-container-high file:text-on-surface">
+                  <span class="text-xs uppercase tracking-wider text-on-surface-variant">Imagen de referencia
+                    (opcional)</span>
+                  <input id="tattoo-ref" type="file" accept="image/*"
+                    class="atelier-card w-full bg-surface border border-outline-variant px-4 py-2.5 text-xs text-on-surface-variant file:mr-4 file:py-1.5 file:px-3 file:border-0 file:bg-surface-container-high file:text-on-surface">
                 </label>
 
                 <div class="sm:col-span-2 flex flex-wrap items-center justify-between gap-4 pt-2">
-                  <span id="tattoo-form-status" class="text-xs text-outline">Respuesta y presupuesto directo con Nahi.</span>
-                  <button type="submit" class="atelier-btn inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-accent text-on-accent text-xs uppercase tracking-widest font-semibold hover:bg-primary hover:text-on-primary shadow-md">
+                  <span id="tattoo-form-status" class="text-xs text-outline">Respuesta y presupuesto directo con
+                    Nahi.</span>
+                  <button type="submit"
+                    class="atelier-btn inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-accent text-on-accent text-xs uppercase tracking-widest font-semibold hover:bg-primary hover:text-on-primary shadow-md">
                     <span>Enviar Idea de Tatuaje</span>
                     <span class="material-symbols-outlined text-base">arrow_outward</span>
                   </button>
@@ -770,7 +838,8 @@
       <div class="max-w-7xl mx-auto px-page-margin py-section grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
         <div class="lg:col-span-5">
           <div class="atelier-card aspect-[3/4] bg-surface-container-low border border-outline-variant overflow-hidden">
-            <img id="about-photo-img" src="fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg" alt="Nahi Ciamprone en Espacio Muna" loading="lazy" class="w-full h-full object-cover">
+            <img id="about-photo-img" src="fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg"
+              alt="Nahi Ciamprone en Espacio Muna" loading="lazy" class="w-full h-full object-cover">
           </div>
           <p id="about-photo-caption" class="text-xs text-secondary tracking-widest uppercase mt-3">
             Nahiara Ciamprone — Espacio Muna
@@ -788,24 +857,33 @@
               Dos disciplinas, un mismo pulso estético en Espacio Muna
             </span>
             <p id="about-intro-1" class="text-base sm:text-lg text-on-surface-variant leading-relaxed">
-              Soy Nahiara Ciamprone, creadora de NAHI STUDIO. Mi trabajo habita el cruce entre dos mundos que comparten la misma dedicación artesanal por el trazo, la forma y la identidad: el Nail Art escultural y el Tattoo Art.
+              Soy Nahiara Ciamprone, creadora de NAHI STUDIO. Mi trabajo habita el cruce entre dos mundos que comparten
+              la misma dedicación artesanal por el trazo, la forma y la identidad: el Nail Art escultural y el Tattoo
+              Art.
             </p>
             <p id="about-intro-2" class="text-sm text-outline leading-relaxed">
-              En Espacio Muna diseño tanto estructuras en uñas con relieves 3D, cromos y estética de autor, como tatuajes en tinta negra, fine-line, lettering y piezas pensadas a medida de cada persona.
+              En Espacio Muna diseño tanto estructuras en uñas con relieves 3D, cromos y estética de autor, como
+              tatuajes en tinta negra, fine-line, lettering y piezas pensadas a medida de cada persona.
             </p>
           </div>
 
           <!-- Selector interactivo de caras desde la biografía -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-            <button type="button" onclick="activateStudioSide('nails', true); document.getElementById('obras-activas').scrollIntoView({behavior:'smooth'});" class="atelier-card text-left border border-outline-variant bg-surface-container-low hover:border-secondary p-5 transition-all">
+            <button type="button"
+              onclick="activateStudioSide('nails', true); document.getElementById('obras-activas').scrollIntoView({behavior:'smooth'});"
+              class="atelier-card text-left border border-outline-variant bg-surface-container-low hover:border-secondary p-5 transition-all">
               <span class="text-xs uppercase tracking-widest text-secondary block">Cara A — Nails</span>
-              <p id="about-close-1" class="side-display-title text-xl text-on-surface mt-1">Belleza, precisión, creatividad y detalle.</p>
+              <p id="about-close-1" class="side-display-title text-xl text-on-surface mt-1">Belleza, precisión,
+                creatividad y detalle.</p>
               <span class="text-xs text-outline mt-2 inline-block">Ver colección de uñas →</span>
             </button>
 
-            <button type="button" onclick="activateStudioSide('tattoo', true); document.getElementById('dynamic-coin-viewport').scrollIntoView({behavior:'smooth'});" class="atelier-card text-left border border-outline-variant bg-surface-container-low hover:border-accent p-5 transition-all">
+            <button type="button"
+              onclick="activateStudioSide('tattoo', true); document.getElementById('dynamic-coin-viewport').scrollIntoView({behavior:'smooth'});"
+              class="atelier-card text-left border border-outline-variant bg-surface-container-low hover:border-accent p-5 transition-all">
               <span class="text-xs uppercase tracking-widest text-accent block">Cara B — Tattoos</span>
-              <p id="about-close-2" class="side-display-title text-xl text-on-surface mt-1">Tinta, personalidad, expresión y carácter.</p>
+              <p id="about-close-2" class="side-display-title text-xl text-on-surface mt-1">Tinta, personalidad,
+                expresión y carácter.</p>
               <span class="text-xs text-outline mt-2 inline-block">Ver colección de tatuajes →</span>
             </button>
           </div>
@@ -832,19 +910,24 @@
           </p>
         </div>
 
-        <div class="atelier-card border border-outline-variant bg-surface-container p-7 flex flex-col justify-between gap-4">
+        <div
+          class="atelier-card border border-outline-variant bg-surface-container p-7 flex flex-col justify-between gap-4">
           <div>
             <span class="side-tag text-secondary">Contacto Directo</span>
             <h3 class="side-display-title text-2xl text-on-surface mt-1">Instagram &amp; Turnos</h3>
           </div>
           <div class="flex flex-wrap gap-2.5">
-            <a id="contact-turnero-link" href="turnos.html?side=nails" class="atelier-btn px-5 py-2.5 bg-primary text-on-primary text-xs uppercase tracking-wider font-medium hover:bg-accent hover:text-on-accent">
+            <a id="contact-turnero-link" href="turnos.html?side=nails"
+              class="atelier-btn px-5 py-2.5 bg-primary text-on-primary text-xs uppercase tracking-wider font-medium hover:bg-accent hover:text-on-accent">
               Turnero Online
             </a>
-            <a id="direct-instagram-link" href="https://www.instagram.com/nahi.ciamprone/" target="_blank" rel="noopener noreferrer" class="atelier-btn px-5 py-2.5 border border-outline-variant text-on-surface text-xs uppercase tracking-wider hover:border-secondary">
+            <a id="direct-instagram-link" href="https://www.instagram.com/nahi.ciamprone/" target="_blank"
+              rel="noopener noreferrer"
+              class="atelier-btn px-5 py-2.5 border border-outline-variant text-on-surface text-xs uppercase tracking-wider hover:border-secondary">
               @nahi.ciamprone
             </a>
-            <a id="direct-whatsapp-link" href="https://wa.me/" target="_blank" rel="noopener noreferrer" class="atelier-btn px-5 py-2.5 bg-accent text-on-accent text-xs uppercase tracking-wider hover:opacity-90">
+            <a id="direct-whatsapp-link" href="https://wa.me/" target="_blank" rel="noopener noreferrer"
+              class="atelier-btn px-5 py-2.5 bg-accent text-on-accent text-xs uppercase tracking-wider hover:opacity-90">
               WhatsApp
             </a>
           </div>
@@ -865,14 +948,17 @@
           </p>
         </div>
         <div class="flex flex-wrap gap-6 text-sm">
-          <button type="button" onclick="activateStudioSide('nails', true)" class="text-on-surface-variant hover:text-primary">Cara A — Nail Art</button>
-          <button type="button" onclick="activateStudioSide('tattoo', true)" class="text-on-surface-variant hover:text-primary">Cara B — Tattoo Art</button>
+          <button type="button" onclick="activateStudioSide('nails', true)"
+            class="text-on-surface-variant hover:text-primary">Cara A — Nail Art</button>
+          <button type="button" onclick="activateStudioSide('tattoo', true)"
+            class="text-on-surface-variant hover:text-primary">Cara B — Tattoo Art</button>
           <a href="#sobre-nahi" class="text-on-surface-variant hover:text-primary">Sobre Nahi</a>
           <a href="turnos.html" class="text-on-surface-variant hover:text-primary">Agenda de Turnos</a>
           <a href="admin.html" class="text-secondary hover:text-primary">Panel del Estudio</a>
         </div>
       </div>
-      <div class="pt-6 border-t border-outline-variant flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-outline">
+      <div
+        class="pt-6 border-t border-outline-variant flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-outline">
         <span id="footer-copyright">© 2026 Nahi Studio — Nahiara Ciamprone · Espacio Muna.</span>
         <span>Two Sides · One Identity</span>
       </div>
@@ -880,39 +966,48 @@
   </footer>
 
   <!-- BOTÓN FLOTANTE DE WHATSAPP -->
-  <a id="floating-whatsapp" href="https://wa.me/" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp" class="atelier-btn fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 px-5 py-3 bg-primary text-on-primary border border-outline-variant shadow-xl hover:bg-accent hover:text-on-accent">
+  <a id="floating-whatsapp" href="https://wa.me/" target="_blank" rel="noopener noreferrer"
+    aria-label="Contactar por WhatsApp"
+    class="atelier-btn fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 px-5 py-3 bg-primary text-on-primary border border-outline-variant shadow-xl hover:bg-accent hover:text-on-accent">
     <span class="material-symbols-outlined text-base" aria-hidden="true">chat</span>
     <span class="text-xs uppercase tracking-wider font-medium hidden sm:inline">WhatsApp</span>
   </a>
 
   <!-- VISOR MODAL LIGHTBOX -->
-  <dialog id="detail-modal" aria-labelledby="modal-title" aria-describedby="modal-tag modal-desc" class="atelier-card bg-surface-container border border-outline-variant text-on-surface p-0 max-w-2xl w-full backdrop:bg-black/80">
+  <dialog id="detail-modal" aria-labelledby="modal-title" aria-describedby="modal-tag modal-desc"
+    class="atelier-card bg-surface-container border border-outline-variant text-on-surface p-0 max-w-2xl w-full backdrop:bg-black/80">
     <header class="flex items-start justify-between gap-4 p-6 border-b border-outline-variant">
       <div>
         <p id="modal-tag" class="side-tag text-secondary"></p>
         <h2 id="modal-title" class="side-display-title text-2xl sm:text-3xl text-on-surface mt-0.5">Detalle de obra</h2>
       </div>
-      <button id="modal-close-btn" type="button" aria-label="Cerrar diálogo" class="atelier-btn inline-flex items-center justify-center w-9 h-9 border border-outline-variant text-on-surface hover:border-primary">
+      <button id="modal-close-btn" type="button" aria-label="Cerrar diálogo"
+        class="atelier-btn inline-flex items-center justify-center w-9 h-9 border border-outline-variant text-on-surface hover:border-primary">
         <span class="material-symbols-outlined text-base" aria-hidden="true">close</span>
       </button>
     </header>
 
     <div class="p-6 flex flex-col gap-4">
-      <div class="atelier-card w-full max-h-[65vh] overflow-hidden bg-surface border border-outline-variant flex items-center justify-center">
+      <div
+        class="atelier-card w-full max-h-[65vh] overflow-hidden bg-surface border border-outline-variant flex items-center justify-center">
         <img id="modal-img" src="" alt="" class="max-h-[65vh] w-auto object-contain">
-        <video id="modal-video" src="" controls playsinline loop class="hidden max-h-[65vh] w-auto object-contain"></video>
+        <video id="modal-video" src="" controls playsinline loop
+          class="hidden max-h-[65vh] w-auto object-contain"></video>
       </div>
       <p id="modal-desc" class="text-sm text-on-surface-variant leading-relaxed"></p>
     </div>
 
     <footer class="p-6 border-t border-outline-variant flex items-center justify-end gap-3">
-      <button id="modal-dismiss-btn" type="button" class="atelier-btn px-5 py-2.5 border border-outline-variant text-on-surface-variant text-xs uppercase tracking-wider hover:border-primary hover:text-primary">
+      <button id="modal-dismiss-btn" type="button"
+        class="atelier-btn px-5 py-2.5 border border-outline-variant text-on-surface-variant text-xs uppercase tracking-wider hover:border-primary hover:text-primary">
         Cerrar
       </button>
-      <a id="modal-book-nails-btn" href="turnos.html?side=nails" class="atelier-btn hidden px-6 py-2.5 bg-primary text-on-primary text-xs uppercase tracking-wider font-medium hover:bg-accent hover:text-on-accent">
+      <a id="modal-book-nails-btn" href="turnos.html?side=nails"
+        class="atelier-btn hidden px-6 py-2.5 bg-primary text-on-primary text-xs uppercase tracking-wider font-medium hover:bg-accent hover:text-on-accent">
         Reservar este estilo
       </a>
-      <a id="modal-consult-btn" href="#consulta-tattoo" class="atelier-btn hidden px-6 py-2.5 bg-accent text-on-accent text-xs uppercase tracking-wider font-medium hover:bg-primary hover:text-on-primary">
+      <a id="modal-consult-btn" href="#consulta-tattoo"
+        class="atelier-btn hidden px-6 py-2.5 bg-accent text-on-accent text-xs uppercase tracking-wider font-medium hover:bg-primary hover:text-on-primary">
         Cotizar este tatuaje
       </a>
     </footer>
@@ -926,7 +1021,7 @@
       whatsappNumber: '',
       currentSide: 'nails', // 'nails' | 'tattoo'
       coinAngleY: 0,
-      allPhotos: [{"id":"nahi_nail_1","title":"Crimson French & Tattoo","badge":"Cara A · Nail Art de Autor","category":"nails","description":"Almendradas con french rojo carmesí profundo en diálogo con tatuaje ornamental de muñeca.","imageUrl":"fotos/imgi_25_539976307_17854872333514079_3988514524600607766_n.webp","mediaType":"image","isFeatured":true,"isHero":true,"sortOrder":1},{"id":"nahi_nail_vid_1","title":"Reel · Transición Animal Print & Chrome","badge":"Cara A · Video en Atelier","category":"nails","description":"Transición en cámara de preparación de estructura coffin a diseño animal print sobre base champagne metálica.","imageUrl":"fotos/igexport-DfYbk6ptM3G.mp4","mediaType":"video","isFeatured":true,"isHero":true,"sortOrder":2},{"id":"nahi_nail_2","title":"Sculpted 3D & Perlas","badge":"Cara A · Relieve Escultórico","category":"nails","description":"Diseño escultórico con volumen metálico dorado, perlas y detalles marinos sobre base lechosa.","imageUrl":"fotos/imgi_22_504060229_17842497063514079_4107614235171648365_n.webp","mediaType":"image","isFeatured":true,"isHero":true,"sortOrder":3},{"id":"nahi_nail_vid_2","title":"Reel · Gothic Chrome & Tachas en Movimiento","badge":"Cara A · Video en Vivo","category":"nails","description":"Detalle en movimiento del set negro profundo con lettering gótico a mano alzada, cruces cromadas y tachas metálicas.","imageUrl":"fotos/igexport-De0QjOPN0VR.mp4","mediaType":"video","isFeatured":true,"isHero":false,"sortOrder":4},{"id":"nahi_nail_3","title":"Reflective Obsidian Glitter","badge":"Cara A · Destello Reflectivo","category":"nails","description":"Glitter reflectivo oscuro con destellos plateados en forma almendra.","imageUrl":"fotos/imgi_6_928715819_1678752167229555_3258636658814047340_n.jpg","mediaType":"image","isFeatured":true,"isHero":false,"sortOrder":5},{"id":"nahi_nail_4","title":"Chrome Animal Print Coffin","badge":"Cara A · Estructura Coffin","category":"nails","description":"Base metálica champagne con diseño animal print en negro intenso sobre estructura coffin.","imageUrl":"fotos/imgi_9_857436431_17930539812514079_2849828327181330972_n.jpg","mediaType":"image","isFeatured":true,"isHero":false,"sortOrder":6},{"id":"nahi_nail_5","title":"Editorial French & Red","badge":"Cara A · French Clásico","category":"nails","description":"French clásico reinterpretado con líneas orgánicas y acento rojo carmesí.","imageUrl":"fotos/imgi_31_628792993_17875531770514079_7101006345959160330_n.webp","mediaType":"image","isFeatured":true,"isHero":false,"sortOrder":7},{"id":"nahi_nail_6","title":"Gothic Chrome & Studs","badge":"Cara A · Nail Art de Autor","category":"nails","description":"Nail art negro profundo con lettering gótico, tachas metálicas y líneas cromadas.","imageUrl":"fotos/imgi_13_861911954_1131761712629862_1954115592653772609_n.jpg","mediaType":"image","isFeatured":true,"isHero":false,"sortOrder":8},{"id":"nahi_tattoo_1","title":"Cupido Blackwork & Puntillismo","badge":"Cara B · Blackwork","category":"tattoo","description":"Cupido clásico en clave blackwork con sombreado de arrastre y puntillismo de alta definición.","imageUrl":"fotos/imgi_28_771909433_18096793385269189_6790519837572543665_n.jpg","mediaType":"image","isFeatured":true,"isHero":true,"sortOrder":9},{"id":"nahi_tattoo_vid_1","title":"Reel · Sesión Runa de Protección en Estudio","badge":"Cara B · Video de Sesión","category":"tattoo","description":"Proceso real en camilla tatuando una Runa de Protección en estilo brushstroke blackwork.","imageUrl":"fotos/igexport-Dc1nPj0sBE7.mp4","mediaType":"video","isFeatured":true,"isHero":true,"sortOrder":10},{"id":"nahi_tattoo_2","title":"León Oriental Fu Dog & Geometría","badge":"Cara B · Proyecto a Medida","category":"tattoo","description":"Pieza de pecho a gran escala: guardián oriental con líneas sólidas y esfera de geometría sagrada.","imageUrl":"fotos/imgi_18_831313350_18104431136269189_151488612152529768_n.jpg","mediaType":"image","isFeatured":true,"isHero":true,"sortOrder":11},{"id":"nahi_tattoo_vid_2","title":"Reel · Femme Spots & Fine Line Collection","badge":"Cara B · Video Fine Line","category":"tattoo","description":"Recorrido en video por diseños delicados de trazo fino: botánico en esternón, micro-lettering y coquette bow.","imageUrl":"fotos/igexport-Dd7r8REtC7P.mp4","mediaType":"video","isFeatured":true,"isHero":false,"sortOrder":12},{"id":"nahi_tattoo_3","title":"Lettering Distorsión — Viejo Karma","badge":"Cara B · Lettering","category":"tattoo","description":"Tipografía experimental con efecto onda y firma caligráfica en tinta negra intensa.","imageUrl":"fotos/imgi_11_902024821_18111104054269189_4890881016085880301_n.jpg","mediaType":"image","isFeatured":true,"isHero":false,"sortOrder":13},{"id":"nahi_tattoo_vid_3","title":"Reel · Sesión Grabado Clásico en Espalda","badge":"Cara B · Proceso en Vivo","category":"tattoo","description":"Nahi tatuando en vivo una pieza de gran formato con líneas de grabado clásico sobre espalda.","imageUrl":"fotos/igexport-De-jsVethEQ.mp4","mediaType":"video","isFeatured":true,"isHero":false,"sortOrder":14},{"id":"nahi_tattoo_4","title":"Fine Line & Caligrafía Infinito","badge":"Cara B · Fine Line","category":"tattoo","description":"Trazo fino caligráfico con destellos astrales, micro-luna y línea ornamental.","imageUrl":"fotos/imgi_15_846504117_18106174985269189_2305949659410720467_n.jpg","mediaType":"image","isFeatured":true,"isHero":false,"sortOrder":15},{"id":"nahi_tattoo_vid_4","title":"Reel · Delicate Mini Tattoos & Ornamental","badge":"Cara B · Video Mini Tattoos","category":"tattoo","description":"Tatuajes ornamentales simétricos y micro-caligrafía delicada en empeine y tobillo.","imageUrl":"fotos/igexport-Dd2I_0qAa9o.mp4","mediaType":"video","isFeatured":true,"isHero":false,"sortOrder":16},{"id":"nahi_tattoo_5","title":"Femme Spots — Botánico Ornamental","badge":"Cara B · Botánico","category":"tattoo","description":"Diseño botánico simétrico de trazo delicado adaptado a la anatomía del esternón.","imageUrl":"fotos/imgi_10_832478316_1138317815289557_8357992302156346057_n.jpg","mediaType":"image","isFeatured":true,"isHero":false,"sortOrder":17}],
+      allPhotos: [{ "id": "nahi_nail_1", "title": "Crimson French & Tattoo", "badge": "Cara A · Nail Art de Autor", "category": "nails", "description": "Almendradas con french rojo carmesí profundo en diálogo con tatuaje ornamental de muñeca.", "imageUrl": "fotos/imgi_25_539976307_17854872333514079_3988514524600607766_n.webp", "mediaType": "image", "isFeatured": true, "isHero": true, "sortOrder": 1 }, { "id": "nahi_nail_vid_1", "title": "Reel · Transición Animal Print & Chrome", "badge": "Cara A · Video en Atelier", "category": "nails", "description": "Transición en cámara de preparación de estructura coffin a diseño animal print sobre base champagne metálica.", "imageUrl": "fotos/igexport-DfYbk6ptM3G.mp4", "mediaType": "video", "isFeatured": true, "isHero": true, "sortOrder": 2 }, { "id": "nahi_nail_2", "title": "Sculpted 3D & Perlas", "badge": "Cara A · Relieve Escultórico", "category": "nails", "description": "Diseño escultórico con volumen metálico dorado, perlas y detalles marinos sobre base lechosa.", "imageUrl": "fotos/imgi_22_504060229_17842497063514079_4107614235171648365_n.webp", "mediaType": "image", "isFeatured": true, "isHero": true, "sortOrder": 3 }, { "id": "nahi_nail_vid_2", "title": "Reel · Gothic Chrome & Tachas en Movimiento", "badge": "Cara A · Video en Vivo", "category": "nails", "description": "Detalle en movimiento del set negro profundo con lettering gótico a mano alzada, cruces cromadas y tachas metálicas.", "imageUrl": "fotos/igexport-De0QjOPN0VR.mp4", "mediaType": "video", "isFeatured": true, "isHero": false, "sortOrder": 4 }, { "id": "nahi_nail_3", "title": "Reflective Obsidian Glitter", "badge": "Cara A · Destello Reflectivo", "category": "nails", "description": "Glitter reflectivo oscuro con destellos plateados en forma almendra.", "imageUrl": "fotos/imgi_6_928715819_1678752167229555_3258636658814047340_n.jpg", "mediaType": "image", "isFeatured": true, "isHero": false, "sortOrder": 5 }, { "id": "nahi_nail_4", "title": "Chrome Animal Print Coffin", "badge": "Cara A · Estructura Coffin", "category": "nails", "description": "Base metálica champagne con diseño animal print en negro intenso sobre estructura coffin.", "imageUrl": "fotos/imgi_9_857436431_17930539812514079_2849828327181330972_n.jpg", "mediaType": "image", "isFeatured": true, "isHero": false, "sortOrder": 6 }, { "id": "nahi_nail_5", "title": "Editorial French & Red", "badge": "Cara A · French Clásico", "category": "nails", "description": "French clásico reinterpretado con líneas orgánicas y acento rojo carmesí.", "imageUrl": "fotos/imgi_31_628792993_17875531770514079_7101006345959160330_n.webp", "mediaType": "image", "isFeatured": true, "isHero": false, "sortOrder": 7 }, { "id": "nahi_nail_6", "title": "Gothic Chrome & Studs", "badge": "Cara A · Nail Art de Autor", "category": "nails", "description": "Nail art negro profundo con lettering gótico, tachas metálicas y líneas cromadas.", "imageUrl": "fotos/imgi_13_861911954_1131761712629862_1954115592653772609_n.jpg", "mediaType": "image", "isFeatured": true, "isHero": false, "sortOrder": 8 }, { "id": "nahi_tattoo_1", "title": "Cupido Blackwork & Puntillismo", "badge": "Cara B · Blackwork", "category": "tattoo", "description": "Cupido clásico en clave blackwork con sombreado de arrastre y puntillismo de alta definición.", "imageUrl": "fotos/imgi_28_771909433_18096793385269189_6790519837572543665_n.jpg", "mediaType": "image", "isFeatured": true, "isHero": true, "sortOrder": 9 }, { "id": "nahi_tattoo_vid_1", "title": "Reel · Sesión Runa de Protección en Estudio", "badge": "Cara B · Video de Sesión", "category": "tattoo", "description": "Proceso real en camilla tatuando una Runa de Protección en estilo brushstroke blackwork.", "imageUrl": "fotos/igexport-Dc1nPj0sBE7.mp4", "mediaType": "video", "isFeatured": true, "isHero": true, "sortOrder": 10 }, { "id": "nahi_tattoo_2", "title": "León Oriental Fu Dog & Geometría", "badge": "Cara B · Proyecto a Medida", "category": "tattoo", "description": "Pieza de pecho a gran escala: guardián oriental con líneas sólidas y esfera de geometría sagrada.", "imageUrl": "fotos/imgi_18_831313350_18104431136269189_151488612152529768_n.jpg", "mediaType": "image", "isFeatured": true, "isHero": true, "sortOrder": 11 }, { "id": "nahi_tattoo_vid_2", "title": "Reel · Femme Spots & Fine Line Collection", "badge": "Cara B · Video Fine Line", "category": "tattoo", "description": "Recorrido en video por diseños delicados de trazo fino: botánico en esternón, micro-lettering y coquette bow.", "imageUrl": "fotos/igexport-Dd7r8REtC7P.mp4", "mediaType": "video", "isFeatured": true, "isHero": false, "sortOrder": 12 }, { "id": "nahi_tattoo_3", "title": "Lettering Distorsión — Viejo Karma", "badge": "Cara B · Lettering", "category": "tattoo", "description": "Tipografía experimental con efecto onda y firma caligráfica en tinta negra intensa.", "imageUrl": "fotos/imgi_11_902024821_18111104054269189_4890881016085880301_n.jpg", "mediaType": "image", "isFeatured": true, "isHero": false, "sortOrder": 13 }, { "id": "nahi_tattoo_vid_3", "title": "Reel · Sesión Grabado Clásico en Espalda", "badge": "Cara B · Proceso en Vivo", "category": "tattoo", "description": "Nahi tatuando en vivo una pieza de gran formato con líneas de grabado clásico sobre espalda.", "imageUrl": "fotos/igexport-De-jsVethEQ.mp4", "mediaType": "video", "isFeatured": true, "isHero": false, "sortOrder": 14 }, { "id": "nahi_tattoo_4", "title": "Fine Line & Caligrafía Infinito", "badge": "Cara B · Fine Line", "category": "tattoo", "description": "Trazo fino caligráfico con destellos astrales, micro-luna y línea ornamental.", "imageUrl": "fotos/imgi_15_846504117_18106174985269189_2305949659410720467_n.jpg", "mediaType": "image", "isFeatured": true, "isHero": false, "sortOrder": 15 }, { "id": "nahi_tattoo_vid_4", "title": "Reel · Delicate Mini Tattoos & Ornamental", "badge": "Cara B · Video Mini Tattoos", "category": "tattoo", "description": "Tatuajes ornamentales simétricos y micro-caligrafía delicada en empeine y tobillo.", "imageUrl": "fotos/igexport-Dd2I_0qAa9o.mp4", "mediaType": "video", "isFeatured": true, "isHero": false, "sortOrder": 16 }, { "id": "nahi_tattoo_5", "title": "Femme Spots — Botánico Ornamental", "badge": "Cara B · Botánico", "category": "tattoo", "description": "Diseño botánico simétrico de trazo delicado adaptado a la anatomía del esternón.", "imageUrl": "fotos/imgi_10_832478316_1138317815289557_8357992302156346057_n.jpg", "mediaType": "image", "isFeatured": true, "isHero": false, "sortOrder": 17 }],
       allServices: [],
       siteContent: null
     };
@@ -1187,7 +1282,7 @@
         modalImg.src = '';
         modalVideo.classList.remove('hidden');
         modalVideo.src = src;
-        modalVideo.play().catch(() => {});
+        modalVideo.play().catch(() => { });
       } else {
         if (modalVideo) {
           modalVideo.pause();
@@ -1259,16 +1354,16 @@
                       data-tattoo-action="false">
                 <div class="${aspectCls} w-full overflow-hidden bg-surface-container-low relative">
                   ${isVideoAsset(safeImg)
-                    ? `<video src="${safeImg}" autoplay muted loop playsinline preload="metadata" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"></video>
+              ? `<video src="${safeImg}" autoplay muted loop playsinline preload="metadata" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"></video>
                        <span class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/70 text-white text-[10px] uppercase tracking-wider flex items-center gap-1">
                          <span class="material-symbols-outlined text-xs">play_circle</span> Video en vivo
                        </span>`
-                    : `${isVideoAsset(safeImg)
-                    ? `<video src="${safeImg}" autoplay muted loop playsinline preload="metadata" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"></video>
+              : `${isVideoAsset(safeImg)
+                ? `<video src="${safeImg}" autoplay muted loop playsinline preload="metadata" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"></video>
                        <span class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/75 border border-accent/60 text-white text-[10px] uppercase tracking-wider flex items-center gap-1">
                          <span class="material-symbols-outlined text-xs">play_circle</span> Video Sesión
                        </span>`
-                    : `<img src="${safeImg}" alt="${safeTitle}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">`}`}
+                : `<img src="${safeImg}" alt="${safeTitle}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">`}`}
                 </div>
                 <div class="p-5 flex items-center justify-between gap-3">
                   <div>
@@ -1460,7 +1555,7 @@
             </a>
           `;
         }).join('');
-      } catch (e) {}
+      } catch (e) { }
     }
 
     async function initStudioPortfolio() {
@@ -1534,7 +1629,7 @@
             phone: 'WhatsApp',
             notes: `Solicitud Nail Art | ${notes}`
           });
-        } catch (_) {}
+        } catch (_) { }
       }
 
       const msg = `Hola Nahi! Quiero reservar un turno de NAIL ART.\n• Nombre: ${clientName}\n• Servicio: ${service}\n• Fecha deseada: ${date}${notes ? `\n• Idea/Notas: ${notes}` : ''}`;
@@ -1567,7 +1662,7 @@
             phone: contact,
             notes: `Zona: ${zone} | Tamaño: ${size} | Idea: ${idea}`
           });
-        } catch (_) {}
+        } catch (_) { }
       }
 
       const msg = `Hola Nahi! Te envío una consulta de TATTOO ART:\n• Nombre: ${name}\n• Contacto: ${contact}\n• Zona: ${zone}\n• Tamaño aprox: ${size}\n• Idea: ${idea}\n• Referencia: ${refNote}`;
@@ -1579,4 +1674,5 @@
   </script>
 
 </body>
+
 </html>

@@ -22,7 +22,8 @@
     LOCAL_USERS: 'nahi_users_db',
     GALLERY: 'nahi_gallery_photos_v3',
     PUBLISHED_SCHEDULES: 'nahi_published_schedules',
-    SITE_CONTENT: 'nahi_site_content'
+    SITE_CONTENT: 'nahi_site_content',
+    PAYMENT_INFO: 'nahi_payment_info'
   };
 
   // Seña obligatoria para reservar (porcentaje del precio del servicio)
@@ -220,16 +221,11 @@
 
     async _loadConfigAndInit() {
       try {
-        // 1. Auto-descubrimiento inteligente del servidor Node (evita errores 404 en Live Server / GitHub Pages)
+        // 1. Auto-descubrimiento inteligente del servidor Node / Vercel Serverless (evita 404 en GitHub Pages)
         const host = (window.location && window.location.hostname) ? window.location.hostname.toLowerCase() : '';
         const port = (window.location && window.location.port) ? String(window.location.port) : '';
         const proto = (window.location && window.location.protocol) ? window.location.protocol : '';
-        const isStaticCloudHost = (
-          host.endsWith('.github.io') ||
-          host.endsWith('.netlify.app') ||
-          host.endsWith('.vercel.app') ||
-          host.endsWith('.pages.dev')
-        );
+        const isStaticOnlyHost = host.endsWith('.github.io');
 
         const candidateBases = [];
         if (window.MICA_API_URL) {
@@ -238,10 +234,11 @@
           if (port === '3456') {
             candidateBases.push('');
           } else {
-            // Abierto desde Live Server (:5500, etc.) o file:// -> conectar directo al backend en :3456 sin provocar 404 local
+            // Abierto desde Live Server (:5500, etc.) o file:// -> probar relativo y backend en :3456
+            if (proto !== 'file:') candidateBases.push('');
             candidateBases.push('http://localhost:3456');
           }
-        } else if (!isStaticCloudHost) {
+        } else if (!isStaticOnlyHost) {
           candidateBases.push('');
         }
 
@@ -1985,6 +1982,20 @@
 
     async getPaymentInfo() {
       await this.init();
+      // 1. Intentar desde backend /api/payment-info
+      try {
+        const apiRes = await this._apiFetch('/api/payment-info');
+        if (apiRes && apiRes.ok) {
+          const data = await apiRes.json();
+          if (data && data.paymentInfo) {
+            const merged = { ...DEFAULT_PAYMENT_INFO, ...data.paymentInfo };
+            try { localStorage.setItem(STORAGE_KEYS.PAYMENT_INFO, JSON.stringify(merged)); } catch (_) {}
+            return merged;
+          }
+        }
+      } catch (e) {}
+
+      // 2. Intentar desde Supabase REST
       if (this.config.isConfigured) {
         try {
           const res = await fetch(`${this.config.supabaseUrl}/rest/v1/settings?key=eq.payment_info&select=value`, {
@@ -1993,11 +2004,25 @@
           if (res.ok) {
             const rows = await res.json();
             if (Array.isArray(rows) && rows[0] && rows[0].value) {
-              return { ...DEFAULT_PAYMENT_INFO, ...rows[0].value };
+              const merged = { ...DEFAULT_PAYMENT_INFO, ...rows[0].value };
+              try { localStorage.setItem(STORAGE_KEYS.PAYMENT_INFO, JSON.stringify(merged)); } catch (_) {}
+              return merged;
             }
           }
         } catch (e) {}
       }
+
+      // 3. Fallback a localStorage
+      try {
+        const localRaw = localStorage.getItem(STORAGE_KEYS.PAYMENT_INFO);
+        if (localRaw) {
+          const parsed = JSON.parse(localRaw);
+          if (parsed && typeof parsed === 'object') {
+            return { ...DEFAULT_PAYMENT_INFO, ...parsed };
+          }
+        }
+      } catch (e) {}
+
       return { ...DEFAULT_PAYMENT_INFO };
     }
 
@@ -2011,21 +2036,45 @@
         bank: String(info.bank || '').trim(),
         whatsapp: String(info.whatsapp || '').trim()
       };
-      if (!this.config.isConfigured) throw new Error('Supabase no está configurado.');
-      const res = await fetch(`${this.config.supabaseUrl}/rest/v1/settings?on_conflict=key`, {
-        method: 'POST',
-        headers: {
-          apikey: this.config.supabaseAnonKey,
-          Authorization: `Bearer ${this._getAuthBearer()}`,
-          'Content-Type': 'application/json',
-          Prefer: 'resolution=merge-duplicates,return=minimal'
-        },
-        body: JSON.stringify({ key: 'payment_info', value: clean, description: 'Datos de transferencia para la seña' })
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || 'No se pudieron guardar los datos de pago. Cerrá sesión y volvé a ingresar como admin.');
+
+      // Guardar siempre en localStorage como respaldo inmediato
+      try {
+        localStorage.setItem(STORAGE_KEYS.PAYMENT_INFO, JSON.stringify(clean));
+      } catch (_) {}
+
+      // 1. Intentar guardar a través del backend /api/payment-info (usa SUPABASE_SERVICE_ROLE_KEY si está en servidor/Vercel)
+      try {
+        const apiRes = await this._apiFetch('/api/payment-info', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(clean)
+        });
+        if (apiRes && apiRes.ok) {
+          return clean;
+        }
+      } catch (e) {}
+
+      // 2. Fallback directo a Supabase REST
+      if (this.config.isConfigured) {
+        try {
+          const res = await fetch(`${this.config.supabaseUrl}/rest/v1/settings?on_conflict=key`, {
+            method: 'POST',
+            headers: {
+              apikey: this.config.supabaseAnonKey,
+              Authorization: `Bearer ${this._getAuthBearer()}`,
+              'Content-Type': 'application/json',
+              Prefer: 'resolution=merge-duplicates,return=minimal'
+            },
+            body: JSON.stringify({ key: 'payment_info', value: clean, description: 'Datos de transferencia para la seña' })
+          });
+          if (!res.ok) {
+            console.warn('Supabase settings payment_info direct save warning:', res.status);
+          }
+        } catch (e) {
+          console.warn('Supabase settings payment_info error:', e);
+        }
       }
+
       return clean;
     }
 
