@@ -20,7 +20,7 @@
     LOCAL_TURNOS: 'nahi_studio_turnos',
     DELETED_TURNOS: 'nahi_deleted_turnos',
     LOCAL_USERS: 'nahi_users_db',
-    GALLERY: 'nahi_gallery_photos_v2',
+    GALLERY: 'nahi_gallery_photos_v3',
     PUBLISHED_SCHEDULES: 'nahi_published_schedules',
     SITE_CONTENT: 'nahi_site_content'
   };
@@ -1697,16 +1697,30 @@
         }
       }
 
-      // 3. Fallback a LocalStorage
+      // 3. Fallback a LocalStorage (validando que las rutas sean válidas de Nahi Studio)
       try {
         const local = localStorage.getItem(STORAGE_KEYS.GALLERY);
         if (local) {
           const parsed = JSON.parse(local);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed) && parsed.length > 0 && !parsed.some(p => String(p.imageUrl || '').startsWith('images/ej-'))) {
+            return parsed;
+          }
         }
       } catch (e) {}
 
-      // 4. Default 6 fotos
+      // 3b. Intentar cargar gallery-data.json estático (ideal para Vercel / GitHub Pages)
+      try {
+        const staticRes = await fetch('/gallery-data.json').catch(() => null);
+        if (staticRes && staticRes.ok) {
+          const staticPhotos = await staticRes.json().catch(() => null);
+          if (Array.isArray(staticPhotos) && staticPhotos.length > 0) {
+            this._safeSetLocalGallery(staticPhotos);
+            return staticPhotos;
+          }
+        }
+      } catch (e) {}
+
+      // 4. Default fotos y videos de Nahi Studio
       const def = this._getDefaultGalleryPhotos();
       this._safeSetLocalGallery(def);
       return def;

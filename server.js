@@ -2652,14 +2652,20 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
-server.listen(port, () => {
-  console.log(`\n============================================================`);
-  console.log(`✨ NAHI STUDIO — SERVIDOR Y BACKEND SUPABASE ACTIVO ✨`);
-  console.log(`============================================================`);
-  console.log(`🌐 Servidor local: http://localhost:${port}`);
-  console.log(`📅 Turnos online:  http://localhost:${port}/turnos.html`);
-  console.log(`🔐 Iniciar sesión: http://localhost:${port}/login.html`);
-  console.log(`👑 Panel Admin:    http://localhost:${port}/admin.html`);
-  console.log(`📡 API Health:     http://localhost:${port}/api/health`);
-  console.log(`============================================================\n`);
-});
+if (require.main === module && !process.env.VERCEL) {
+  server.listen(port, () => {
+    console.log(`\n============================================================`);
+    console.log(`✨ NAHI STUDIO — SERVIDOR Y BACKEND SUPABASE ACTIVO ✨`);
+    console.log(`============================================================`);
+    console.log(`🌐 Servidor local: http://localhost:${port}`);
+    console.log(`📅 Turnos online:  http://localhost:${port}/turnos.html`);
+    console.log(`🔐 Iniciar sesión: http://localhost:${port}/login.html`);
+    console.log(`👑 Panel Admin:    http://localhost:${port}/admin.html`);
+    console.log(`📡 API Health:     http://localhost:${port}/api/health`);
+    console.log(`============================================================\n`);
+  });
+}
+
+module.exports = (req, res) => {
+  server.emit('request', req, res);
+};

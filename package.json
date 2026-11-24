@@ -2,7 +2,6 @@
   "name": "nahi-studio-creative-portfolio",
   "version": "2.0.0",
   "description": "Nahi Studio — Two Sides, One Identity | Nail Art & Tattoo Art Portfolio + Admin System",
-  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
