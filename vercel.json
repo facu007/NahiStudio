@@ -1,42 +1,8 @@
 {
   "version": 2,
-  "cleanUrls": false,
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/index.js"
-    },
-    {
-      "source": "/admin",
-      "destination": "/admin.html"
-    },
-    {
-      "source": "/turnos",
-      "destination": "/turnos.html"
-    },
-    {
-      "source": "/login",
-      "destination": "/login.html"
+  "functions": {
+    "server.js": {
+      "includeFiles": "{*.html,*.js,*.json,fotos/**,assets/**,components/**}"
     }
-  ],
-  "headers": [
-    {
-      "source": "/fotos/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    }
-  ]
+  }
 }

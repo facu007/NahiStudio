@@ -20,7 +20,7 @@
     LOCAL_TURNOS: 'nahi_studio_turnos',
     DELETED_TURNOS: 'nahi_deleted_turnos',
     LOCAL_USERS: 'nahi_users_db',
-    GALLERY: 'nahi_gallery_photos_v3',
+    GALLERY: 'nahi_gallery_photos_v4',
     PUBLISHED_SCHEDULES: 'nahi_published_schedules',
     SITE_CONTENT: 'nahi_site_content',
     PAYMENT_INFO: 'nahi_payment_info'
@@ -1365,23 +1365,11 @@
             "badge": "Cara A · Nail Art de Autor",
             "category": "nails",
             "description": "Almendradas con french rojo carmesí profundo en diálogo con tatuaje ornamental de muñeca.",
-            "imageUrl": "fotos/imgi_25_539976307_17854872333514079_3988514524600607766_n.webp",
+            "imageUrl": "fotos/imgi_25_539976307_17854872333514079_3988514524600607766_n.webp?v=2",
             "mediaType": "image",
             "isFeatured": true,
             "isHero": true,
             "sortOrder": 1
-      },
-      {
-            "id": "nahi_nail_vid_1",
-            "title": "Reel · Transición Animal Print & Chrome",
-            "badge": "Cara A · Video en Atelier",
-            "category": "nails",
-            "description": "Transición en cámara de preparación de estructura coffin a diseño animal print sobre base champagne metálica.",
-            "imageUrl": "fotos/igexport-DfYbk6ptM3G.mp4",
-            "mediaType": "video",
-            "isFeatured": true,
-            "isHero": true,
-            "sortOrder": 2
       },
       {
             "id": "nahi_nail_2",
@@ -1389,23 +1377,11 @@
             "badge": "Cara A · Relieve Escultórico",
             "category": "nails",
             "description": "Diseño escultórico con volumen metálico dorado, perlas y detalles marinos sobre base lechosa.",
-            "imageUrl": "fotos/imgi_22_504060229_17842497063514079_4107614235171648365_n.webp",
+            "imageUrl": "fotos/imgi_22_504060229_17842497063514079_4107614235171648365_n.webp?v=2",
             "mediaType": "image",
             "isFeatured": true,
             "isHero": true,
-            "sortOrder": 3
-      },
-      {
-            "id": "nahi_nail_vid_2",
-            "title": "Reel · Gothic Chrome & Tachas en Movimiento",
-            "badge": "Cara A · Video en Vivo",
-            "category": "nails",
-            "description": "Detalle en movimiento del set negro profundo con lettering gótico a mano alzada, cruces cromadas y tachas metálicas.",
-            "imageUrl": "fotos/igexport-De0QjOPN0VR.mp4",
-            "mediaType": "video",
-            "isFeatured": true,
-            "isHero": false,
-            "sortOrder": 4
+            "sortOrder": 2
       },
       {
             "id": "nahi_nail_3",
@@ -1413,11 +1389,11 @@
             "badge": "Cara A · Destello Reflectivo",
             "category": "nails",
             "description": "Glitter reflectivo oscuro con destellos plateados en forma almendra.",
-            "imageUrl": "fotos/imgi_6_928715819_1678752167229555_3258636658814047340_n.jpg",
+            "imageUrl": "fotos/imgi_6_928715819_1678752167229555_3258636658814047340_n.jpg?v=2",
             "mediaType": "image",
             "isFeatured": true,
-            "isHero": false,
-            "sortOrder": 5
+            "isHero": true,
+            "sortOrder": 3
       },
       {
             "id": "nahi_nail_4",
@@ -1425,11 +1401,11 @@
             "badge": "Cara A · Estructura Coffin",
             "category": "nails",
             "description": "Base metálica champagne con diseño animal print en negro intenso sobre estructura coffin.",
-            "imageUrl": "fotos/imgi_9_857436431_17930539812514079_2849828327181330972_n.jpg",
+            "imageUrl": "fotos/imgi_9_857436431_17930539812514079_2849828327181330972_n.jpg?v=2",
             "mediaType": "image",
             "isFeatured": true,
             "isHero": false,
-            "sortOrder": 6
+            "sortOrder": 4
       },
       {
             "id": "nahi_nail_5",
@@ -1437,11 +1413,11 @@
             "badge": "Cara A · French Clásico",
             "category": "nails",
             "description": "French clásico reinterpretado con líneas orgánicas y acento rojo carmesí.",
-            "imageUrl": "fotos/imgi_31_628792993_17875531770514079_7101006345959160330_n.webp",
+            "imageUrl": "fotos/imgi_31_628792993_17875531770514079_7101006345959160330_n.webp?v=2",
             "mediaType": "image",
             "isFeatured": true,
             "isHero": false,
-            "sortOrder": 7
+            "sortOrder": 5
       },
       {
             "id": "nahi_nail_6",
@@ -1449,11 +1425,11 @@
             "badge": "Cara A · Nail Art de Autor",
             "category": "nails",
             "description": "Nail art negro profundo con lettering gótico, tachas metálicas y líneas cromadas.",
-            "imageUrl": "fotos/imgi_13_861911954_1131761712629862_1954115592653772609_n.jpg",
+            "imageUrl": "fotos/imgi_13_861911954_1131761712629862_1954115592653772609_n.jpg?v=2",
             "mediaType": "image",
             "isFeatured": true,
             "isHero": false,
-            "sortOrder": 8
+            "sortOrder": 6
       },
       {
             "id": "nahi_tattoo_1",
@@ -1461,23 +1437,11 @@
             "badge": "Cara B · Blackwork",
             "category": "tattoo",
             "description": "Cupido clásico en clave blackwork con sombreado de arrastre y puntillismo de alta definición.",
-            "imageUrl": "fotos/imgi_28_771909433_18096793385269189_6790519837572543665_n.jpg",
+            "imageUrl": "fotos/imgi_28_771909433_18096793385269189_6790519837572543665_n.jpg?v=2",
             "mediaType": "image",
             "isFeatured": true,
             "isHero": true,
-            "sortOrder": 9
-      },
-      {
-            "id": "nahi_tattoo_vid_1",
-            "title": "Reel · Sesión Runa de Protección en Estudio",
-            "badge": "Cara B · Video de Sesión",
-            "category": "tattoo",
-            "description": "Proceso real en camilla tatuando una Runa de Protección en estilo brushstroke blackwork.",
-            "imageUrl": "fotos/igexport-Dc1nPj0sBE7.mp4",
-            "mediaType": "video",
-            "isFeatured": true,
-            "isHero": true,
-            "sortOrder": 10
+            "sortOrder": 7
       },
       {
             "id": "nahi_tattoo_2",
@@ -1485,23 +1449,11 @@
             "badge": "Cara B · Proyecto a Medida",
             "category": "tattoo",
             "description": "Pieza de pecho a gran escala: guardián oriental con líneas sólidas y esfera de geometría sagrada.",
-            "imageUrl": "fotos/imgi_18_831313350_18104431136269189_151488612152529768_n.jpg",
+            "imageUrl": "fotos/imgi_18_831313350_18104431136269189_151488612152529768_n.jpg?v=2",
             "mediaType": "image",
             "isFeatured": true,
             "isHero": true,
-            "sortOrder": 11
-      },
-      {
-            "id": "nahi_tattoo_vid_2",
-            "title": "Reel · Femme Spots & Fine Line Collection",
-            "badge": "Cara B · Video Fine Line",
-            "category": "tattoo",
-            "description": "Recorrido en video por diseños delicados de trazo fino: botánico en esternón, micro-lettering y coquette bow.",
-            "imageUrl": "fotos/igexport-Dd7r8REtC7P.mp4",
-            "mediaType": "video",
-            "isFeatured": true,
-            "isHero": false,
-            "sortOrder": 12
+            "sortOrder": 8
       },
       {
             "id": "nahi_tattoo_3",
@@ -1509,23 +1461,11 @@
             "badge": "Cara B · Lettering",
             "category": "tattoo",
             "description": "Tipografía experimental con efecto onda y firma caligráfica en tinta negra intensa.",
-            "imageUrl": "fotos/imgi_11_902024821_18111104054269189_4890881016085880301_n.jpg",
+            "imageUrl": "fotos/imgi_11_902024821_18111104054269189_4890881016085880301_n.jpg?v=2",
             "mediaType": "image",
             "isFeatured": true,
-            "isHero": false,
-            "sortOrder": 13
-      },
-      {
-            "id": "nahi_tattoo_vid_3",
-            "title": "Reel · Sesión Grabado Clásico en Espalda",
-            "badge": "Cara B · Proceso en Vivo",
-            "category": "tattoo",
-            "description": "Nahi tatuando en vivo una pieza de gran formato con líneas de grabado clásico sobre espalda.",
-            "imageUrl": "fotos/igexport-De-jsVethEQ.mp4",
-            "mediaType": "video",
-            "isFeatured": true,
-            "isHero": false,
-            "sortOrder": 14
+            "isHero": true,
+            "sortOrder": 9
       },
       {
             "id": "nahi_tattoo_4",
@@ -1533,23 +1473,11 @@
             "badge": "Cara B · Fine Line",
             "category": "tattoo",
             "description": "Trazo fino caligráfico con destellos astrales, micro-luna y línea ornamental.",
-            "imageUrl": "fotos/imgi_15_846504117_18106174985269189_2305949659410720467_n.jpg",
+            "imageUrl": "fotos/imgi_15_846504117_18106174985269189_2305949659410720467_n.jpg?v=2",
             "mediaType": "image",
             "isFeatured": true,
             "isHero": false,
-            "sortOrder": 15
-      },
-      {
-            "id": "nahi_tattoo_vid_4",
-            "title": "Reel · Delicate Mini Tattoos & Ornamental",
-            "badge": "Cara B · Video Mini Tattoos",
-            "category": "tattoo",
-            "description": "Tatuajes ornamentales simétricos y micro-caligrafía delicada en empeine y tobillo.",
-            "imageUrl": "fotos/igexport-Dd2I_0qAa9o.mp4",
-            "mediaType": "video",
-            "isFeatured": true,
-            "isHero": false,
-            "sortOrder": 16
+            "sortOrder": 10
       },
       {
             "id": "nahi_tattoo_5",
@@ -1557,11 +1485,11 @@
             "badge": "Cara B · Botánico",
             "category": "tattoo",
             "description": "Diseño botánico simétrico de trazo delicado adaptado a la anatomía del esternón.",
-            "imageUrl": "fotos/imgi_10_832478316_1138317815289557_8357992302156346057_n.jpg",
+            "imageUrl": "fotos/imgi_10_832478316_1138317815289557_8357992302156346057_n.jpg?v=2",
             "mediaType": "image",
             "isFeatured": true,
             "isHero": false,
-            "sortOrder": 17
+            "sortOrder": 11
       }
 ];
     }
@@ -1645,6 +1573,14 @@
       });
     }
 
+    _isValidStudioGalleryList(list) {
+      if (!Array.isArray(list) || list.length === 0) return false;
+      return !list.some(p => {
+        const u = String(p && p.imageUrl ? p.imageUrl : '');
+        return !u || u.startsWith('images/ej-') || u.startsWith('images/mica-');
+      });
+    }
+
     async getGalleryPhotos() {
       await this.init();
 
@@ -1653,7 +1589,7 @@
         const res = await this._apiFetch('/api/gallery');
         if (res && res.ok) {
           const data = await res.json();
-          if (data && Array.isArray(data.photos) && data.photos.length > 0) {
+          if (data && this._isValidStudioGalleryList(data.photos)) {
             this._safeSetLocalGallery(data.photos);
             return data.photos;
           }
@@ -1685,8 +1621,10 @@
                 isHero: r.is_hero,
                 sortOrder: r.sort_order
               }));
-              this._safeSetLocalGallery(mapped);
-              return mapped;
+              if (this._isValidStudioGalleryList(mapped)) {
+                this._safeSetLocalGallery(mapped);
+                return mapped;
+              }
             }
           }
         } catch (e) {
@@ -1699,7 +1637,7 @@
         const local = localStorage.getItem(STORAGE_KEYS.GALLERY);
         if (local) {
           const parsed = JSON.parse(local);
-          if (Array.isArray(parsed) && parsed.length > 0 && !parsed.some(p => String(p.imageUrl || '').startsWith('images/ej-'))) {
+          if (this._isValidStudioGalleryList(parsed)) {
             return parsed;
           }
         }
@@ -1707,17 +1645,17 @@
 
       // 3b. Intentar cargar gallery-data.json estático (ideal para Vercel / GitHub Pages)
       try {
-        const staticRes = await fetch('/gallery-data.json').catch(() => null);
+        const staticRes = await fetch('gallery-data.json').catch(() => null);
         if (staticRes && staticRes.ok) {
           const staticPhotos = await staticRes.json().catch(() => null);
-          if (Array.isArray(staticPhotos) && staticPhotos.length > 0) {
+          if (this._isValidStudioGalleryList(staticPhotos)) {
             this._safeSetLocalGallery(staticPhotos);
             return staticPhotos;
           }
         }
       } catch (e) {}
 
-      // 4. Default fotos y videos de Nahi Studio
+      // 4. Default fotos de la carpeta fotos/ de Nahi Studio
       const def = this._getDefaultGalleryPhotos();
       this._safeSetLocalGallery(def);
       return def;
