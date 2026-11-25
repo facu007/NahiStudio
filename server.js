@@ -38,6 +38,12 @@ const VERCEL_STATIC_BUNDLE_MANIFEST = [
   path.join(__dirname, 'fotos', 'igexport-De0QjOPN0VR.mp4'),
   path.join(__dirname, 'fotos', 'igexport-DfYbk6ptM3G.mp4'),
   path.join(__dirname, 'assets', 'images', 'hero_editorial.jpg'),
+  path.join(__dirname, 'assets', 'images', 'imgi_22_504060229_17842497063514079_4107-50ee06.webp'),
+  path.join(__dirname, 'assets', 'images', 'imgi_25_539976307_17854872333514079_3988-ea76d1.webp'),
+  path.join(__dirname, 'assets', 'images', 'imgi_28_771909433_18096793385269189_6790-05960c.jpg'),
+  path.join(__dirname, 'assets', 'images', 'imgi_31_628792993_17875531770514079_7101-331086.webp'),
+  path.join(__dirname, 'assets', 'images', 'imgi_6_928715819_1678752167229555_325863-f19bd9.jpg'),
+  path.join(__dirname, 'assets', 'images', 'imgi_9_857436431_17930539812514079_28498-13ceb5.jpg'),
   path.join(__dirname, 'assets', 'images', 'tattoo_flash_01.jpg'),
   path.join(__dirname, 'assets', 'images', 'tattoo_flash_02.jpg')
 ];
@@ -504,7 +510,7 @@ function getDefaultSiteContent() {
     "instagramBtnText": "Ver más trabajos en Instagram @nahi.ciamprone"
   },
   "about": {
-    "photoUrl": "fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg",
+    "photoUrl": "fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg?v=3",
     "photoTopBadge": "NAIL ARTIST & TATTOO ARTIST",
     "photoCardName": "Nahiara Ciamprone",
     "photoCardRole": "NAHI STUDIO • ESPACIO MUNA",
@@ -588,7 +594,7 @@ function getDefaultSiteContent() {
     "hoursTitle": "Horarios",
     "hoursLine1": "Con Turno Previo",
     "hoursLine2": "Consultá disponibilidad en la agenda online o por WhatsApp",
-    "studioPhotoUrl": "fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg",
+    "studioPhotoUrl": "fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg?v=3",
     "whatsappNumber": "",
     "instagramHandle": "@nahi.ciamprone",
     "instagramUrl": "https://www.instagram.com/nahi.ciamprone/",

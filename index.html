@@ -8,7 +8,7 @@
   <meta name="description"
     content="Nahi Ciamprone — NAHI STUDIO. Dos formas de expresión, una misma esencia: Nail Art de autor y Tattoo Art artesanal en Espacio Muna.">
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <script src="supabase-client.js?v=20261127"></script>
+  <script src="supabase-client.js?v=20261128"></script>
   <script id="tailwind-config">
     /** @type {import('tailwindcss').Config} */
     globalThis.tailwind = globalThis.tailwind || {};
@@ -838,7 +838,7 @@
       <div class="max-w-7xl mx-auto px-page-margin py-section grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
         <div class="lg:col-span-5">
           <div class="atelier-card aspect-[3/4] bg-surface-container-low border border-outline-variant overflow-hidden">
-            <img id="about-photo-img" src="fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg?v=2"
+            <img id="about-photo-img" src="fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg?v=3"
               alt="Nahi Ciamprone en Espacio Muna" loading="lazy" class="w-full h-full object-cover">
           </div>
           <p id="about-photo-caption" class="text-xs text-secondary tracking-widest uppercase mt-3">
@@ -1516,7 +1516,10 @@
       if (content.about) {
         const ab = content.about;
         const bioImg = document.getElementById('about-photo-img');
-        if (bioImg && ab.photoUrl && !String(ab.photoUrl).startsWith('images/')) bioImg.src = ab.photoUrl;
+        if (bioImg && ab.photoUrl && !String(ab.photoUrl).startsWith('images/')) {
+          const rawUrl = String(ab.photoUrl).trim();
+          bioImg.src = (rawUrl.startsWith('fotos/') && !rawUrl.includes('?')) ? `${rawUrl}?v=3` : rawUrl;
+        }
         setTxt('about-header-pill', ab.headerPill);
         setTxt('about-subheadline', ab.subheadline);
         setTxt('about-intro-1', ab.introParagraph1);

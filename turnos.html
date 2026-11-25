@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="supabase-client.js?v=20261127"></script>
+  <script src="supabase-client.js?v=20261128"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -438,7 +438,7 @@
         <div class="p-4 rounded-2xl bg-gradient-to-r from-[#1E1E1E] to-[#120d15] border-2 border-[#C7C7C7] flex items-center justify-between shadow-lg">
           <div class="flex items-center gap-3.5">
             <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-[#F1ECE5] flex-shrink-0">
-              <img id="turnos-prof-img" src="fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg" alt="Nahiara Ciamprone" class="w-full h-full object-cover object-top">
+              <img id="turnos-prof-img" src="fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg?v=3" alt="Nahiara Ciamprone" class="w-full h-full object-cover object-top">
             </div>
             <div>
               <div class="flex items-center gap-1.5">
@@ -813,7 +813,10 @@
               setTxt('turnos-prof-role', ab.photoTopBadge);
               setTxt('turnos-prof-sub', ab.photoCardRole);
               const profImg = document.getElementById('turnos-prof-img');
-              if (profImg && ab.photoUrl) profImg.src = ab.photoUrl;
+              if (profImg && ab.photoUrl && !String(ab.photoUrl).startsWith('images/')) {
+                const rawUrl = String(ab.photoUrl).trim();
+                profImg.src = (rawUrl.startsWith('fotos/') && !rawUrl.includes('?')) ? `${rawUrl}?v=3` : rawUrl;
+              }
             }
           } catch(e) {}
         }

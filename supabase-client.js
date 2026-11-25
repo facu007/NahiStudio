@@ -2921,7 +2921,7 @@
             "instagramBtnText": "Ver más trabajos en Instagram @nahi.ciamprone"
       },
       "about": {
-            "photoUrl": "fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg",
+            "photoUrl": "fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg?v=3",
             "photoTopBadge": "NAIL ARTIST & TATTOO ARTIST",
             "photoCardName": "Nahiara Ciamprone",
             "photoCardRole": "NAHI STUDIO • ESPACIO MUNA",
@@ -3005,7 +3005,7 @@
             "hoursTitle": "Horarios",
             "hoursLine1": "Con Turno Previo",
             "hoursLine2": "Consultá disponibilidad en la agenda online o por WhatsApp",
-            "studioPhotoUrl": "fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg",
+            "studioPhotoUrl": "fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg?v=3",
             "whatsappNumber": "",
             "instagramHandle": "@nahi.ciamprone",
             "instagramUrl": "https://www.instagram.com/nahi.ciamprone/",
@@ -3038,9 +3038,33 @@
 };
     }
 
+    _normalizeStudioAssetUrl(url, fallbackUrl) {
+      const raw = String(url || '').trim();
+      if (!raw || raw.startsWith('images/ej-') || raw.startsWith('images/mica-')) {
+        return fallbackUrl;
+      }
+      if (raw.startsWith('fotos/') && !raw.includes('?')) {
+        return `${raw}?v=3`;
+      }
+      return raw;
+    }
+
     _mergeSiteContent(baseObj, overrideObj) {
       const defaults = baseObj || this.getDefaultSiteContent();
       if (!overrideObj || typeof overrideObj !== 'object') return defaults;
+      const mergedAbout = {
+        ...defaults.about,
+        ...(overrideObj.about || {}),
+        specialties: Array.isArray(overrideObj.about?.specialties) ? overrideObj.about.specialties : defaults.about.specialties
+      };
+      mergedAbout.photoUrl = this._normalizeStudioAssetUrl(mergedAbout.photoUrl, defaults.about.photoUrl);
+
+      const mergedLocation = {
+        ...defaults.location,
+        ...(overrideObj.location || {})
+      };
+      mergedLocation.studioPhotoUrl = this._normalizeStudioAssetUrl(mergedLocation.studioPhotoUrl, defaults.location.studioPhotoUrl);
+
       return {
         ...defaults,
         ...overrideObj,
@@ -3060,21 +3084,22 @@
           ...defaults.hero,
           ...(overrideObj.hero || {}),
           guarantees: Array.isArray(overrideObj.hero?.guarantees) ? overrideObj.hero.guarantees : defaults.hero.guarantees,
-          styles: Array.isArray(overrideObj.hero?.styles) && overrideObj.hero.styles.length > 0 ? overrideObj.hero.styles : defaults.hero.styles
+          styles: Array.isArray(overrideObj.hero?.styles) && overrideObj.hero.styles.length > 0
+            ? overrideObj.hero.styles.map((st, i) => ({
+                ...st,
+                img: this._normalizeStudioAssetUrl(st.img, (defaults.hero.styles[i] || defaults.hero.styles[0]).img)
+              }))
+            : defaults.hero.styles
         },
         servicesSection: { ...defaults.servicesSection, ...(overrideObj.servicesSection || {}) },
         gallerySection: { ...defaults.gallerySection, ...(overrideObj.gallerySection || {}) },
-        about: {
-          ...defaults.about,
-          ...(overrideObj.about || {}),
-          specialties: Array.isArray(overrideObj.about?.specialties) ? overrideObj.about.specialties : defaults.about.specialties
-        },
+        about: mergedAbout,
         bookingSection: {
           ...defaults.bookingSection,
           ...(overrideObj.bookingSection || {}),
           features: Array.isArray(overrideObj.bookingSection?.features) ? overrideObj.bookingSection.features : defaults.bookingSection.features
         },
-        location: { ...defaults.location, ...(overrideObj.location || {}) },
+        location: mergedLocation,
         faqs: {
           ...defaults.faqs,
           ...(overrideObj.faqs || {}),
