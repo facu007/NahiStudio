@@ -1079,20 +1079,22 @@
     async getAdminAppointments(filter = 'all') {
       await this.init();
       const deletedSet = new Set(this._getDeletedTurnoIds());
+      const localTurnos = this.getStoredTurnos().filter(t => !deletedSet.has(t.id) && !deletedSet.has(t.supabaseId));
+      let remoteList = [];
 
       // 1. Consultar servidor backend /api/turnos (usa SUPABASE_SERVICE_ROLE_KEY)
       try {
         const apiRes = await this._apiFetch(`/api/turnos?status=${filter}`);
         if (apiRes && apiRes.ok) {
           const apiData = await apiRes.json();
-          if (Array.isArray(apiData.appointments)) {
-            return apiData.appointments
+          if (Array.isArray(apiData.appointments) && apiData.appointments.length > 0) {
+            remoteList = apiData.appointments
               .filter(r => !deletedSet.has(r.id))
               .map(r => {
                 const rawNotes = r.client_notes || r.notes || '';
                 const svcName = (r.services && r.services.name)
                   || r.service_name
-                  || (rawNotes.includes('Tratamiento:') ? rawNotes.split('Tratamiento:')[1].split('\n')[0].trim() : 'Tratamiento de Pestañas');
+                  || (rawNotes.includes('Tratamiento:') ? rawNotes.split('Tratamiento:')[1].split('\n')[0].trim() : 'Servicio Nahi Studio');
                 return {
                   id: r.id,
                   date: r.appointment_date || r.date,
@@ -1116,7 +1118,7 @@
       } catch (e) {}
 
       // 2. Fallback directo a Supabase REST
-      if (this.config.isConfigured) {
+      if (remoteList.length === 0 && this.config.isConfigured) {
         try {
           let url = `${this.config.supabaseUrl}/rest/v1/appointments?order=appointment_date.desc,start_time.asc`;
           if (filter !== 'all') {
@@ -1132,7 +1134,7 @@
 
           if (res.ok) {
             const data = await res.json();
-            return data
+            remoteList = data
               .filter(r => !deletedSet.has(r.id))
               .map(r => ({
                 id: r.id,
@@ -1156,12 +1158,19 @@
         }
       }
 
-      // 3. Fallback a localStorage
-      let turnos = this.getStoredTurnos().filter(t => !deletedSet.has(t.id) && !deletedSet.has(t.supabaseId));
+      // 3. Combinar citas remotas con las guardadas en localStorage (garantiza persistencia en Vercel sin Supabase)
+      const remoteIds = new Set(remoteList.map(r => String(r.id)));
+      const merged = [...remoteList];
+      localTurnos.forEach(lt => {
+        if (!remoteIds.has(String(lt.id)) && (!lt.supabaseId || !remoteIds.has(String(lt.supabaseId)))) {
+          merged.push(lt);
+        }
+      });
+
       if (filter !== 'all') {
-        turnos = turnos.filter(t => t.status === filter);
+        return merged.filter(t => t.status === filter);
       }
-      return turnos;
+      return merged;
     }
 
     async updateAppointmentStatus(appointmentId, newStatus, options = {}) {
@@ -1584,6 +1593,16 @@
     async getGalleryPhotos() {
       await this.init();
 
+      // Si no hay Supabase conectado y el admin ya personalizó la galería en este navegador, priorizar localStorage
+      if (!this.config.isConfigured && localStorage.getItem('nahi_gallery_custom') === '1') {
+        try {
+          const localCustom = JSON.parse(localStorage.getItem(STORAGE_KEYS.GALLERY) || 'null');
+          if (this._isValidStudioGalleryList(localCustom)) {
+            return localCustom;
+          }
+        } catch (_) {}
+      }
+
       // 1. Intentar desde backend server /api/gallery
       try {
         const res = await this._apiFetch('/api/gallery');
@@ -1663,6 +1682,7 @@
 
     async addGalleryPhoto(photoData) {
       await this.init();
+      const current = await this.getGalleryPhotos();
 
       // 1. Intentar backend /api/gallery
       try {
@@ -1674,11 +1694,11 @@
         if (res && res.ok) {
           const data = await res.json();
           if (data && data.photo) {
-            const current = await this.getGalleryPhotos();
             if (!current.some(p => String(p.id) === String(data.photo.id))) {
               current.push(data.photo);
               this._safeSetLocalGallery(current);
             }
+            try { localStorage.setItem('nahi_gallery_custom', '1'); } catch (_) {}
             return data.photo;
           }
         }
@@ -1700,7 +1720,7 @@
             body: JSON.stringify({
               title: photoData.title,
               badge: photoData.badge || 'Look Más Pedido',
-              category: photoData.category || 'volumen',
+              category: photoData.category || 'nails',
               description: photoData.description || '',
               image_url: photoData.imageUrl,
               is_featured: !!photoData.isFeatured,
@@ -1723,9 +1743,9 @@
                 isHero: r.is_hero,
                 sortOrder: r.sort_order
               };
-              const current = await this.getGalleryPhotos();
               current.push(mapped);
               this._safeSetLocalGallery(current);
+              try { localStorage.setItem('nahi_gallery_custom', '1'); } catch (_) {}
               return mapped;
             }
           }
@@ -1739,14 +1759,17 @@
         id: 'photo_' + Date.now(),
         ...photoData
       };
-      const current = await this.getGalleryPhotos();
       current.push(localPhoto);
       this._safeSetLocalGallery(current);
+      try { localStorage.setItem('nahi_gallery_custom', '1'); } catch (_) {}
       return localPhoto;
     }
 
     async updateGalleryPhoto(id, photoData) {
       await this.init();
+      const updated = { ...photoData, id };
+      this._updateLocalGalleryItem(updated);
+      try { localStorage.setItem('nahi_gallery_custom', '1'); } catch (_) {}
 
       // 1. Backend /api/gallery/:id
       try {
@@ -1793,23 +1816,30 @@
         }
       }
 
-      // 3. Local update
-      const updated = { ...photoData, id };
-      this._updateLocalGalleryItem(updated);
       return updated;
     }
 
     async deleteGalleryPhoto(id) {
       await this.init();
 
-      // 1. Backend /api/gallery/:id
+      // 1. Local delete inmediato
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.GALLERY);
+        if (raw) {
+          const list = JSON.parse(raw).filter(p => String(p.id) !== String(id));
+          this._safeSetLocalGallery(list);
+        }
+        localStorage.setItem('nahi_gallery_custom', '1');
+      } catch (e) {}
+
+      // 2. Backend /api/gallery/:id
       try {
         await this._apiFetch(`/api/gallery/${encodeURIComponent(id)}`, { method: 'DELETE' });
       } catch (e) {
         console.warn('Backend deleteGalleryPhoto error:', e);
       }
 
-      // 2. Supabase
+      // 3. Supabase
       if (this.config.isConfigured) {
         try {
           await fetch(`${this.config.supabaseUrl}/rest/v1/gallery_photos?id=eq.${encodeURIComponent(id)}`, {
@@ -1824,20 +1854,12 @@
         }
       }
 
-      // 3. Local delete
-      try {
-        const raw = localStorage.getItem(STORAGE_KEYS.GALLERY);
-        if (raw) {
-          const list = JSON.parse(raw).filter(p => String(p.id) !== String(id));
-          this._safeSetLocalGallery(list);
-        }
-      } catch (e) {}
-
       return true;
     }
 
     async resetGalleryDefaults() {
       await this.init();
+      try { localStorage.removeItem('nahi_gallery_custom'); } catch (_) {}
       try {
         await this._apiFetch('/api/gallery/reset', { method: 'POST' });
       } catch (e) {}
@@ -1920,12 +1942,25 @@
 
     async getPaymentInfo() {
       await this.init();
+      // Si no hay Supabase conectado y el admin ya guardó sus datos en este navegador, priorizar localStorage
+      if (!this.config.isConfigured) {
+        try {
+          const localRaw = localStorage.getItem(STORAGE_KEYS.PAYMENT_INFO);
+          if (localRaw) {
+            const parsed = JSON.parse(localRaw);
+            if (parsed && parsed.alias) {
+              return { ...DEFAULT_PAYMENT_INFO, ...parsed };
+            }
+          }
+        } catch (_) {}
+      }
+
       // 1. Intentar desde backend /api/payment-info
       try {
         const apiRes = await this._apiFetch('/api/payment-info');
         if (apiRes && apiRes.ok) {
           const data = await apiRes.json();
-          if (data && data.paymentInfo) {
+          if (data && data.paymentInfo && data.paymentInfo.alias) {
             const merged = { ...DEFAULT_PAYMENT_INFO, ...data.paymentInfo };
             try { localStorage.setItem(STORAGE_KEYS.PAYMENT_INFO, JSON.stringify(merged)); } catch (_) {}
             return merged;
@@ -2292,15 +2327,18 @@
 
     async getPublishedDays(upcomingOnly = true) {
       await this.init();
+      let backendDays = [];
       try {
         const res = await this._apiFetch(`/api/published-schedules?upcoming=${upcomingOnly ? 'true' : 'false'}`);
         if (res && res.ok) {
           const data = await res.json();
-          if (data && Array.isArray(data.days)) return data.days;
+          if (data && Array.isArray(data.days) && data.days.length > 0) {
+            backendDays = data.days;
+          }
         }
       } catch (e) {}
 
-      // Fallback estático / Supabase REST
+      // Combinar o hacer fallback con localStorage / Supabase REST (garantiza que horarios subidos en Vercel sin DB persistan)
       const mapObj = await this._getStaticPublishedMap();
       const allDays = (mapObj && mapObj.days) || {};
       const now = new Date();
@@ -2310,22 +2348,34 @@
         .filter(d => !upcomingOnly || d >= todayStr)
         .sort();
 
-      const results = [];
+      if (backendDays.length > 0 && dates.length === 0) {
+        return backendDays;
+      }
+
+      const byDate = {};
+      backendDays.forEach(d => { if (d && d.date) byDate[d.date] = d; });
+
       for (const d of dates) {
-        const avail = await this.getAvailableSlots(d);
-        results.push({
+        const localSlots = allDays[d].slots || [];
+        const localTurnos = this.getStoredTurnos().filter(t => t.date === d && t.status !== 'cancelled').map(t => t.time);
+        byDate[d] = {
           date: d,
           isPublished: true,
           updatedAt: allDays[d].updatedAt || null,
-          slots: avail.map(s => ({
-            time: s.time,
-            crossedOut: !!s.crossedOut,
-            autoBooked: !!s.autoBooked,
-            isBooked: !s.available
-          }))
-        });
+          slots: localSlots.map(s => {
+            const time = String(s.time || '').slice(0, 5);
+            const crossedOut = !!s.crossedOut;
+            const autoBooked = localTurnos.includes(time);
+            return {
+              time,
+              crossedOut,
+              autoBooked,
+              isBooked: crossedOut || autoBooked
+            };
+          })
+        };
       }
-      return results;
+      return Object.values(byDate).sort((a, b) => a.date.localeCompare(b.date));
     }
 
     async getPublishedDay(dateStr) {
@@ -3059,6 +3109,13 @@
 
       const defaults = this.getDefaultSiteContent();
 
+      // Si no hay Supabase conectado y el admin ya guardó cambios en este navegador, priorizar localStorage
+      if (!this.config.isConfigured && localStorage.getItem('nahi_content_custom') === '1') {
+        const localCustom = this._loadLocalSiteContent();
+        this._cachedSiteContent = localCustom;
+        return localCustom;
+      }
+
       // 1. Intentar desde el servidor Node (/api/site-content)
       try {
         const res = await this._apiFetch('/api/site-content');
@@ -3129,6 +3186,7 @@
 
       this._cachedSiteContent = merged;
       this._saveLocalSiteContent(merged);
+      try { localStorage.setItem('nahi_content_custom', '1'); } catch (_) {}
 
       // 1. Guardar en el servidor Node si está activo
       try {
@@ -3233,6 +3291,9 @@
 
     async resetSiteContent(sectionKey = null) {
       await this.init();
+      if (!sectionKey) {
+        try { localStorage.removeItem('nahi_content_custom'); } catch (_) {}
+      }
       const defaults = this.getDefaultSiteContent();
 
       try {

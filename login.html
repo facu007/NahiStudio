@@ -139,15 +139,21 @@
         <div id="reg-status" class="text-center text-xs min-h-[1.2rem] font-semibold"></div>
       </form>
 
-      <!-- Divisor o Invitada -->
+      <!-- Divisor o Invitada / Acceso Rápido Admin -->
       <div class="pt-2 border-t border-white/10 text-center space-y-3">
         <p class="text-xs text-[#d8c4d6]">
           ¿Solo querés reservar sin registrarte?
         </p>
-        <a href="turnos.html" class="inline-flex items-center gap-1.5 text-xs text-[#F1ECE5] hover:text-white font-bold underline transition-colors">
-          <span>Continuar como invitada a pedir turno</span>
-          <span class="material-symbols-outlined text-sm">arrow_forward</span>
-        </a>
+        <div class="flex flex-col items-center gap-2">
+          <a href="turnos.html" class="inline-flex items-center gap-1.5 text-xs text-[#F1ECE5] hover:text-white font-bold underline transition-colors">
+            <span>Continuar como invitada a pedir turno</span>
+            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+          </a>
+          <a href="admin.html" class="inline-flex items-center gap-1.5 text-xs text-[#D4AF37] hover:text-white font-bold underline transition-colors pt-1">
+            <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
+            <span>Entrar al Panel de Administración (Estudio)</span>
+          </a>
+        </div>
       </div>
 
     </div>
@@ -162,7 +168,7 @@
 
   </div>
 
-  <script src="supabase-client.js?v=20261126"></script>
+  <script src="supabase-client.js?v=20261127"></script>
   <script>
     function switchAuthTab(tab) {
       const loginForm = document.getElementById('form-login');

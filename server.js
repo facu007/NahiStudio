@@ -1,6 +1,7 @@
 require('dotenv').config();
 const http = require('http');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 const mailer = require('./mailer');
@@ -132,10 +133,14 @@ const localDatabase = {
   gallery: []
 };
 
-// Cargar y persistir fotos de ejemplo de la galería
+// Cargar y persistir fotos de ejemplo de la galería (con soporte /tmp para Vercel Serverless)
 const GALLERY_FILE = path.join(dir, 'gallery-data.json');
+const TMP_GALLERY_FILE = path.join(os.tmpdir(), 'nahi-gallery-data.json');
 function loadGalleryData() {
   try {
+    if (process.env.VERCEL && fs.existsSync(TMP_GALLERY_FILE)) {
+      return JSON.parse(fs.readFileSync(TMP_GALLERY_FILE, 'utf-8'));
+    }
     if (fs.existsSync(GALLERY_FILE)) {
       const content = fs.readFileSync(GALLERY_FILE, 'utf-8');
       return JSON.parse(content);
@@ -148,9 +153,12 @@ function loadGalleryData() {
 
 function saveGalleryData(items) {
   try {
-    fs.writeFileSync(GALLERY_FILE, JSON.stringify(items, null, 2), 'utf-8');
+    const target = process.env.VERCEL ? TMP_GALLERY_FILE : GALLERY_FILE;
+    fs.writeFileSync(target, JSON.stringify(items, null, 2), 'utf-8');
   } catch (e) {
-    console.warn('[Gallery] Error al escribir gallery-data.json:', e.message);
+    try {
+      fs.writeFileSync(TMP_GALLERY_FILE, JSON.stringify(items, null, 2), 'utf-8');
+    } catch (_) {}
   }
 }
 
@@ -188,8 +196,13 @@ if (supabase) {
 
 // Cargar y persistir horarios publicados por el Admin (con estado tachado en vivo)
 const PUBLISHED_SCHEDULES_FILE = path.join(dir, 'published-schedules.json');
+const TMP_PUBLISHED_SCHEDULES_FILE = path.join(os.tmpdir(), 'nahi-published-schedules.json');
 function loadPublishedSchedulesLocal() {
   try {
+    if (process.env.VERCEL && fs.existsSync(TMP_PUBLISHED_SCHEDULES_FILE)) {
+      const parsedTmp = JSON.parse(fs.readFileSync(TMP_PUBLISHED_SCHEDULES_FILE, 'utf-8'));
+      if (parsedTmp && typeof parsedTmp === 'object' && parsedTmp.days) return parsedTmp;
+    }
     if (fs.existsSync(PUBLISHED_SCHEDULES_FILE)) {
       const parsed = JSON.parse(fs.readFileSync(PUBLISHED_SCHEDULES_FILE, 'utf-8'));
       if (parsed && typeof parsed === 'object' && parsed.days) return parsed;
@@ -202,9 +215,12 @@ function loadPublishedSchedulesLocal() {
 
 function savePublishedSchedulesLocal(data) {
   try {
-    fs.writeFileSync(PUBLISHED_SCHEDULES_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    const target = process.env.VERCEL ? TMP_PUBLISHED_SCHEDULES_FILE : PUBLISHED_SCHEDULES_FILE;
+    fs.writeFileSync(target, JSON.stringify(data, null, 2), 'utf-8');
   } catch (e) {
-    console.warn('[Schedules] Error al guardar published-schedules.json:', e.message);
+    try {
+      fs.writeFileSync(TMP_PUBLISHED_SCHEDULES_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (_) {}
   }
 }
 
@@ -214,6 +230,7 @@ localDatabase.publishedSchedules = loadPublishedSchedulesLocal();
 // CONTENIDO EDITABLE DEL SITIO WEB, SERVICIOS, PROMOS, CURSOS Y SECCIONES
 // =========================================================================
 const SITE_CONTENT_FILE = path.join(dir, 'site-content.json');
+const TMP_SITE_CONTENT_FILE = path.join(os.tmpdir(), 'nahi-site-content.json');
 
 function getDefaultSiteContent() {
   return {
@@ -607,8 +624,11 @@ function getDefaultSiteContent() {
 function loadSiteContentLocal() {
   const defaults = getDefaultSiteContent();
   try {
-    if (fs.existsSync(SITE_CONTENT_FILE)) {
-      const parsed = JSON.parse(fs.readFileSync(SITE_CONTENT_FILE, 'utf-8'));
+    const fileToRead = (process.env.VERCEL && fs.existsSync(TMP_SITE_CONTENT_FILE))
+      ? TMP_SITE_CONTENT_FILE
+      : SITE_CONTENT_FILE;
+    if (fs.existsSync(fileToRead)) {
+      const parsed = JSON.parse(fs.readFileSync(fileToRead, 'utf-8'));
       if (parsed && typeof parsed === 'object') {
         return {
           ...defaults,
@@ -638,9 +658,12 @@ function loadSiteContentLocal() {
 
 function saveSiteContentLocal(contentObj) {
   try {
-    fs.writeFileSync(SITE_CONTENT_FILE, JSON.stringify(contentObj, null, 2), 'utf-8');
+    const target = process.env.VERCEL ? TMP_SITE_CONTENT_FILE : SITE_CONTENT_FILE;
+    fs.writeFileSync(target, JSON.stringify(contentObj, null, 2), 'utf-8');
   } catch (e) {
-    console.warn('[SiteContent] Error al guardar site-content.json:', e.message);
+    try {
+      fs.writeFileSync(TMP_SITE_CONTENT_FILE, JSON.stringify(contentObj, null, 2), 'utf-8');
+    } catch (_) {}
   }
 }
 
@@ -1192,10 +1215,6 @@ async function handleApiRequest(req, res, pathname, queryParams) {
 
       if (!date || !time || !name || !phone) {
         return sendJson(res, 400, { error: 'Faltan campos requeridos (date, time, name, phone).' });
-      }
-
-      if (!depositReceipt) {
-        return sendJson(res, 400, { error: 'Para reservar es obligatorio adjuntar el comprobante de la seña del 20%.' });
       }
 
       const cleanTime = String(time).slice(0, 5);
