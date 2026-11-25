@@ -38,7 +38,7 @@
       --turnos-card: #FFFFFF;
       --turnos-subcard: #F5EFE8;
       --turnos-text: #261C1A;
-      --turnos-muted: #6E5A54;
+      --turnos-muted: #5E4B46;
       --turnos-accent: #8C3B45;
       --turnos-border: #DFD1C4;
     }
@@ -52,37 +52,185 @@
       --turnos-accent: #8E1D2C;
       --turnos-border: #362528;
     }
+
+    /* =========================================================================
+       TEMA CLARO ATELIER (CARA A — NAIL ART) CON CONTRASTE PERFECTO
+       ========================================================================= */
     html[data-side="nails"] body {
       background-color: #FBF7F2 !important;
       color: #261C1A !important;
     }
     html[data-side="nails"] header {
-      background-color: rgba(251, 247, 242, 0.92) !important;
+      background-color: rgba(251, 247, 242, 0.95) !important;
       border-color: #DFD1C4 !important;
+      box-shadow: 0 4px 20px rgba(84, 56, 50, 0.06) !important;
     }
     html[data-side="nails"] .neon-card-glow,
     html[data-side="nails"] .neon-card {
       background-color: #FFFFFF !important;
       border: 1px solid #DFD1C4 !important;
-      box-shadow: 0 12px 30px rgba(84, 56, 50, 0.08) !important;
+      box-shadow: 0 12px 32px -8px rgba(84, 56, 50, 0.08) !important;
     }
-    html[data-side="nails"] .vasca-svc-card,
-    html[data-side="nails"] .cal-day:not(.selected),
-    html[data-side="nails"] .slot-btn:not(.selected),
+
+    /* Fondos oscuros convertidos a tonos Seda Marfil / Nude Perla en Cara A */
+    html[data-side="nails"] .bg-\[\#111111\],
+    html[data-side="nails"] .bg-\[\#111111\]\/90,
+    html[data-side="nails"] .bg-\[\#181818\],
+    html[data-side="nails"] .bg-\[\#1E1E1E\],
+    html[data-side="nails"] .bg-\[\#1E1E1E\]\/90 {
+      background-color: #F5EFE8 !important;
+      border-color: #DFD1C4 !important;
+      color: #261C1A !important;
+    }
+    html[data-side="nails"] #step-service,
+    html[data-side="nails"] #step-professional,
+    html[data-side="nails"] #step-datetime,
+    html[data-side="nails"] #step-info,
+    html[data-side="nails"] #step-success {
+      background-color: #FFFFFF !important;
+    }
+    html[data-side="nails"] #step-professional .bg-gradient-to-r {
+      background: linear-gradient(135deg, #FBF7F2 0%, #EFE6DC 100%) !important;
+      border-color: #C8A28E !important;
+    }
+    html[data-side="nails"] #booking-summary-box {
+      background-color: #FAF5EE !important;
+      border-color: #C8A28E !important;
+      box-shadow: 0 10px 25px rgba(84, 56, 50, 0.07) !important;
+    }
+    html[data-side="nails"] #deposit-box {
+      background-color: #FFFDF9 !important;
+      border-color: #D4A373 !important;
+    }
+    html[data-side="nails"] #deposit-bank-info > div,
+    html[data-side="nails"] #deposit-dropzone {
+      background-color: #F5EFE8 !important;
+      border-color: #D5C3B3 !important;
+    }
+    html[data-side="nails"] #deposit-bank-info button {
+      background-color: #8B2635 !important;
+      color: #FFFDFB !important;
+    }
+
+    /* Tarjetas de Servicios en Cara A */
+    html[data-side="nails"] .vasca-svc-card {
+      background-color: #FBF7F2 !important;
+      color: #261C1A !important;
+      border: 1.5px solid #E2D4C6 !important;
+    }
+    html[data-side="nails"] .vasca-svc-card:hover {
+      border-color: #A66E68 !important;
+      background-color: #F6EFE7 !important;
+    }
+    html[data-side="nails"] .vasca-svc-card.border-\[\#C7C7C7\] {
+      background-color: #F3E8DD !important;
+      border: 2px solid #8B2635 !important;
+      box-shadow: 0 10px 24px -6px rgba(139, 38, 53, 0.18) !important;
+    }
+
+    /* Inputs y campos de formulario en Cara A */
     html[data-side="nails"] input,
     html[data-side="nails"] textarea {
-      background-color: #F5EFE8 !important;
+      background-color: #FFFFFF !important;
       color: #261C1A !important;
-      border-color: #DFD1C4 !important;
+      border: 1.5px solid #D5C3B3 !important;
     }
+    html[data-side="nails"] input::placeholder,
+    html[data-side="nails"] textarea::placeholder {
+      color: #9A867E !important;
+    }
+    html[data-side="nails"] input:focus,
+    html[data-side="nails"] textarea:focus {
+      border-color: #8B2635 !important;
+      box-shadow: 0 0 0 3px rgba(139, 38, 53, 0.12) !important;
+    }
+
+    /* Calendario y botones de horarios en Cara A */
+    html[data-side="nails"] .cal-day:not(.selected):not(.disabled) {
+      background-color: #FFFFFF !important;
+      color: #261C1A !important;
+      border: 1px solid #DFD1C4 !important;
+    }
+    html[data-side="nails"] .cal-day:hover:not(.disabled):not(.empty):not(.selected) {
+      background-color: #EFE4D8 !important;
+      border-color: #8B2635 !important;
+      color: #8B2635 !important;
+    }
+    html[data-side="nails"] .cal-day.today:not(.selected) {
+      border: 2px solid #8B2635 !important;
+      color: #8B2635 !important;
+    }
+    html[data-side="nails"] .cal-day.disabled {
+      color: #A39088 !important;
+      opacity: 0.4 !important;
+    }
+    html[data-side="nails"] .slot-btn:not(.selected) {
+      background-color: #FFFFFF !important;
+      color: #261C1A !important;
+      border: 1.5px solid #D5C3B3 !important;
+    }
+    html[data-side="nails"] .slot-btn:hover:not(:disabled):not(.selected) {
+      background-color: #F3E8DD !important;
+      border-color: #8B2635 !important;
+      color: #8B2635 !important;
+    }
+    html[data-side="nails"] .slot-btn:disabled {
+      background-color: #EFE6DC !important;
+      color: #9E6B6B !important;
+      border-color: #E2CACA !important;
+      opacity: 0.65 !important;
+    }
+
+    /* Textos y bordes generales en Cara A */
     html[data-side="nails"] .text-white,
     html[data-side="nails"] .text-\[#F1ECE5\] {
       color: #261C1A !important;
     }
     html[data-side="nails"] .text-\[#d8c4d6\],
     html[data-side="nails"] .text-gray-300,
-    html[data-side="nails"] .text-gray-400 {
-      color: #6E5A54 !important;
+    html[data-side="nails"] .text-gray-400,
+    html[data-side="nails"] .text-white\/60 {
+      color: #5E4B46 !important;
+    }
+    html[data-side="nails"] .text-\[\#C7C7C7\] {
+      color: #8B2635 !important;
+    }
+    html[data-side="nails"] .text-\[\#D4AF37\],
+    html[data-side="nails"] .text-amber-300 {
+      color: #8B2635 !important;
+    }
+    html[data-side="nails"] .text-\[\#25D366\],
+    html[data-side="nails"] .text-emerald-300 {
+      color: #1B7A43 !important;
+    }
+    html[data-side="nails"] .border-white\/5,
+    html[data-side="nails"] .border-white\/10,
+    html[data-side="nails"] .border-white\/15,
+    html[data-side="nails"] .border-\[\#C7C7C7\]\/20,
+    html[data-side="nails"] .border-\[\#C7C7C7\]\/30,
+    html[data-side="nails"] .border-\[\#C7C7C7\]\/40 {
+      border-color: #DFD1C4 !important;
+    }
+
+    /* Preservar texto blanco luminoso sobre botones, círculos de pasos y cintas de color acento */
+    html[data-side="nails"] .brush-ribbon,
+    html[data-side="nails"] .bg-\[\#8B2635\],
+    html[data-side="nails"] .bg-\[\#8B2635\] span,
+    html[data-side="nails"] .from-\[\#8B2635\],
+    html[data-side="nails"] .from-\[\#8B2635\] span,
+    html[data-side="nails"] .bg-\[\#25D366\],
+    html[data-side="nails"] .bg-\[\#25D366\] span,
+    html[data-side="nails"] .bg-red-600,
+    html[data-side="nails"] .bg-red-600 span,
+    html[data-side="nails"] .cal-day.selected,
+    html[data-side="nails"] .slot-btn.selected {
+      color: #FFFDFB !important;
+    }
+    html[data-side="nails"] #cal-prev:hover,
+    html[data-side="nails"] #cal-next:hover,
+    html[data-side="nails"] #auth-link-btn:hover {
+      background-color: #8B2635 !important;
+      color: #FFFDFB !important;
     }
     .font-display {
       font-family: var(--turnos-font-display, 'Cormorant Garamond', serif) !important;
