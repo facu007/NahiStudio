@@ -35,7 +35,12 @@
       box-shadow: 0 0 35px 2px rgba(139, 38, 53, 0.25), inset 0 0 25px rgba(139, 38, 53, 0.08);
     }
   </style>
-  <script src="supabase-client.js?v=20261128"></script>
+  <script src="supabase-client.js?v=20261129"></script>
+  <script>
+    if (!window.MicaBackend || !window.MicaBackend.auth || !window.MicaBackend.auth.isAdmin()) {
+      window.location.replace('login.html?redirect=admin');
+    }
+  </script>
 </head>
 <body class="bg-[#111111] text-[#f5edf5] font-body min-h-screen flex flex-col antialiased selection:bg-[#C7C7C7] selection:text-white">
 
@@ -64,6 +69,11 @@
           <span class="material-symbols-outlined text-sm">open_in_new</span>
           <span>Ver Turnos en Vivo</span>
         </a>
+
+        <button type="button" onclick="openAdminPasswordModal()" class="p-1.5 sm:px-3 sm:py-1.5 rounded-full bg-[#8B2635]/20 hover:bg-[#8B2635]/40 border border-[#C7C7C7]/30 text-xs font-semibold text-[#F1ECE5] hover:text-white transition-all flex items-center gap-1" title="Cambiar email o contraseña de administrador">
+          <span class="material-symbols-outlined text-base text-[#D4AF37]">lock_reset</span>
+          <span class="hidden sm:inline">Cambiar Clave</span>
+        </button>
 
         <button type="button" onclick="handleLogout()" class="p-1.5 sm:px-3 sm:py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-xs font-medium text-gray-300 hover:text-white transition-all flex items-center gap-1">
           <span class="material-symbols-outlined text-base">logout</span>
@@ -4809,15 +4819,58 @@
 
     function handleLogout() {
       window.MicaBackend.auth.logout();
-      window.location.href = 'login.html';
+      window.location.href = 'login.html?redirect=admin';
+    }
+
+    function openAdminPasswordModal() {
+      const modal = document.getElementById('modal-admin-password');
+      if (!modal) return;
+      const emailInput = document.getElementById('adm-pwd-email');
+      if (emailInput && window.MicaBackend && window.MicaBackend.auth) {
+        emailInput.value = window.MicaBackend.auth.getAdminEmail() || 'admin@nahistudio.com';
+      }
+      document.getElementById('adm-pwd-current').value = '';
+      document.getElementById('adm-pwd-new').value = '';
+      document.getElementById('adm-pwd-status').textContent = '';
+      modal.classList.remove('hidden');
+    }
+
+    function closeAdminPasswordModal() {
+      const modal = document.getElementById('modal-admin-password');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function handleSaveAdminPassword(e) {
+      e.preventDefault();
+      const newEmail = document.getElementById('adm-pwd-email').value.trim();
+      const currentPassword = document.getElementById('adm-pwd-current').value;
+      const newPassword = document.getElementById('adm-pwd-new').value;
+      const statusEl = document.getElementById('adm-pwd-status');
+
+      statusEl.textContent = 'Actualizando credenciales...';
+      statusEl.className = 'text-xs font-bold text-center text-[#F1ECE5]';
+
+      try {
+        await window.MicaBackend.auth.changeAdminPassword({
+          currentPassword,
+          newEmail,
+          newPassword
+        });
+        statusEl.textContent = '✓ ¡Contraseña de administrador actualizada con éxito!';
+        statusEl.className = 'text-xs font-bold text-center text-[#25D366]';
+        setTimeout(() => {
+          closeAdminPasswordModal();
+        }, 1200);
+      } catch (err) {
+        statusEl.textContent = err.message || 'Error al cambiar la contraseña.';
+        statusEl.className = 'text-xs font-bold text-center text-red-400';
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      let currentUser = window.MicaBackend.auth.getUser();
-      if (!currentUser || currentUser.role !== 'admin') {
-        currentUser = { id: 'admin_nahi', name: 'Nahi Ciamprone', email: 'admin@nahistudio.com', role: 'admin' };
-        localStorage.setItem('nahi_current_user', JSON.stringify(currentUser));
-        localStorage.setItem('nahi_token', 'demo_token_admin_nahi');
+      if (!window.MicaBackend || !window.MicaBackend.auth || !window.MicaBackend.auth.isAdmin()) {
+        window.location.replace('login.html?redirect=admin');
+        return;
       }
       loadAppointments();
       loadPublishedDaysBoard();
@@ -4827,5 +4880,43 @@
       window.MicaBackend.emails.getSettings().then(d => updateEmailProviderBadges(d.provider)).catch(() => {});
     });
   </script>
+
+  <!-- Modal Cambiar Contraseña de Admin -->
+  <div id="modal-admin-password" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-[#181818] border border-[#C7C7C7]/40 rounded-3xl p-6 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#D4AF37]">lock_reset</span>
+          <h3 class="font-display font-bold text-lg text-white">Credenciales de Administrador</h3>
+        </div>
+        <button type="button" onclick="closeAdminPasswordModal()" class="text-gray-400 hover:text-white">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form onsubmit="handleSaveAdminPassword(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-bold uppercase tracking-wider text-[#F1ECE5] mb-1">Email de Administrador</label>
+          <input type="email" id="adm-pwd-email" required class="w-full bg-[#111111] border border-white/15 focus:border-[#D4AF37] rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
+        </div>
+        <div>
+          <label class="block font-bold uppercase tracking-wider text-[#F1ECE5] mb-1">Contraseña Actual *</label>
+          <input type="password" id="adm-pwd-current" required placeholder="Ingresá tu clave actual" class="w-full bg-[#111111] border border-white/15 focus:border-[#D4AF37] rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
+        </div>
+        <div>
+          <label class="block font-bold uppercase tracking-wider text-[#F1ECE5] mb-1">Nueva Contraseña *</label>
+          <input type="password" id="adm-pwd-new" required minlength="4" placeholder="Mínimo 4 caracteres" class="w-full bg-[#111111] border border-white/15 focus:border-[#D4AF37] rounded-xl px-3.5 py-2.5 text-white focus:outline-none">
+        </div>
+        <div id="adm-pwd-status" class="text-xs font-bold text-center min-h-[1rem]"></div>
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" onclick="closeAdminPasswordModal()" class="px-4 py-2.5 rounded-full bg-white/5 hover:bg-white/10 text-gray-300 font-bold">
+            Cancelar
+          </button>
+          <button type="submit" class="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#8B2635] to-[#D4AF37] hover:brightness-110 text-white font-bold uppercase tracking-wider shadow-lg">
+            Guardar Nueva Clave
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
 </html>

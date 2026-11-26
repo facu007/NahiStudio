@@ -23,7 +23,16 @@
     GALLERY: 'nahi_gallery_photos_v4',
     PUBLISHED_SCHEDULES: 'nahi_published_schedules',
     SITE_CONTENT: 'nahi_site_content',
-    PAYMENT_INFO: 'nahi_payment_info'
+    PAYMENT_INFO: 'nahi_payment_info',
+    ADMIN_CREDS: 'nahi_admin_creds_v1'
+  };
+
+  const DEFAULT_ADMIN_CREDS = {
+    id: 'admin_nahi',
+    name: 'Nahiara Ciamprone',
+    email: 'admin@nahistudio.com',
+    password: 'NahiStudio2026',
+    role: 'admin'
   };
 
   // Seña obligatoria para reservar (porcentaje del precio del servicio)
@@ -146,7 +155,11 @@
         login: this.login.bind(this),
         register: this.register.bind(this),
         logout: this.logout.bind(this),
-        getUser: this.getCurrentUser.bind(this)
+        getUser: this.getCurrentUser.bind(this),
+        isAuthenticated: this.isAuthenticated.bind(this),
+        isAdmin: this.isAdmin.bind(this),
+        changeAdminPassword: this.changeAdminPassword.bind(this),
+        getAdminEmail: this.getAdminEmail.bind(this)
       };
       this.turnos = {
         getServices: this.getServices.bind(this),
@@ -387,22 +400,126 @@
       }
     }
 
-    _localRegister({ name, phone, email, password }) {
+    _getLocalAdminCreds() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.ADMIN_CREDS);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.email && parsed.password) {
+            return { ...DEFAULT_ADMIN_CREDS, ...parsed, role: 'admin' };
+          }
+        }
+      } catch (e) {}
+      return { ...DEFAULT_ADMIN_CREDS };
+    }
+
+    _saveLocalAdminCreds(creds) {
+      try {
+        const merged = { ...this._getLocalAdminCreds(), ...creds, role: 'admin' };
+        localStorage.setItem(STORAGE_KEYS.ADMIN_CREDS, JSON.stringify(merged));
+        return merged;
+      } catch (e) {
+        return { ...DEFAULT_ADMIN_CREDS, ...creds };
+      }
+    }
+
+    getAdminEmail() {
+      return this._getLocalAdminCreds().email;
+    }
+
+    async changeAdminPassword({ currentPassword, newEmail, newPassword }) {
+      await this.init();
+      const localAdmin = this._getLocalAdminCreds();
+      if (!currentPassword || currentPassword !== localAdmin.password) {
+        throw new Error('La contraseña actual ingresada no es correcta.');
+      }
+      if (!newPassword || String(newPassword).length < 4) {
+        throw new Error('La nueva contraseña debe tener al menos 4 caracteres.');
+      }
+      const cleanEmail = (newEmail && String(newEmail).includes('@'))
+        ? String(newEmail).trim().toLowerCase()
+        : localAdmin.email;
+
+      if (this.hasNodeBackend) {
+        try {
+          await this._apiFetch('/api/auth/admin-password', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentPassword, newEmail: cleanEmail, newPassword })
+          });
+        } catch (e) {}
+      }
+
+      const updated = this._saveLocalAdminCreds({
+        email: cleanEmail,
+        password: String(newPassword)
+      });
+
+      const sessionUser = {
+        id: updated.id,
+        name: updated.name,
+        email: updated.email,
+        role: 'admin'
+      };
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(sessionUser));
+      localStorage.setItem(STORAGE_KEYS.TOKEN, 'nahi_admin_token_' + Date.now());
+      return { success: true, user: sessionUser };
+    }
+
+    async _localRegister({ name, phone, email, password }) {
+      const cleanEmail = String(email || '').trim().toLowerCase();
+      if (!name || !cleanEmail || !password) {
+        throw new Error('Por favor completá todos los campos obligatorios.');
+      }
+      if (String(password).length < 4) {
+        throw new Error('La contraseña debe tener al menos 4 caracteres.');
+      }
+
+      const adminCreds = this._getLocalAdminCreds();
+      if (cleanEmail === adminCreds.email.toLowerCase()) {
+        throw new Error('Ese correo pertenece a la administración del estudio. Iniciá sesión con tu contraseña.');
+      }
+
       const usersStr = localStorage.getItem(STORAGE_KEYS.LOCAL_USERS) || '[]';
       const users = JSON.parse(usersStr);
 
-      const existing = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+      const existing = users.find(u => String(u.email || '').toLowerCase() === cleanEmail);
       if (existing) {
         throw new Error('Ya existe una cuenta con este correo. Podés iniciar sesión.');
       }
 
+      // Intentar registrar en el backend también
+      let backendUser = null;
+      let backendToken = null;
+      if (this.hasNodeBackend) {
+        try {
+          const res = await this._apiFetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, phone: phone || '', email: cleanEmail, password })
+          });
+          if (res) {
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok && res.status === 409) {
+              throw new Error(data.error || 'Ya existe una cuenta con este correo.');
+            }
+            if (res.ok && data.user) {
+              backendUser = data.user;
+              backendToken = data.token;
+            }
+          }
+        } catch (err) {
+          if (err.message && err.message.includes('Ya existe')) throw err;
+        }
+      }
+
       const newUser = {
-        id: 'usr_' + Date.now(),
+        id: (backendUser && backendUser.id) ? backendUser.id : ('usr_' + Date.now()),
         name,
         phone: phone || '',
-        email,
+        email: cleanEmail,
         password,
-        role: email.includes('admin') || (email.includes('nahi') || email.includes('mica')) ? 'admin' : 'client',
+        role: 'client',
         createdAt: new Date().toISOString()
       };
 
@@ -414,17 +531,25 @@
         name: newUser.name,
         phone: newUser.phone,
         email: newUser.email,
-        role: newUser.role
+        role: 'client'
       };
 
       localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(sessionUser));
-      localStorage.setItem(STORAGE_KEYS.TOKEN, 'demo_token_' + newUser.id);
+      localStorage.setItem(STORAGE_KEYS.TOKEN, backendToken || ('nahi_client_token_' + newUser.id + '_' + Date.now()));
 
       return { success: true, user: sessionUser, mode: 'local' };
     }
 
     async login(email, password) {
       await this.init();
+
+      const cleanEmail = String(email || '').trim().toLowerCase();
+      const adminCreds = this._getLocalAdminCreds();
+
+      // 1. Verificación prioritaria de cuenta Admin del estudio
+      if (cleanEmail === adminCreds.email.toLowerCase()) {
+        return this._localLogin(cleanEmail, password);
+      }
 
       if (this.config.isConfigured) {
         let res;
@@ -436,11 +561,11 @@
               apikey: this.config.supabaseAnonKey,
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ email: cleanEmail, password })
           });
         } catch (networkErr) {
           console.warn('Supabase unreachable, trying local storage:', networkErr);
-          return this._localLogin(email, password);
+          return this._localLogin(cleanEmail, password);
         }
 
         const data = await res.json().catch(() => ({}));
@@ -475,10 +600,10 @@
         }
 
         if (!resolvedRole) {
-          resolvedRole = (data.user.email.toLowerCase() === 'admin@gmail.com') ? 'admin' : 'client';
+          resolvedRole = (data.user.email.toLowerCase() === adminCreds.email.toLowerCase()) ? 'admin' : 'client';
         }
 
-        const fullName = data.user?.user_metadata?.full_name || data.user?.user_metadata?.name || email.split('@')[0];
+        const fullName = data.user?.user_metadata?.full_name || data.user?.user_metadata?.name || cleanEmail.split('@')[0];
         const phone = data.user?.user_metadata?.phone || '';
 
         const userObj = {
@@ -492,42 +617,104 @@
         localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(userObj));
         return { success: true, user: userObj, mode: 'supabase' };
       } else {
-        return this._localLogin(email, password);
+        return this._localLogin(cleanEmail, password);
       }
     }
 
-    _localLogin(email, password) {
+    async _localLogin(email, password) {
+      const cleanEmail = String(email || '').trim().toLowerCase();
+      const adminCreds = this._getLocalAdminCreds();
+
+      // 1. Verificar si es el email de Administración
+      if (cleanEmail === adminCreds.email.toLowerCase()) {
+        if (password !== adminCreds.password) {
+          // Consultar también al backend por si la clave se cambió desde otro dispositivo
+          if (this.hasNodeBackend) {
+            const apiRes = await this._apiFetch('/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: cleanEmail, password })
+            }).catch(() => null);
+            if (apiRes && apiRes.ok) {
+              const apiData = await apiRes.json().catch(() => ({}));
+              if (apiData.user && apiData.user.role === 'admin') {
+                this._saveLocalAdminCreds({ email: cleanEmail, password });
+                localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(apiData.user));
+                localStorage.setItem(STORAGE_KEYS.TOKEN, apiData.token || ('nahi_admin_token_' + Date.now()));
+                return { success: true, user: apiData.user, mode: 'local' };
+              }
+            }
+          }
+          throw new Error('Contraseña de administrador incorrecta.');
+        }
+
+        const adminUser = {
+          id: adminCreds.id || 'admin_nahi',
+          name: adminCreds.name || 'Nahiara Ciamprone',
+          email: adminCreds.email,
+          role: 'admin'
+        };
+        const token = 'nahi_admin_token_' + Date.now();
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(adminUser));
+        localStorage.setItem(STORAGE_KEYS.TOKEN, token);
+        return { success: true, user: adminUser, mode: 'local' };
+      }
+
+      // 2. Verificar cuenta de clienta registrada en localStorage
       const usersStr = localStorage.getItem(STORAGE_KEYS.LOCAL_USERS) || '[]';
       const users = JSON.parse(usersStr);
+      const found = users.find(u => String(u.email || '').toLowerCase() === cleanEmail);
 
-      const found = users.find(u => u.email.toLowerCase() === email.toLowerCase());
       if (found) {
-        if (found.password && found.password !== password) {
+        if (found.password !== password) {
           throw new Error('Contraseña incorrecta.');
         }
         const sessionUser = {
           id: found.id,
           name: found.name,
-          phone: found.phone,
+          phone: found.phone || '',
           email: found.email,
-          role: found.role || 'client'
+          role: 'client'
         };
+        const token = 'nahi_client_token_' + found.id + '_' + Date.now();
         localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(sessionUser));
-        localStorage.setItem(STORAGE_KEYS.TOKEN, 'demo_token_' + found.id);
+        localStorage.setItem(STORAGE_KEYS.TOKEN, token);
         return { success: true, user: sessionUser, mode: 'local' };
       }
 
-      // Si no existe, permitir inicio con credenciales demo
-      const demoUser = {
-        id: 'usr_guest_' + Date.now(),
-        name: email.split('@')[0],
-        email: email,
-        phone: '',
-        role: email.includes('admin') || (email.includes('nahi') || email.includes('mica')) ? 'admin' : 'client'
-      };
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(demoUser));
-      localStorage.setItem(STORAGE_KEYS.TOKEN, 'demo_token_' + demoUser.id);
-      return { success: true, user: demoUser, mode: 'local' };
+      // 3. Consultar en el backend Node/Vercel por si la clienta se registró antes
+      if (this.hasNodeBackend) {
+        const apiRes = await this._apiFetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: cleanEmail, password })
+        }).catch(() => null);
+
+        if (apiRes) {
+          const apiData = await apiRes.json().catch(() => ({}));
+          if (apiRes.ok && apiData.user) {
+            users.push({
+              id: apiData.user.id,
+              name: apiData.user.name,
+              phone: apiData.user.phone || '',
+              email: apiData.user.email,
+              password,
+              role: 'client',
+              createdAt: new Date().toISOString()
+            });
+            localStorage.setItem(STORAGE_KEYS.LOCAL_USERS, JSON.stringify(users));
+            localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(apiData.user));
+            localStorage.setItem(STORAGE_KEYS.TOKEN, apiData.token || ('nahi_client_token_' + apiData.user.id + '_' + Date.now()));
+            return { success: true, user: apiData.user, mode: 'local' };
+          }
+          if (apiRes.status === 401) {
+            throw new Error(apiData.error || 'Contraseña incorrecta.');
+          }
+        }
+      }
+
+      // Si no está registrada, exigir registro previo
+      throw new Error('No encontramos una cuenta con ese email. Registrate primero en la pestaña "Registrarse".');
     }
 
     logout() {
@@ -535,6 +722,22 @@
       localStorage.removeItem(STORAGE_KEYS.REFRESH);
       localStorage.removeItem(STORAGE_KEYS.USER);
       return true;
+    }
+
+    isAuthenticated() {
+      const user = this.getCurrentUser();
+      const token = localStorage.getItem(STORAGE_KEYS.TOKEN) || '';
+      if (!user || !user.email || !token) return false;
+      // Invalidar tokens viejos de modo demo sin contraseña (ej. demo_token_admin_nahi)
+      if (token.startsWith('demo_token_')) return false;
+      return true;
+    }
+
+    isAdmin() {
+      if (!this.isAuthenticated()) return false;
+      const user = this.getCurrentUser();
+      const token = localStorage.getItem(STORAGE_KEYS.TOKEN) || '';
+      return !!(user && user.role === 'admin' && (token.startsWith('nahi_admin_token_') || token.split('.').length === 3));
     }
 
     getCurrentUser() {

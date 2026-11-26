@@ -62,6 +62,9 @@
     <!-- Card Principal -->
     <div class="neon-card-glow bg-[#181818] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
       
+      <!-- Banner Contextual (Admin o Turnos) -->
+      <div id="auth-context-banner" class="hidden px-4 py-3 rounded-2xl bg-[#8B2635]/20 border border-[#D4AF37]/40 text-xs text-[#F1ECE5] text-center font-semibold"></div>
+
       <!-- Tabs Iniciar Sesión / Registrarse -->
       <div class="flex p-1 bg-[#111111] rounded-2xl border border-white/10">
         <button type="button" id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all bg-[#8B2635] text-white shadow-md">
@@ -86,7 +89,7 @@
             <label class="block text-xs font-bold uppercase tracking-wider text-[#F1ECE5]">
               Contraseña
             </label>
-            <a href="#" onclick="alert('Podés ingresar con cualquier contraseña para la demo o crear una cuenta nueva.'); return false;" class="text-[11px] text-[#D4AF37] hover:underline">
+            <a href="#" onclick="alert('Si olvidaste tu contraseña de clienta, podés registrarte con otro correo o escribirnos por WhatsApp al estudio.'); return false;" class="text-[11px] text-[#D4AF37] hover:underline">
               ¿Olvidaste tu clave?
             </a>
           </div>
@@ -95,7 +98,7 @@
 
         <button type="submit" id="btn-submit-login" class="w-full inline-flex justify-center items-center gap-2 bg-gradient-to-r from-[#8B2635] to-[#D4AF37] hover:brightness-110 text-white py-3.5 px-4 rounded-full font-bold text-xs uppercase tracking-wider shadow-lg shadow-[#8B2635]/30 transition-all active:scale-[0.98]">
           <span class="material-symbols-outlined text-base">login</span>
-          <span>Ingresar a Mis Turnos</span>
+          <span id="btn-submit-login-text">Iniciar Sesión</span>
         </button>
 
         <div id="login-status" class="text-center text-xs min-h-[1.2rem] font-semibold"></div>
@@ -139,21 +142,15 @@
         <div id="reg-status" class="text-center text-xs min-h-[1.2rem] font-semibold"></div>
       </form>
 
-      <!-- Divisor o Invitada / Acceso Rápido Admin -->
-      <div class="pt-2 border-t border-white/10 text-center space-y-3">
-        <p class="text-xs text-[#d8c4d6]">
-          ¿Solo querés reservar sin registrarte?
+      <!-- Acceso para Administración con Contraseña -->
+      <div class="pt-3 border-t border-white/10 text-center space-y-2">
+        <p class="text-[11px] text-[#d8c4d6]">
+          🔒 Para reservar turnos o administrar el estudio es obligatorio iniciar sesión.
         </p>
-        <div class="flex flex-col items-center gap-2">
-          <a href="turnos.html" class="inline-flex items-center gap-1.5 text-xs text-[#F1ECE5] hover:text-white font-bold underline transition-colors">
-            <span>Continuar como invitada a pedir turno</span>
-            <span class="material-symbols-outlined text-sm">arrow_forward</span>
-          </a>
-          <a href="admin.html" class="inline-flex items-center gap-1.5 text-xs text-[#D4AF37] hover:text-white font-bold underline transition-colors pt-1">
-            <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
-            <span>Entrar al Panel de Administración (Estudio)</span>
-          </a>
-        </div>
+        <button type="button" onclick="prepareAdminLogin()" class="inline-flex items-center gap-1.5 text-xs text-[#D4AF37] hover:text-white font-bold underline transition-colors pt-1">
+          <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
+          <span>Acceso Administradora (Estudio)</span>
+        </button>
       </div>
 
     </div>
@@ -168,8 +165,40 @@
 
   </div>
 
-  <script src="supabase-client.js?v=20261128"></script>
+  <script src="supabase-client.js?v=20261129"></script>
   <script>
+    function getRedirectTarget(user) {
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect') || '';
+      const side = params.get('side') || '';
+      if (user && user.role === 'admin') {
+        if (redirect === 'turnos') {
+          return side ? `turnos.html?side=${encodeURIComponent(side)}` : 'turnos.html';
+        }
+        return 'admin.html';
+      }
+      return side ? `turnos.html?side=${encodeURIComponent(side)}` : 'turnos.html';
+    }
+
+    function prepareAdminLogin() {
+      switchAuthTab('login');
+      const emailInput = document.getElementById('login-email');
+      const passInput = document.getElementById('login-password');
+      const adminEmail = (window.MicaBackend && window.MicaBackend.auth && window.MicaBackend.auth.getAdminEmail)
+        ? window.MicaBackend.auth.getAdminEmail()
+        : 'admin@nahistudio.com';
+      if (emailInput) emailInput.value = adminEmail;
+      if (passInput) {
+        passInput.value = '';
+        passInput.focus();
+      }
+      const banner = document.getElementById('auth-context-banner');
+      if (banner) {
+        banner.textContent = '🔒 Ingresá la contraseña de Administradora para abrir el Panel del Estudio.';
+        banner.classList.remove('hidden');
+      }
+    }
+
     function switchAuthTab(tab) {
       const loginForm = document.getElementById('form-login');
       const regForm = document.getElementById('form-register');
@@ -197,21 +226,23 @@
       const btn = document.getElementById('btn-submit-login');
       
       btn.disabled = true;
-      status.textContent = 'Verificando con Supabase...';
+      status.textContent = 'Verificando credenciales...';
       status.className = 'text-center text-xs mt-2 text-[#F1ECE5]';
 
       try {
         const res = await window.MicaBackend.login(email, password);
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('redirect') === 'admin' && (!res.user || res.user.role !== 'admin')) {
+          window.MicaBackend.auth.logout();
+          throw new Error('Esta cuenta no tiene permisos de Administradora. Ingresá con el correo del estudio.');
+        }
+
         status.textContent = '¡Bienvenida! Redirigiendo...';
         status.className = 'text-center text-xs mt-2 text-[#25D366] font-bold';
 
         setTimeout(() => {
-          if (res.user && res.user.role === 'admin') {
-            window.location.href = 'admin.html';
-          } else {
-            window.location.href = 'turnos.html';
-          }
-        }, 500);
+          window.location.href = getRedirectTarget(res.user);
+        }, 400);
       } catch (err) {
         btn.disabled = false;
         status.textContent = err.message || 'Error al iniciar sesión.';
@@ -229,17 +260,17 @@
       const btn = document.getElementById('btn-submit-reg');
 
       btn.disabled = true;
-      status.textContent = 'Registrando cuenta en Supabase...';
+      status.textContent = 'Creando tu cuenta...';
       status.className = 'text-center text-xs mt-2 text-[#F1ECE5]';
 
       try {
-        await window.MicaBackend.register({ name, phone, email, password });
-        status.textContent = '¡Cuenta creada con éxito! Redirigiendo...';
+        const res = await window.MicaBackend.register({ name, phone, email, password });
+        status.textContent = '¡Cuenta creada con éxito! Redirigiendo a Turnos...';
         status.className = 'text-center text-xs mt-2 text-[#25D366] font-bold';
 
         setTimeout(() => {
-          window.location.href = 'turnos.html';
-        }, 500);
+          window.location.href = getRedirectTarget(res.user);
+        }, 400);
       } catch (err) {
         btn.disabled = false;
         status.textContent = err.message || 'Error al crear la cuenta.';
@@ -247,11 +278,31 @@
       }
     }
 
-    // Prefill si ya había un usuario registrado previamente
     document.addEventListener('DOMContentLoaded', () => {
-      const savedUser = window.MicaBackend.getCurrentUser();
-      if (savedUser && savedUser.email && document.getElementById('login-email')) {
-        document.getElementById('login-email').value = savedUser.email;
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect');
+      const banner = document.getElementById('auth-context-banner');
+
+      if (redirect === 'admin') {
+        if (window.MicaBackend && window.MicaBackend.auth && window.MicaBackend.auth.isAdmin()) {
+          window.location.replace('admin.html');
+          return;
+        }
+        prepareAdminLogin();
+      } else if (redirect === 'turnos') {
+        if (window.MicaBackend && window.MicaBackend.auth && window.MicaBackend.auth.isAuthenticated()) {
+          window.location.replace(getRedirectTarget(window.MicaBackend.auth.getUser()));
+          return;
+        }
+        if (banner) {
+          banner.textContent = '✨ Iniciá sesión o registrate gratis en segundos para reservar tu turno.';
+          banner.classList.remove('hidden');
+        }
+      } else {
+        const savedUser = window.MicaBackend.getCurrentUser();
+        if (savedUser && savedUser.email && document.getElementById('login-email')) {
+          document.getElementById('login-email').value = savedUser.email;
+        }
       }
     });
   </script>

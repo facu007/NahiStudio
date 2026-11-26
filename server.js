@@ -1055,6 +1055,187 @@ async function handleApiRequest(req, res, pathname, queryParams) {
     });
   }
 
+  // 2a. AUTENTICACIÓN DE ADMIN Y CLIENTAS (/api/auth/login, /api/auth/register, /api/auth/admin-password)
+  const AUTH_STORE_FILE = path.join(dir, 'users-data.json');
+  const TMP_AUTH_STORE_FILE = path.join(os.tmpdir(), 'nahi-users-data.json');
+  function loadAuthStore() {
+    const defaultStore = {
+      admin: {
+        id: 'admin_nahi',
+        name: 'Nahiara Ciamprone',
+        email: process.env.ADMIN_EMAIL && process.env.ADMIN_EMAIL !== 'micaela@lashart.com'
+          ? process.env.ADMIN_EMAIL
+          : 'admin@nahistudio.com',
+        password: process.env.ADMIN_PASSWORD || 'NahiStudio2026',
+        role: 'admin'
+      },
+      users: []
+    };
+    try {
+      const target = (process.env.VERCEL && fs.existsSync(TMP_AUTH_STORE_FILE))
+        ? TMP_AUTH_STORE_FILE
+        : (fs.existsSync(AUTH_STORE_FILE) ? AUTH_STORE_FILE : null);
+      if (target) {
+        const parsed = JSON.parse(fs.readFileSync(target, 'utf-8'));
+        if (parsed && typeof parsed === 'object') {
+          return {
+            admin: { ...defaultStore.admin, ...(parsed.admin || {}) },
+            users: Array.isArray(parsed.users) ? parsed.users : []
+          };
+        }
+      }
+    } catch (e) {}
+    return defaultStore;
+  }
+  function saveAuthStore(store) {
+    try {
+      const target = process.env.VERCEL ? TMP_AUTH_STORE_FILE : AUTH_STORE_FILE;
+      fs.writeFileSync(target, JSON.stringify(store, null, 2), 'utf-8');
+    } catch (e) {
+      try {
+        fs.writeFileSync(TMP_AUTH_STORE_FILE, JSON.stringify(store, null, 2), 'utf-8');
+      } catch (_) {}
+    }
+  }
+
+  if (req.method === 'POST' && pathname === '/api/auth/login') {
+    try {
+      const body = await parseJsonBody(req);
+      const email = String(body.email || '').trim().toLowerCase();
+      const password = String(body.password || '');
+      if (!email || !password) {
+        return sendJson(res, 400, { error: 'Por favor ingresá tu email y contraseña.' });
+      }
+      const store = loadAuthStore();
+      if (email === String(store.admin.email || '').toLowerCase()) {
+        if (password !== store.admin.password) {
+          return sendJson(res, 401, { error: 'Contraseña de administrador incorrecta.' });
+        }
+        const adminUser = {
+          id: store.admin.id || 'admin_nahi',
+          name: store.admin.name || 'Nahiara Ciamprone',
+          email: store.admin.email,
+          role: 'admin'
+        };
+        return sendJson(res, 200, {
+          success: true,
+          token: 'nahi_admin_token_' + Date.now(),
+          user: adminUser
+        });
+      }
+
+      const found = store.users.find(u => String(u.email || '').toLowerCase() === email);
+      if (!found) {
+        return sendJson(res, 404, {
+          error: 'No encontramos una cuenta con ese email. Por favor registrate en la pestaña "Registrarse".',
+          code: 'USER_NOT_FOUND'
+        });
+      }
+      if (found.password !== password) {
+        return sendJson(res, 401, { error: 'Contraseña incorrecta.' });
+      }
+      const clientUser = {
+        id: found.id,
+        name: found.name,
+        phone: found.phone || '',
+        email: found.email,
+        role: 'client'
+      };
+      return sendJson(res, 200, {
+        success: true,
+        token: 'nahi_client_token_' + found.id + '_' + Date.now(),
+        user: clientUser
+      });
+    } catch (err) {
+      return sendJson(res, 500, { error: err.message });
+    }
+  }
+
+  if (req.method === 'POST' && pathname === '/api/auth/register') {
+    try {
+      const body = await parseJsonBody(req);
+      const name = String(body.name || '').trim();
+      const phone = String(body.phone || '').trim();
+      const email = String(body.email || '').trim().toLowerCase();
+      const password = String(body.password || '');
+
+      if (!name || !email || !password) {
+        return sendJson(res, 400, { error: 'Completá nombre, email y contraseña.' });
+      }
+      if (password.length < 4) {
+        return sendJson(res, 400, { error: 'La contraseña debe tener al menos 4 caracteres.' });
+      }
+      const store = loadAuthStore();
+      if (email === String(store.admin.email || '').toLowerCase()) {
+        return sendJson(res, 409, { error: 'Ese correo pertenece a la administración. Iniciá sesión con tu contraseña.' });
+      }
+      const existing = store.users.find(u => String(u.email || '').toLowerCase() === email);
+      if (existing) {
+        return sendJson(res, 409, { error: 'Ya existe una cuenta con este correo. Podés iniciar sesión.' });
+      }
+      const newUser = {
+        id: 'usr_' + Date.now(),
+        name,
+        phone,
+        email,
+        password,
+        role: 'client',
+        createdAt: new Date().toISOString()
+      };
+      store.users.push(newUser);
+      saveAuthStore(store);
+
+      const sessionUser = {
+        id: newUser.id,
+        name: newUser.name,
+        phone: newUser.phone,
+        email: newUser.email,
+        role: 'client'
+      };
+      return sendJson(res, 201, {
+        success: true,
+        token: 'nahi_client_token_' + newUser.id + '_' + Date.now(),
+        user: sessionUser
+      });
+    } catch (err) {
+      return sendJson(res, 500, { error: err.message });
+    }
+  }
+
+  if ((req.method === 'PUT' || req.method === 'POST') && pathname === '/api/auth/admin-password') {
+    try {
+      const body = await parseJsonBody(req);
+      const currentPassword = String(body.currentPassword || '');
+      const newPassword = String(body.newPassword || '');
+      const newEmail = String(body.newEmail || '').trim().toLowerCase();
+
+      const store = loadAuthStore();
+      if (currentPassword !== store.admin.password) {
+        return sendJson(res, 401, { error: 'La contraseña actual no es correcta.' });
+      }
+      if (!newPassword || newPassword.length < 4) {
+        return sendJson(res, 400, { error: 'La nueva contraseña debe tener al menos 4 caracteres.' });
+      }
+      store.admin.password = newPassword;
+      if (newEmail && newEmail.includes('@')) {
+        store.admin.email = newEmail;
+      }
+      saveAuthStore(store);
+
+      return sendJson(res, 200, {
+        success: true,
+        user: {
+          id: store.admin.id,
+          name: store.admin.name,
+          email: store.admin.email,
+          role: 'admin'
+        }
+      });
+    } catch (err) {
+      return sendJson(res, 500, { error: err.message });
+    }
+  }
+
   // 2b. GET /api/payment-info & PUT /api/payment-info (Datos de transferencia para la seña del 20%)
   if (req.method === 'GET' && pathname === '/api/payment-info') {
     if (supabase) {

@@ -10,7 +10,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="supabase-client.js?v=20261128"></script>
+  <script src="supabase-client.js?v=20261129"></script>
+  <script>
+    (function enforceTurnosLogin() {
+      if (!window.MicaBackend || !window.MicaBackend.auth || !window.MicaBackend.auth.isAuthenticated()) {
+        const params = new URLSearchParams(window.location.search);
+        const side = params.get('side') || localStorage.getItem('nahi_active_side') || 'nails';
+        window.location.replace(`login.html?redirect=turnos&side=${encodeURIComponent(side)}`);
+      }
+    })();
+  </script>
   <script>
     tailwind.config = {
       theme: {
@@ -904,13 +913,18 @@
       },
 
       checkAuth() {
-        const savedUserStr = localStorage.getItem('nahi_current_user');
+        if (!window.NahiBackend || !window.NahiBackend.auth || !window.NahiBackend.auth.isAuthenticated()) {
+          const params = new URLSearchParams(window.location.search);
+          const side = params.get('side') || localStorage.getItem('nahi_active_side') || 'nails';
+          window.location.replace(`login.html?redirect=turnos&side=${encodeURIComponent(side)}`);
+          return;
+        }
+        const user = window.NahiBackend.auth.getUser();
         const container = document.getElementById('auth-status-container');
-        if (savedUserStr && container) {
+        if (user && container) {
           try {
-            const user = JSON.parse(savedUserStr);
-            if (user && user.name) {
-              const isAdmin = user.role === 'admin' || user.email?.includes('admin') || user.email?.includes('mica');
+            if (user.name) {
+              const isAdmin = window.NahiBackend.auth.isAdmin();
               container.innerHTML = `
                 <div class="flex items-center gap-2">
                   ${isAdmin ? `
@@ -937,9 +951,13 @@
       },
 
       logout() {
-        localStorage.removeItem('nahi_current_user');
-        localStorage.removeItem('vasca_token');
-        window.location.reload();
+        if (window.NahiBackend && window.NahiBackend.auth) {
+          window.NahiBackend.auth.logout();
+        } else {
+          localStorage.removeItem('nahi_current_user');
+          localStorage.removeItem('nahi_token');
+        }
+        window.location.replace('login.html?redirect=turnos');
       },
 
       switchTab(tab) {
@@ -1353,6 +1371,11 @@
       },
 
       async confirmBooking() {
+        if (!window.NahiBackend || !window.NahiBackend.auth || !window.NahiBackend.auth.isAuthenticated()) {
+          window.location.replace(`login.html?redirect=turnos&side=${encodeURIComponent(this.activeSide || 'nails')}`);
+          return;
+        }
+        const currentUser = window.NahiBackend.auth.getUser();
         const nameInput = document.getElementById('book-name');
         const phoneInput = document.getElementById('book-phone');
         const igInput = document.getElementById('book-ig');
@@ -1436,7 +1459,7 @@
           name: name,
           phone: phone,
           clientIg: igInput ? igInput.value.trim() : '',
-          email: '',
+          email: (currentUser && currentUser.email) ? currentUser.email : '',
           notes: (notesInput ? notesInput.value.trim() : '') + (igInput && igInput.value ? ` [IG: ${igInput.value.trim()}]` : '')
         };
 
