@@ -174,7 +174,10 @@
         getAppointments: this.getAdminAppointments.bind(this),
         updateAppointmentStatus: this.updateAppointmentStatus.bind(this),
         deleteAppointment: this.deleteAppointment.bind(this),
-        deleteCancelledAppointments: this.deleteCancelledAppointments.bind(this)
+        deleteCancelledAppointments: this.deleteCancelledAppointments.bind(this),
+        getBackendStatus: this.getBackendStatus.bind(this),
+        saveSupabaseConfig: this.saveSupabaseConfig.bind(this),
+        getSqlSchema: this.getSqlSchema.bind(this)
       };
       this.payments = {
         depositPercentage: DEPOSIT_PERCENTAGE,
@@ -337,17 +340,103 @@
         badge.innerHTML = `
           <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#25D366]/20 border border-[#25D366]/40 text-[#25D366] text-xs font-semibold">
             <span class="w-2 h-2 rounded-full bg-[#25D366] animate-pulse"></span>
-            Supabase Conectado
+            Supabase Cloud Conectado
+          </span>
+        `;
+      } else if (status.hasNodeBackend) {
+        badge.innerHTML = `
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#25D366]/15 border border-[#D4AF37]/50 text-[#F1ECE5] text-xs font-semibold" title="Servidor Backend Node.js de Nahi Studio activo y conectado">
+            <span class="w-2 h-2 rounded-full bg-[#25D366] animate-pulse"></span>
+            Backend Node Activo
           </span>
         `;
       } else {
         badge.innerHTML = `
-          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-semibold" title="Los turnos y usuarios se guardan en el navegador. Podés configurar tu URL y clave de Supabase en el archivo .env">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-semibold">
             <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-            Modo Local / Demo
+            Modo Local
           </span>
         `;
       }
+    }
+
+    async getBackendStatus() {
+      await this.init();
+      if (this.hasNodeBackend) {
+        try {
+          const res = await this._apiFetch('/api/admin/backend-status');
+          if (res && res.ok) {
+            return await res.json();
+          }
+        } catch (e) {}
+      }
+      return {
+        status: 'online',
+        engine: this.config.isConfigured ? 'Supabase Cloud' : 'Almacenamiento Local',
+        supabaseConnected: this.config.isConfigured,
+        supabaseUrl: this.config.supabaseUrl || '',
+        adminEmail: this.getAdminEmail(),
+        stats: {
+          users: JSON.parse(localStorage.getItem(STORAGE_KEYS.LOCAL_USERS) || '[]').length,
+          appointments: JSON.parse(localStorage.getItem(STORAGE_KEYS.LOCAL_TURNOS) || '[]').length,
+          services: FALLBACK_SERVICES.length,
+          galleryPhotos: 11,
+          publishedDays: 0
+        }
+      };
+    }
+
+    async saveSupabaseConfig({ supabaseUrl, supabaseAnonKey, supabaseServiceKey }) {
+      await this.init();
+      const cleanUrl = String(supabaseUrl || '').trim().replace(/\/+$/, '');
+      const cleanAnon = String(supabaseAnonKey || '').trim();
+      const cleanSvc = String(supabaseServiceKey || '').trim();
+
+      if (cleanUrl && cleanAnon) {
+        localStorage.setItem('mica_supabase_url', cleanUrl);
+        localStorage.setItem('mica_supabase_key', cleanAnon);
+        this.config.supabaseUrl = cleanUrl;
+        this.config.supabaseAnonKey = cleanAnon;
+        this.config.isConfigured = true;
+      } else {
+        localStorage.removeItem('mica_supabase_url');
+        localStorage.removeItem('mica_supabase_key');
+        this.config.supabaseUrl = '';
+        this.config.supabaseAnonKey = '';
+        this.config.isConfigured = false;
+      }
+
+      if (this.hasNodeBackend) {
+        try {
+          await this._apiFetch('/api/admin/supabase-config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              supabaseUrl: cleanUrl,
+              supabaseAnonKey: cleanAnon,
+              supabaseServiceKey: cleanSvc
+            })
+          });
+        } catch (e) {}
+      }
+      this._updateUIStatusBadge();
+      return this.getStatus();
+    }
+
+    async getSqlSchema() {
+      await this.init();
+      if (this.hasNodeBackend) {
+        try {
+          const res = await this._apiFetch('/api/admin/sql-schema');
+          if (res && res.ok) {
+            const data = await res.json();
+            if (data && data.sql) return data.sql;
+          }
+        } catch (e) {}
+      }
+      const rawRes = await fetch('supabase-schema.sql').catch(() => null);
+      if (rawRes && rawRes.ok) return await rawRes.text();
+      return '';
     }
 
     // =========================================================================

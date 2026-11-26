@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS professionals (
 );
 
 -- ==============================================================================
--- 3. TABLA: services (Tratamientos de Pestañas & Cejas)
+-- 3. TABLA: services (Tratamientos de Nail Art & Tattoo Art)
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS services (
   id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS services (
   price_ars           DECIMAL(12, 2) NOT NULL,
   deposit_ars         DECIMAL(12, 2) DEFAULT 0,
   icon                TEXT DEFAULT '✨',
-  category            TEXT DEFAULT 'extensiones' CHECK (category IN ('extensiones', 'lifting', 'cejas', 'combo')),
+  category            TEXT DEFAULT 'nails' CHECK (category IN ('nails', 'tattoo', 'flash', 'extensiones', 'lifting', 'cejas', 'combo')),
   is_active           BOOLEAN DEFAULT TRUE,
   sort_order          INT DEFAULT 0,
   created_at          TIMESTAMPTZ DEFAULT NOW(),
@@ -155,6 +155,7 @@ CREATE TABLE IF NOT EXISTS appointments (
   
   price_ars           DECIMAL(12, 2) NOT NULL,
   deposit_ars         DECIMAL(12, 2) DEFAULT 0,
+  deposit_receipt_url TEXT,
   payment_method      TEXT DEFAULT 'efectivo' CHECK (payment_method IN ('efectivo', 'transferencia', 'mercadopago', 'tarjeta', NULL)),
   payment_status      TEXT DEFAULT 'pending' CHECK (payment_status IN ('pending', 'partial', 'paid', 'refunded')),
   
@@ -247,7 +248,7 @@ BEGIN
   v_full_name := COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', '');
   v_phone     := COALESCE(NEW.raw_user_meta_data->>'phone', '');
   v_role      := CASE
-                   WHEN LOWER(COALESCE(NEW.email, '')) IN ('admin@gmail.com', 'micaela@lashart.com') THEN 'admin'
+                   WHEN LOWER(COALESCE(NEW.email, '')) IN ('admin@nahistudio.com', 'admin@gmail.com') THEN 'admin'
                    WHEN COALESCE(NEW.raw_app_meta_data->>'role', '') IN ('admin', 'client') THEN NEW.raw_app_meta_data->>'role'
                    ELSE 'client'
                  END;
@@ -404,18 +405,18 @@ CREATE POLICY "Admin full access to settings" ON settings FOR ALL
   USING (public.is_admin());
 
 -- ==============================================================================
--- 13. SEED DATA (DATOS INICIALES REALES DE MICA LASH ART)
+-- 13. SEED DATA (DATOS INICIALES REALES DE NAHI STUDIO)
 -- ==============================================================================
 
--- Profesional: Micaela
+-- Profesional: Nahiara Ciamprone
 INSERT INTO professionals (id, name, slug, title, avatar_url, bio, whatsapp, is_active, sort_order)
 VALUES (
   '11111111-1111-1111-1111-111111111111',
-  'Micaela',
-  'micaela',
-  'Master Lash Artist & Educadora',
-  'images/mica-bio-1.jpg',
-  'Especialista en miradas VIP desde 2016 en Bahía Blanca. Más de 1.500 servicios realizados y decenas de alumnas formadas.',
+  'Nahiara Ciamprone',
+  'nahiara-ciamprone',
+  'Nail Artist & Tattoo Artist • Espacio Muna',
+  'fotos/imgi_14_851843619_18118320313897879_5122667710876184401_n.jpg?v=3',
+  'Dos formas de expresión, una misma artista en Espacio Muna: Nail Art escultórico de autor y Tattoo Art en tinta negra y fine line.',
   '5492914491141',
   TRUE,
   1
@@ -424,104 +425,105 @@ SET name = EXCLUDED.name,
     title = EXCLUDED.title,
     avatar_url = EXCLUDED.avatar_url;
 
--- Horarios Semanales de Micaela (Lunes a Sábado de 10:00 a 19:00 hs)
+-- Horarios Semanales de Nahi Studio (Lunes a Sábado de 10:00 a 19:00 hs)
 INSERT INTO weekly_schedule (professional_id, day_of_week, start_time, end_time, break_start, break_end, slot_duration_min, is_active)
 VALUES
-  ('11111111-1111-1111-1111-111111111111', 1, '10:00', '19:00', '13:00', '14:00', 90, TRUE), -- Lunes
-  ('11111111-1111-1111-1111-111111111111', 2, '10:00', '19:00', '13:00', '14:00', 90, TRUE), -- Martes
-  ('11111111-1111-1111-1111-111111111111', 3, '10:00', '19:00', '13:00', '14:00', 90, TRUE), -- Miércoles
-  ('11111111-1111-1111-1111-111111111111', 4, '10:00', '19:00', '13:00', '14:00', 90, TRUE), -- Jueves
-  ('11111111-1111-1111-1111-111111111111', 5, '10:00', '19:00', '13:00', '14:00', 90, TRUE), -- Viernes
-  ('11111111-1111-1111-1111-111111111111', 6, '10:00', '18:00', '13:00', '14:00', 90, TRUE)  -- Sábado
+  ('11111111-1111-1111-1111-111111111111', 1, '10:00', '19:00', '13:00', '14:00', 90, TRUE),
+  ('11111111-1111-1111-1111-111111111111', 2, '10:00', '19:00', '13:00', '14:00', 90, TRUE),
+  ('11111111-1111-1111-1111-111111111111', 3, '10:00', '19:00', '13:00', '14:00', 90, TRUE),
+  ('11111111-1111-1111-1111-111111111111', 4, '10:00', '19:00', '13:00', '14:00', 90, TRUE),
+  ('11111111-1111-1111-1111-111111111111', 5, '10:00', '19:00', '13:00', '14:00', 90, TRUE),
+  ('11111111-1111-1111-1111-111111111111', 6, '10:00', '18:00', '13:00', '14:00', 90, TRUE)
 ON CONFLICT (professional_id, day_of_week) DO UPDATE
 SET start_time = EXCLUDED.start_time,
     end_time = EXCLUDED.end_time;
 
--- Catálogo de Tratamientos (6 Servicios Oficiales)
+-- Catálogo de Tratamientos Oficiales de Nahi Studio (Nail Art & Tattoo Art)
 INSERT INTO services (id, name, slug, badge, description, duration_minutes, price_ars, deposit_ars, icon, category, sort_order)
 VALUES
   (
     '22222222-2222-2222-2222-222222222201',
-    'Clásicas Pelo a Pelo',
-    'clasicas-pelo-a-pelo',
-    'Efecto Rímel Natural',
-    'Una extensión ultra liviana sobre cada pestaña natural. Ideal para el día a día sin maquillaje.',
-    90,
+    'Esculpidas & Nail Art Editorial',
+    'esculpidas-nail-art',
+    '01 — NAIL ART',
+    'Construcción escultural a medida con diseño personalizado: efectos cromo, relieve 3D, perlas, gothic lettering o french editorial.',
+    120,
     28000,
-    5000,
-    '✨',
-    'extensiones',
+    5600,
+    '💎',
+    'nails',
     1
   ),
   (
     '22222222-2222-2222-2222-222222222202',
-    'Volumen Híbrido Glam',
-    'volumen-hibrido-glam',
-    '★ Look Más Pedido',
-    'Mezcla armoniosa de técnica clásica y abanicos 2D/3D. Textura esponjosa con máxima definición.',
-    120,
-    34000,
-    5000,
-    '👑',
-    'extensiones',
+    'Kapping / Capping Gel + Diseño',
+    'kapping-gel-diseno',
+    '01 — NAIL ART',
+    'Baño de gel fortificador sobre el largo de tu uña natural para máxima resistencia, nivelación perfecta y nail art a elección.',
+    90,
+    24000,
+    4800,
+    '✨',
+    'nails',
     2
   ),
   (
     '22222222-2222-2222-2222-222222222203',
-    'Volumen Ruso 3D-5D',
-    'volumen-ruso-3d-5d',
-    'Densidad & Mirada Intensa',
-    'Abanicos artesanales ultralivianos hechos a mano. Densidad sofisticada y curvatura impecable.',
-    135,
-    42000,
-    8000,
-    '💎',
-    'extensiones',
+    'Esmaltado Semipermanente + Nail Art',
+    'semipermanente-nail-art',
+    '01 — NAIL ART',
+    'Manicuría combinada de alta precisión con esmaltado de larga duración, french, glitter reflectivo o detalles cromados.',
+    75,
+    20000,
+    4000,
+    '🖤',
+    'nails',
     3
   ),
   (
     '22222222-2222-2222-2222-222222222204',
-    'Mega Volumen Velvet',
-    'mega-volumen-velvet',
-    'Impacto Black Intenso',
-    'Máxima cobertura y textura aterciopelada. Fibras extra finas 0.03mm de máxima ligereza.',
-    150,
-    48000,
-    10000,
-    '🖤',
-    'extensiones',
+    'Service / Mantenimiento Nail Art',
+    'service-mantenimiento-nails',
+    '01 — NAIL ART',
+    'Balance de estructura, retiro de crecimiento y renovación completa del diseño (recomendado cada 21 días).',
+    90,
+    22000,
+    4400,
+    '🔄',
+    'nails',
     4
   ),
   (
     '22222222-2222-2222-2222-222222222205',
-    'Lifting de Pestañas + Botox',
-    'lifting-pestanas-botox',
-    'Nutrición 100% Natural',
-    'Arqueado desde la raíz con nutrición profunda de keratina, botox y tinte negro azabache.',
-    60,
-    24000,
-    4000,
-    '🌸',
-    'lifting',
+    'Tattoo Fine Line / Mini & Flash',
+    'tattoo-fine-line-flash',
+    '02 — TATTOO ART',
+    'Tatuajes delicados de trazo fino, caligrafía, botánicos, micro-tattoos o diseños seleccionados del Flash Book del estudio.',
+    90,
+    35000,
+    7000,
+    '🖋️',
+    'tattoo',
     5
   ),
   (
     '22222222-2222-2222-2222-222222222206',
-    'Laminado & Diseño de Cejas',
-    'laminado-diseno-cejas',
-    'Alisado + Henna HD',
-    'Fijación y alineación del vello de cejas, perfilado simétrico y color semipermanente.',
-    45,
-    20000,
-    4000,
-    '✨',
-    'cejas',
+    'Tattoo Blackwork & Diseño Custom',
+    'tattoo-blackwork-custom',
+    '02 — TATTOO ART',
+    'Sesión de tatuaje personalizado en tinta negra, puntillismo, lettering experimental u ornamental a medida.',
+    150,
+    55000,
+    11000,
+    '🩸',
+    'tattoo',
     6
   )
 ON CONFLICT (slug) DO UPDATE
 SET price_ars = EXCLUDED.price_ars,
     duration_minutes = EXCLUDED.duration_minutes,
-    badge = EXCLUDED.badge;
+    badge = EXCLUDED.badge,
+    category = EXCLUDED.category;
 
 -- Cursos Oficiales de Academia Mica Lash Art
 INSERT INTO courses (id, title, slug, level, modality, duration_hours, price_ars, deposit_ars, includes_kit, badge, description, syllabus, sort_order)
@@ -578,7 +580,7 @@ SET price_ars = EXCLUDED.price_ars,
 -- Configuraciones Iniciales del Negocio
 INSERT INTO settings (key, value, description)
 VALUES
-  ('business_info', '{"name":"Mica Lash Art","city":"Bahía Blanca","address":"Zona Hospital Penna - Villa Cerrito","whatsapp":"5492914491141","instagram":"@mica.lashart"}'::jsonb, 'Datos de contacto'),
+  ('business_info', '{"name":"Nahi Studio","city":"Bahía Blanca","address":"Espacio Muna","whatsapp":"5492914491141","instagram":"@nahi.studio"}'::jsonb, 'Datos de contacto'),
   ('booking_policy', '{"deposit_required":true,"deposit_percentage":20,"cancellation_notice_hours":24,"slot_interval_minutes":30}'::jsonb, 'Políticas de turnos y seña')
 ON CONFLICT (key) DO UPDATE
 SET value = EXCLUDED.value;
@@ -589,8 +591,8 @@ SET value = EXCLUDED.value;
 CREATE TABLE IF NOT EXISTS gallery_photos (
   id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title           TEXT NOT NULL,
-  badge           TEXT DEFAULT 'Look Más Pedido',
-  category        TEXT DEFAULT 'hibrido',
+  badge           TEXT DEFAULT 'Cara A · Nail Art',
+  category        TEXT DEFAULT 'nails',
   description     TEXT,
   image_url       TEXT NOT NULL,
   is_featured     BOOLEAN DEFAULT FALSE,
@@ -654,78 +656,79 @@ GRANT EXECUTE ON FUNCTION public.get_booked_slots(DATE) TO anon, authenticated, 
 GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
 
--- Datos Iniciales de Fotos de Ejemplo (6 fotos reales del estudio)
+-- Datos Iniciales de Fotos de Ejemplo (Fotos Reales de Nahi Studio en carpeta fotos/)
 INSERT INTO gallery_photos (id, title, badge, category, description, image_url, is_featured, is_hero, sort_order)
 VALUES
   (
     '44444444-4444-4444-4444-444444444401',
-    'Volumen Híbrido Glam',
-    '★ Look Más Pedido',
-    'volumen',
-    'Densidad suave, textura esponjosa y abanicos ultralivianos realizados a medida de la mirada.',
-    'images/ej-volumen-hibrido.jpg',
+    'Crimson French & Tattoo',
+    'Cara A · Nail Art de Autor',
+    'nails',
+    'Almendradas con french rojo carmesí profundo en diálogo con tatuaje ornamental de muñeca.',
+    'fotos/imgi_25_539976307_17854872333514079_3988514524600607766_n.webp?v=2',
     TRUE,
     TRUE,
     1
   ),
   (
     '44444444-4444-4444-4444-444444444402',
-    'Lifting de Pestañas & Nutrición Botox',
-    '🌿 100% Pestaña Natural',
-    'lifting',
-    'Elevación desde la raíz de la pestaña natural, nutrición profunda con botox y tinte negro azabache.',
-    'images/ej-lifting-botox.jpg',
+    'Sculpted 3D & Perlas',
+    'Cara A · Relieve Escultórico',
+    'nails',
+    'Diseño escultórico con volumen metálico dorado, perlas y detalles marinos sobre base lechosa.',
+    'fotos/imgi_22_504060229_17842497063514079_4107614235171648365_n.webp?v=2',
     TRUE,
     TRUE,
     2
   ),
   (
     '44444444-4444-4444-4444-444444444403',
-    'Laminado & Perfilado de Cejas HD',
-    '✨ Antes & Después HD',
-    'cejas',
-    'Antes y después real. Direccionamiento folicular orgánico, perfilado con pinza y nutrición.',
-    'images/ej-laminado-cejas.jpg',
-    FALSE,
-    FALSE,
+    'Reflective Obsidian Glitter',
+    'Cara A · Destello Reflectivo',
+    'nails',
+    'Glitter reflectivo oscuro con destellos plateados en forma almendra.',
+    'fotos/imgi_6_928715819_1678752167229555_3258636658814047340_n.jpg?v=2',
+    TRUE,
+    TRUE,
     3
   ),
   (
     '44444444-4444-4444-4444-444444444404',
-    'Comparativa Real en Camilla',
-    '👁️ Comparativa en Directo',
-    'comparativa',
-    'Impacto visual directo: ojo con pestaña aplicada vs ojo natural sin intervenir. Resalta la luminosidad y apertura de la mirada.',
-    'images/ej-comparativa-real.jpg',
+    'Cupido Blackwork & Puntillismo',
+    'Cara B · Blackwork',
+    'tattoo',
+    'Cupido clásico en clave blackwork con sombreado de arrastre y puntillismo de alta definición.',
+    'fotos/imgi_28_771909433_18096793385269189_6790519837572543665_n.jpg?v=2',
     TRUE,
     TRUE,
     4
   ),
   (
     '44444444-4444-4444-4444-444444444405',
-    'Mega Volumen Ruso 3D-5D',
-    '🔥 Máxima Densidad',
-    'volumen',
-    'Máxima densidad aterciopelada con abanicos hechos a mano. Cero peso sobre la raíz.',
-    'images/ej-volumen-ruso.jpg',
+    'León Oriental Fu Dog & Geometría',
+    'Cara B · Proyecto a Medida',
+    'tattoo',
+    'Pieza de pecho a gran escala: guardián oriental con líneas sólidas y esfera de geometría sagrada.',
+    'fotos/imgi_18_831313350_18104431136269189_151488612152529768_n.jpg?v=2',
     TRUE,
     TRUE,
     5
   ),
   (
     '44444444-4444-4444-4444-444444444406',
-    'Aislación Milimétrica & Curvatura',
-    '🔬 Técnica de Precisión',
-    'clasicas',
-    'Vista de perfil de alta definición. Curvatura uniforme, raíz limpia sin exceso de adhesivo y separación perfecta.',
-    'images/ej-perfil-curvatura.jpg',
-    FALSE,
-    FALSE,
+    'Lettering Distorsión — Viejo Karma',
+    'Cara B · Lettering',
+    'tattoo',
+    'Tipografía experimental con efecto onda y firma caligráfica en tinta negra intensa.',
+    'fotos/imgi_11_902024821_18111104054269189_4890881016085880301_n.jpg?v=2',
+    TRUE,
+    TRUE,
     6
   )
 ON CONFLICT (id) DO UPDATE
 SET title = EXCLUDED.title,
     badge = EXCLUDED.badge,
+    category = EXCLUDED.category,
     description = EXCLUDED.description,
     image_url = EXCLUDED.image_url;
 

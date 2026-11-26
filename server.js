@@ -19,6 +19,7 @@ const VERCEL_STATIC_BUNDLE_MANIFEST = [
   path.join(__dirname, 'gallery-data.json'),
   path.join(__dirname, 'site-content.json'),
   path.join(__dirname, 'published-schedules.json'),
+  path.join(__dirname, 'supabase-schema.sql'),
   path.join(__dirname, 'fotos', 'imgi_10_832478316_1138317815289557_8357992302156346057_n.jpg'),
   path.join(__dirname, 'fotos', 'imgi_11_902024821_18111104054269189_4890881016085880301_n.jpg'),
   path.join(__dirname, 'fotos', 'imgi_13_861911954_1131761712629862_1954115592653772609_n.jpg'),
@@ -49,91 +50,135 @@ const VERCEL_STATIC_BUNDLE_MANIFEST = [
 ];
 VERCEL_STATIC_BUNDLE_MANIFEST.forEach(p => { try { fs.existsSync(p); } catch (_) {} });
 
-// Configuración de Supabase desde variables de entorno
-const SUPABASE_URL = process.env.SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+// Configuración de Supabase desde variables de entorno o archivo configurado desde el Panel Admin
+const SUPABASE_CONFIG_FILE = path.join(dir, 'supabase-config.json');
+const TMP_SUPABASE_CONFIG_FILE = path.join(os.tmpdir(), 'nahi-supabase-config.json');
+function loadSavedSupabaseConfig() {
+  try {
+    const f = (process.env.VERCEL && fs.existsSync(TMP_SUPABASE_CONFIG_FILE))
+      ? TMP_SUPABASE_CONFIG_FILE
+      : (fs.existsSync(SUPABASE_CONFIG_FILE) ? SUPABASE_CONFIG_FILE : null);
+    if (f) return JSON.parse(fs.readFileSync(f, 'utf-8'));
+  } catch (_) {}
+  return {};
+}
+const savedSbCfg = loadSavedSupabaseConfig();
+let SUPABASE_URL = process.env.SUPABASE_URL || savedSbCfg.supabaseUrl || '';
+let SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || savedSbCfg.supabaseAnonKey || '';
+let SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || savedSbCfg.supabaseServiceKey || '';
 
 let supabase = null;
-if (SUPABASE_URL && (SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY)) {
-  try {
-    supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY, {
-      auth: { persistSession: false }
-    });
-
-
-    console.log(`[Supabase] Conectado a ${SUPABASE_URL}`);
-  } catch (err) {
-    console.warn('[Supabase] Error al inicializar cliente:', err.message);
+function initSupabaseClient() {
+  if (SUPABASE_URL && (SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY)) {
+    try {
+      supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY, {
+        auth: { persistSession: false }
+      });
+      console.log(`[Supabase] Conectado a ${SUPABASE_URL}`);
+      return true;
+    } catch (err) {
+      console.warn('[Supabase] Error al inicializar cliente:', err.message);
+      supabase = null;
+    }
+  } else {
+    supabase = null;
+    console.log('[Backend] Servidor Node.js de Nahi Studio activo con persistencia JSON.');
   }
-} else {
-  console.log('[Supabase] Modo Local / Demo activo. Para conectar a la nube, completa las variables en .env');
+  return false;
+}
+initSupabaseClient();
+
+// Persistencia en disco /tmp para turnos e inscripciones del backend Node
+const APPOINTMENTS_FILE = path.join(dir, 'appointments-data.json');
+const TMP_APPOINTMENTS_FILE = path.join(os.tmpdir(), 'nahi-appointments-data.json');
+function loadAppointmentsData() {
+  try {
+    const f = (process.env.VERCEL && fs.existsSync(TMP_APPOINTMENTS_FILE))
+      ? TMP_APPOINTMENTS_FILE
+      : (fs.existsSync(APPOINTMENTS_FILE) ? APPOINTMENTS_FILE : null);
+    if (f) {
+      const parsed = JSON.parse(fs.readFileSync(f, 'utf-8'));
+      if (Array.isArray(parsed)) return parsed;
+      if (parsed && Array.isArray(parsed.appointments)) return parsed.appointments;
+    }
+  } catch (_) {}
+  return [];
+}
+function saveAppointmentsData(list) {
+  try {
+    const target = process.env.VERCEL ? TMP_APPOINTMENTS_FILE : APPOINTMENTS_FILE;
+    fs.writeFileSync(target, JSON.stringify(list, null, 2), 'utf-8');
+  } catch (e) {
+    try {
+      fs.writeFileSync(TMP_APPOINTMENTS_FILE, JSON.stringify(list, null, 2), 'utf-8');
+    } catch (_) {}
+  }
 }
 
-// Fallback en memoria de turnos y catálogo para desarrollo local
+// Base de datos del Backend Node.js (sincronizada con disco y/o Supabase)
 const localDatabase = {
-  appointments: [],
+  appointments: loadAppointmentsData(),
   enrollments: [],
   services: [
     {
       id: '22222222-2222-2222-2222-222222222201',
-      name: 'Clásicas Pelo a Pelo',
-      slug: 'clasicas-pelo-a-pelo',
-      badge: 'Efecto Rímel Natural',
-      duration_minutes: 90,
+      name: 'Esculpidas & Nail Art Editorial',
+      slug: 'esculpidas-nail-art',
+      badge: '01 — NAIL ART',
+      duration_minutes: 120,
       price_ars: 28000,
-      deposit_ars: 5000,
-      category: 'extensiones'
+      deposit_ars: 5600,
+      category: 'nails'
     },
     {
       id: '22222222-2222-2222-2222-222222222202',
-      name: 'Volumen Híbrido Glam',
-      slug: 'volumen-hibrido-glam',
-      badge: '★ Look Más Pedido',
-      duration_minutes: 120,
-      price_ars: 34000,
-      deposit_ars: 5000,
-      category: 'extensiones'
+      name: 'Kapping / Capping Gel + Diseño',
+      slug: 'kapping-gel-diseno',
+      badge: '01 — NAIL ART',
+      duration_minutes: 90,
+      price_ars: 24000,
+      deposit_ars: 4800,
+      category: 'nails'
     },
     {
       id: '22222222-2222-2222-2222-222222222203',
-      name: 'Volumen Ruso 3D-5D',
-      slug: 'volumen-ruso-3d-5d',
-      badge: 'Densidad & Mirada Intensa',
-      duration_minutes: 135,
-      price_ars: 42000,
-      deposit_ars: 8000,
-      category: 'extensiones'
+      name: 'Esmaltado Semipermanente + Nail Art',
+      slug: 'semipermanente-nail-art',
+      badge: '01 — NAIL ART',
+      duration_minutes: 75,
+      price_ars: 20000,
+      deposit_ars: 4000,
+      category: 'nails'
     },
     {
       id: '22222222-2222-2222-2222-222222222204',
-      name: 'Mega Volumen Velvet',
-      slug: 'mega-volumen-velvet',
-      badge: 'Impacto Black Intenso',
-      duration_minutes: 150,
-      price_ars: 48000,
-      deposit_ars: 10000,
-      category: 'extensiones'
+      name: 'Service / Mantenimiento Nail Art',
+      slug: 'service-mantenimiento-nails',
+      badge: '01 — NAIL ART',
+      duration_minutes: 90,
+      price_ars: 22000,
+      deposit_ars: 4400,
+      category: 'nails'
     },
     {
       id: '22222222-2222-2222-2222-222222222205',
-      name: 'Lifting de Pestañas + Botox',
-      slug: 'lifting-pestanas-botox',
-      badge: 'Nutrición 100% Natural',
-      duration_minutes: 60,
-      price_ars: 24000,
-      deposit_ars: 4000,
-      category: 'lifting'
+      name: 'Tattoo Fine Line / Mini & Flash',
+      slug: 'tattoo-fine-line-flash',
+      badge: '02 — TATTOO ART',
+      duration_minutes: 90,
+      price_ars: 35000,
+      deposit_ars: 7000,
+      category: 'tattoo'
     },
     {
       id: '22222222-2222-2222-2222-222222222206',
-      name: 'Laminado & Diseño de Cejas',
-      slug: 'laminado-diseno-cejas',
-      badge: 'Alisado + Henna HD',
-      duration_minutes: 45,
-      price_ars: 20000,
-      deposit_ars: 4000,
-      category: 'cejas'
+      name: 'Tattoo Blackwork & Diseño Custom',
+      slug: 'tattoo-blackwork-custom',
+      badge: '02 — TATTOO ART',
+      duration_minutes: 150,
+      price_ars: 55000,
+      deposit_ars: 11000,
+      category: 'tattoo'
     }
   ],
   gallery: []
@@ -1236,6 +1281,74 @@ async function handleApiRequest(req, res, pathname, queryParams) {
     }
   }
 
+  // 2a-extra. Endpoints de Gestión del Backend (/api/admin/backend-status, /api/admin/supabase-config, /api/admin/sql-schema)
+  if (req.method === 'GET' && pathname === '/api/admin/backend-status') {
+    const authStore = loadAuthStore();
+    const content = await getSiteContentFull();
+    const pubMap = await getPublishedSchedulesMap();
+    const pubDaysCount = pubMap && pubMap.days ? Object.keys(pubMap.days).length : 0;
+    return sendJson(res, 200, {
+      status: 'online',
+      engine: supabase ? 'Node.js + Supabase PostgreSQL' : 'Node.js Backend API (JSON Storage)',
+      supabaseConnected: !!supabase,
+      supabaseUrl: SUPABASE_URL || '',
+      adminEmail: authStore.admin.email,
+      stats: {
+        users: authStore.users.length,
+        appointments: localDatabase.appointments.length,
+        services: Array.isArray(content.services) ? content.services.length : localDatabase.services.length,
+        galleryPhotos: localDatabase.gallery.length,
+        publishedDays: pubDaysCount
+      }
+    });
+  }
+
+  if (req.method === 'POST' && pathname === '/api/admin/supabase-config') {
+    try {
+      const body = await parseJsonBody(req);
+      const url = String(body.supabaseUrl || '').trim().replace(/\/+$/, '');
+      const anonKey = String(body.supabaseAnonKey || '').trim();
+      const serviceKey = String(body.supabaseServiceKey || '').trim();
+
+      SUPABASE_URL = url;
+      SUPABASE_ANON_KEY = anonKey;
+      if (serviceKey) SUPABASE_SERVICE_ROLE_KEY = serviceKey;
+
+      const cfgToSave = {
+        supabaseUrl: SUPABASE_URL,
+        supabaseAnonKey: SUPABASE_ANON_KEY,
+        supabaseServiceKey: SUPABASE_SERVICE_ROLE_KEY
+      };
+      try {
+        const target = process.env.VERCEL ? TMP_SUPABASE_CONFIG_FILE : SUPABASE_CONFIG_FILE;
+        fs.writeFileSync(target, JSON.stringify(cfgToSave, null, 2), 'utf-8');
+      } catch (e) {
+        try {
+          fs.writeFileSync(TMP_SUPABASE_CONFIG_FILE, JSON.stringify(cfgToSave, null, 2), 'utf-8');
+        } catch (_) {}
+      }
+
+      const connected = initSupabaseClient();
+      return sendJson(res, 200, {
+        success: true,
+        supabaseConnected: connected,
+        supabaseUrl: SUPABASE_URL
+      });
+    } catch (err) {
+      return sendJson(res, 500, { error: err.message });
+    }
+  }
+
+  if (req.method === 'GET' && pathname === '/api/admin/sql-schema') {
+    try {
+      const sqlFile = path.join(dir, 'supabase-schema.sql');
+      const sql = fs.existsSync(sqlFile) ? fs.readFileSync(sqlFile, 'utf-8') : '';
+      return sendJson(res, 200, { sql });
+    } catch (err) {
+      return sendJson(res, 500, { error: err.message });
+    }
+  }
+
   // 2b. GET /api/payment-info & PUT /api/payment-info (Datos de transferencia para la seña del 20%)
   if (req.method === 'GET' && pathname === '/api/payment-info') {
     if (supabase) {
@@ -1490,6 +1603,7 @@ async function handleApiRequest(req, res, pathname, queryParams) {
           created_at: new Date().toISOString()
         };
         localDatabase.appointments.push(createdAppointment);
+        saveAppointmentsData(localDatabase.appointments);
       }
 
       // Enviar email personalizado de reserva si la clienta ingresó su correo
@@ -1614,6 +1728,7 @@ async function handleApiRequest(req, res, pathname, queryParams) {
       if (found) {
         const wasCancelled = found.status === 'cancelled';
         found.status = newStatus;
+        saveAppointmentsData(localDatabase.appointments);
         let emailNotification = { skipped: true };
         if (newStatus === 'cancelled' && !wasCancelled && found.client_email) {
           emailNotification = await mailer.sendAppointmentEmail({
@@ -1649,6 +1764,7 @@ async function handleApiRequest(req, res, pathname, queryParams) {
       }
       const beforeCount = localDatabase.appointments.length;
       localDatabase.appointments = localDatabase.appointments.filter(a => a.status !== 'cancelled');
+      saveAppointmentsData(localDatabase.appointments);
       const localRemoved = beforeCount - localDatabase.appointments.length;
       return sendJson(res, 200, {
         success: true,
@@ -1675,6 +1791,7 @@ async function handleApiRequest(req, res, pathname, queryParams) {
       }
       const beforeCount = localDatabase.appointments.length;
       localDatabase.appointments = localDatabase.appointments.filter(a => a.id !== id && a.supabaseId !== id);
+      saveAppointmentsData(localDatabase.appointments);
       const deletedLocal = localDatabase.appointments.length < beforeCount;
 
       return sendJson(res, 200, {
