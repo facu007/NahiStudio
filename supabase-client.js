@@ -8,9 +8,9 @@
 
   // Configuración predeterminada (se puede sobrescribir con /api/config o window.MICA_CONFIG)
   const defaultConfig = {
-    supabaseUrl: '',
-    supabaseAnonKey: '',
-    isConfigured: false
+    supabaseUrl: 'https://ogkcxihihaozhomilcur.supabase.co',
+    supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9na2N4aWhpaGFvemhvbWlsY3VyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU4MTAzOTQsImV4cCI6MjExMTM4NjM5NH0.sVwdHAnv5v2wyGW80AfQ6ylXMz31FMVdkEMcPns-tRM',
+    isConfigured: true
   };
 
   const STORAGE_KEYS = {
@@ -465,9 +465,14 @@
           const data = await res.json();
           if (!res.ok) throw new Error(data.error_description || data.msg || data.message || 'Error al registrar');
 
+          // Registrar también en la base local/backend para permitir login inmediato incluso si Supabase requiere confirmar email
+          await this._localRegister({ name, phone, email, password }).catch(() => {});
+
           if (data.access_token) {
             localStorage.setItem(STORAGE_KEYS.TOKEN, data.access_token);
             if (data.refresh_token) localStorage.setItem(STORAGE_KEYS.REFRESH, data.refresh_token);
+          } else if (!localStorage.getItem(STORAGE_KEYS.TOKEN)) {
+            localStorage.setItem(STORAGE_KEYS.TOKEN, 'nahi_client_token_' + Date.now());
           }
 
           const userObj = {
@@ -659,11 +664,8 @@
 
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
-          const rawMsg = data.error_description || data.msg || data.message || '';
-          if (rawMsg.toLowerCase().includes('invalid login credentials')) {
-            throw new Error('Email o contraseña incorrectos.');
-          }
-          throw new Error(rawMsg || 'Credenciales inválidas');
+          // Si la cuenta fue creada en el backend Node/local o aún no confirmó email en Supabase, verificar en _localLogin
+          return this._localLogin(cleanEmail, password);
         }
 
         localStorage.setItem(STORAGE_KEYS.TOKEN, data.access_token);
@@ -1885,8 +1887,8 @@
     async getGalleryPhotos() {
       await this.init();
 
-      // Si no hay Supabase conectado y el admin ya personalizó la galería en este navegador, priorizar localStorage
-      if (!this.config.isConfigured && localStorage.getItem('nahi_gallery_custom') === '1') {
+      // Si el admin ya personalizó la galería en este navegador, priorizar sus cambios locales
+      if (localStorage.getItem('nahi_gallery_custom') === '1') {
         try {
           const localCustom = JSON.parse(localStorage.getItem(STORAGE_KEYS.GALLERY) || 'null');
           if (this._isValidStudioGalleryList(localCustom)) {
@@ -3426,8 +3428,8 @@
 
       const defaults = this.getDefaultSiteContent();
 
-      // Si no hay Supabase conectado y el admin ya guardó cambios en este navegador, priorizar localStorage
-      if (!this.config.isConfigured && localStorage.getItem('nahi_content_custom') === '1') {
+      // Si el admin ya guardó cambios de secciones/precios en este navegador, priorizar localStorage
+      if (localStorage.getItem('nahi_content_custom') === '1') {
         const localCustom = this._loadLocalSiteContent();
         this._cachedSiteContent = localCustom;
         return localCustom;

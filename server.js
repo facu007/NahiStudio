@@ -19,6 +19,7 @@ const VERCEL_STATIC_BUNDLE_MANIFEST = [
   path.join(__dirname, 'gallery-data.json'),
   path.join(__dirname, 'site-content.json'),
   path.join(__dirname, 'published-schedules.json'),
+  path.join(__dirname, 'supabase-config.json'),
   path.join(__dirname, 'supabase-schema.sql'),
   path.join(__dirname, 'fotos', 'imgi_10_832478316_1138317815289557_8357992302156346057_n.jpg'),
   path.join(__dirname, 'fotos', 'imgi_11_902024821_18111104054269189_4890881016085880301_n.jpg'),
@@ -62,9 +63,11 @@ function loadSavedSupabaseConfig() {
   } catch (_) {}
   return {};
 }
+const DEFAULT_SUPABASE_URL = 'https://ogkcxihihaozhomilcur.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9na2N4aWhpaGFvemhvbWlsY3VyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU4MTAzOTQsImV4cCI6MjExMTM4NjM5NH0.sVwdHAnv5v2wyGW80AfQ6ylXMz31FMVdkEMcPns-tRM';
 const savedSbCfg = loadSavedSupabaseConfig();
-let SUPABASE_URL = process.env.SUPABASE_URL || savedSbCfg.supabaseUrl || '';
-let SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || savedSbCfg.supabaseAnonKey || '';
+let SUPABASE_URL = process.env.SUPABASE_URL || savedSbCfg.supabaseUrl || DEFAULT_SUPABASE_URL;
+let SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || savedSbCfg.supabaseAnonKey || DEFAULT_SUPABASE_ANON_KEY;
 let SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || savedSbCfg.supabaseServiceKey || '';
 
 let supabase = null;
@@ -1584,7 +1587,7 @@ async function handleApiRequest(req, res, pathname, queryParams) {
         }
       }
 
-      // Si no hay Supabase o falló la conexión, guardar en memoria local
+      // Si no hay Supabase o falló la conexión, crear objeto local; en ambos casos persistir en localDatabase para lectura Admin sin service_role
       if (!createdAppointment) {
         createdAppointment = {
           id: 'turn_' + Date.now(),
@@ -1602,6 +1605,8 @@ async function handleApiRequest(req, res, pathname, queryParams) {
           status: 'pending',
           created_at: new Date().toISOString()
         };
+      }
+      if (!localDatabase.appointments.some(a => a.id === createdAppointment.id)) {
         localDatabase.appointments.push(createdAppointment);
         saveAppointmentsData(localDatabase.appointments);
       }
@@ -1637,6 +1642,7 @@ async function handleApiRequest(req, res, pathname, queryParams) {
     const email = queryParams.get('email');
     const status = queryParams.get('status');
 
+    let remoteRows = [];
     if (supabase) {
       let query = supabase.from('appointments').select('*, services(name)').order('appointment_date', { ascending: false }).order('start_time', { ascending: true });
       if (email) query = query.eq('client_email', email);
@@ -1651,15 +1657,23 @@ async function handleApiRequest(req, res, pathname, queryParams) {
         data = fbRes.data;
         error = fbRes.error;
       }
-      if (!error && data) {
-        return sendJson(res, 200, { appointments: data, count: data.length });
+      if (!error && Array.isArray(data)) {
+        remoteRows = data;
       }
     }
 
-    let results = localDatabase.appointments;
-    if (email) results = results.filter(a => a.client_email === email);
-    if (status && status !== 'all') results = results.filter(a => a.status === status);
-    return sendJson(res, 200, { appointments: results, count: results.length });
+    let localRows = localDatabase.appointments || [];
+    if (email) localRows = localRows.filter(a => a.client_email === email);
+    if (status && status !== 'all') localRows = localRows.filter(a => a.status === status);
+
+    const seenIds = new Set(remoteRows.map(r => String(r.id)));
+    const combined = [...remoteRows];
+    localRows.forEach(lr => {
+      if (!seenIds.has(String(lr.id))) {
+        combined.push(lr);
+      }
+    });
+    return sendJson(res, 200, { appointments: combined, count: combined.length });
   }
 
   // 7. PATCH /api/turnos/:id (Actualizar estado de turno + enviar email personalizado al cancelar)
@@ -1890,6 +1904,9 @@ async function handleApiRequest(req, res, pathname, queryParams) {
 
   // 9. GET /api/gallery (Listado de fotos de ejemplo para la web)
   if (req.method === 'GET' && pathname === '/api/gallery') {
+    if (!localDatabase.gallery || localDatabase.gallery.length === 0) {
+      localDatabase.gallery = loadGalleryData();
+    }
     if (supabase) {
       try {
         const { data, error } = await supabase
@@ -1914,16 +1931,21 @@ async function handleApiRequest(req, res, pathname, queryParams) {
               isHero: row.is_hero,
               sortOrder: row.sort_order
             }));
+            // Combinar con todas las fotos reales de gallery-data.json para que siempre estén las 11 obras completas
+            const existingUrls = new Set(mapped.map(p => String(p.imageUrl || '').split('?')[0]));
+            localDatabase.gallery.forEach(lp => {
+              const baseLp = String(lp.imageUrl || '').split('?')[0];
+              if (baseLp && !existingUrls.has(baseLp)) {
+                mapped.push(lp);
+                existingUrls.add(baseLp);
+              }
+            });
             return sendJson(res, 200, { photos: mapped });
           }
         }
       } catch (e) {
         console.warn('[Supabase] Error consultando gallery_photos:', e.message);
       }
-    }
-    // Asegurar que siempre hay datos cargados desde gallery-data.json (carpeta fotos/)
-    if (!localDatabase.gallery || localDatabase.gallery.length === 0) {
-      localDatabase.gallery = loadGalleryData();
     }
     return sendJson(res, 200, { photos: localDatabase.gallery });
   }
