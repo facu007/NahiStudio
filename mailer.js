@@ -1,9 +1,12 @@
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const nodemailer = require('nodemailer');
 
 const TEMPLATES_FILE = path.join(__dirname, 'email-templates.json');
+const TMP_TEMPLATES_FILE = path.join(os.tmpdir(), 'nahi-email-templates.json');
 const LOGS_FILE = path.join(__dirname, 'email-logs.json');
+const TMP_LOGS_FILE = path.join(os.tmpdir(), 'nahi-email-logs.json');
 const ENV_FILE = path.join(__dirname, '.env');
 
 const DEFAULT_EMAIL_TEMPLATES = {
@@ -18,9 +21,9 @@ const DEFAULT_EMAIL_TEMPLATES = {
     badge: '✨ RESERVA REGISTRADA',
     heading: '¡Tu lugar exclusivo ya está agendado, {{primer_nombre}}! ♡',
     intro: 'Hola {{nombre}}, ¡qué alegría recibirte en Nahi Studio! Te enviamos el comprobante personalizado de tu cita de {{servicio}} con {{profesional}}.',
-    tipsTitle: 'Indicaciones importantes antes de asistir 🎀',
-    tips: '• Asistí con tus pestañas y párpados limpios, sin rímel ni maquillaje ocular.\n• Tolerancia máxima de espera: 15 minutos para respetar el turno de cada clienta.\n• Si necesitás reprogramar o cancelar, podés hacerlo desde la web con al menos 24 hs de anticipación.',
-    footerNote: '¡Te esperamos para transformar tu mirada con arte, precisión y elegancia! 🩷'
+    tipsTitle: 'Indicaciones importantes antes de asistir ✧',
+    tips: '• Para Nail Art: asistí con tus manos limpias (si tenés material previo de otro estudio, avisanos para contemplar el retiro).\n• Para Tattoo Art: asistí bien descansada/o, hidratada/o y con ropa cómoda que descubra la zona a tatuar.\n• Tolerancia máxima de espera: 15 minutos para respetar el turno de cada clienta.',
+    footerNote: '¡Te esperamos en Espacio Muna para crear tu próximo diseño con arte, precisión y carácter! 🖤'
   },
   cancellation: {
     enabled: true,
@@ -79,8 +82,11 @@ function mergeTemplates(saved) {
 
 function loadLocalTemplates() {
   try {
-    if (fs.existsSync(TEMPLATES_FILE)) {
-      return mergeTemplates(JSON.parse(fs.readFileSync(TEMPLATES_FILE, 'utf-8')));
+    const f = (process.env.VERCEL && fs.existsSync(TMP_TEMPLATES_FILE))
+      ? TMP_TEMPLATES_FILE
+      : (fs.existsSync(TEMPLATES_FILE) ? TEMPLATES_FILE : null);
+    if (f) {
+      return mergeTemplates(JSON.parse(fs.readFileSync(f, 'utf-8')));
     }
   } catch (e) {
     console.warn('[Mailer] Error leyendo email-templates.json:', e.message);
@@ -91,9 +97,12 @@ function loadLocalTemplates() {
 function saveLocalTemplates(templates) {
   const merged = mergeTemplates(templates);
   try {
-    fs.writeFileSync(TEMPLATES_FILE, JSON.stringify(merged, null, 2), 'utf-8');
+    const target = process.env.VERCEL ? TMP_TEMPLATES_FILE : TEMPLATES_FILE;
+    fs.writeFileSync(target, JSON.stringify(merged, null, 2), 'utf-8');
   } catch (e) {
-    console.warn('[Mailer] Error guardando email-templates.json:', e.message);
+    try {
+      fs.writeFileSync(TMP_TEMPLATES_FILE, JSON.stringify(merged, null, 2), 'utf-8');
+    } catch (_) {}
   }
   return merged;
 }

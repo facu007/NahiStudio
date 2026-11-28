@@ -725,10 +725,11 @@ localDatabase.siteContent = loadSiteContentLocal();
 
 function mapDbCategoryForServicesTable(cat) {
   const c = String(cat || '').toLowerCase();
+  if (c === 'nails' || c === 'tattoo' || c === 'flash') return c;
   if (c === 'lifting') return 'lifting';
   if (c === 'cejas') return 'cejas';
   if (c === 'combo') return 'combo';
-  return 'extensiones';
+  return 'nails';
 }
 
 async function getSiteContentFull() {
@@ -1106,7 +1107,7 @@ async function handleApiRequest(req, res, pathname, queryParams) {
   // 2a. AUTENTICACIÓN DE ADMIN Y CLIENTAS (/api/auth/login, /api/auth/register, /api/auth/admin-password)
   const AUTH_STORE_FILE = path.join(dir, 'users-data.json');
   const TMP_AUTH_STORE_FILE = path.join(os.tmpdir(), 'nahi-users-data.json');
-  function loadAuthStore() {
+  async function loadAuthStore() {
     const defaultStore = {
       admin: {
         id: 'admin_nahi',
@@ -1119,6 +1120,7 @@ async function handleApiRequest(req, res, pathname, queryParams) {
       },
       users: []
     };
+    let localStore = defaultStore;
     try {
       const target = (process.env.VERCEL && fs.existsSync(TMP_AUTH_STORE_FILE))
         ? TMP_AUTH_STORE_FILE
@@ -1126,22 +1128,57 @@ async function handleApiRequest(req, res, pathname, queryParams) {
       if (target) {
         const parsed = JSON.parse(fs.readFileSync(target, 'utf-8'));
         if (parsed && typeof parsed === 'object') {
-          return {
+          localStore = {
             admin: { ...defaultStore.admin, ...(parsed.admin || {}) },
             users: Array.isArray(parsed.users) ? parsed.users : []
           };
         }
       }
     } catch (e) {}
-    return defaultStore;
+
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('settings')
+          .select('value')
+          .eq('key', 'auth_store')
+          .maybeSingle();
+        if (!error && data && data.value && typeof data.value === 'object') {
+          const remoteUsers = Array.isArray(data.value.users) ? data.value.users : [];
+          const seenEmails = new Set(remoteUsers.map(u => String(u.email || '').toLowerCase()));
+          const mergedUsers = [...remoteUsers];
+          localStore.users.forEach(lu => {
+            const em = String(lu.email || '').toLowerCase();
+            if (em && !seenEmails.has(em)) {
+              mergedUsers.push(lu);
+              seenEmails.add(em);
+            }
+          });
+          localStore = {
+            admin: { ...localStore.admin, ...(data.value.admin || {}) },
+            users: mergedUsers
+          };
+        }
+      } catch (_) {}
+    }
+    return localStore;
   }
-  function saveAuthStore(store) {
+  async function saveAuthStore(store) {
     try {
       const target = process.env.VERCEL ? TMP_AUTH_STORE_FILE : AUTH_STORE_FILE;
       fs.writeFileSync(target, JSON.stringify(store, null, 2), 'utf-8');
     } catch (e) {
       try {
         fs.writeFileSync(TMP_AUTH_STORE_FILE, JSON.stringify(store, null, 2), 'utf-8');
+      } catch (_) {}
+    }
+    if (supabase) {
+      try {
+        await supabase.from('settings').upsert({
+          key: 'auth_store',
+          value: store,
+          description: 'Cuentas registradas y credenciales de administración'
+        }, { onConflict: 'key' });
       } catch (_) {}
     }
   }
@@ -1154,7 +1191,7 @@ async function handleApiRequest(req, res, pathname, queryParams) {
       if (!email || !password) {
         return sendJson(res, 400, { error: 'Por favor ingresá tu email y contraseña.' });
       }
-      const store = loadAuthStore();
+      const store = await loadAuthStore();
       if (email === String(store.admin.email || '').toLowerCase()) {
         if (password !== store.admin.password) {
           return sendJson(res, 401, { error: 'Contraseña de administrador incorrecta.' });
@@ -1213,7 +1250,7 @@ async function handleApiRequest(req, res, pathname, queryParams) {
       if (password.length < 4) {
         return sendJson(res, 400, { error: 'La contraseña debe tener al menos 4 caracteres.' });
       }
-      const store = loadAuthStore();
+      const store = await loadAuthStore();
       if (email === String(store.admin.email || '').toLowerCase()) {
         return sendJson(res, 409, { error: 'Ese correo pertenece a la administración. Iniciá sesión con tu contraseña.' });
       }
@@ -1231,7 +1268,7 @@ async function handleApiRequest(req, res, pathname, queryParams) {
         createdAt: new Date().toISOString()
       };
       store.users.push(newUser);
-      saveAuthStore(store);
+      await saveAuthStore(store);
 
       const sessionUser = {
         id: newUser.id,
@@ -1257,7 +1294,7 @@ async function handleApiRequest(req, res, pathname, queryParams) {
       const newPassword = String(body.newPassword || '');
       const newEmail = String(body.newEmail || '').trim().toLowerCase();
 
-      const store = loadAuthStore();
+      const store = await loadAuthStore();
       if (currentPassword !== store.admin.password) {
         return sendJson(res, 401, { error: 'La contraseña actual no es correcta.' });
       }
@@ -1268,7 +1305,7 @@ async function handleApiRequest(req, res, pathname, queryParams) {
       if (newEmail && newEmail.includes('@')) {
         store.admin.email = newEmail;
       }
-      saveAuthStore(store);
+      await saveAuthStore(store);
 
       return sendJson(res, 200, {
         success: true,
@@ -1286,7 +1323,7 @@ async function handleApiRequest(req, res, pathname, queryParams) {
 
   // 2a-extra. Endpoints de Gestión del Backend (/api/admin/backend-status, /api/admin/supabase-config, /api/admin/sql-schema)
   if (req.method === 'GET' && pathname === '/api/admin/backend-status') {
-    const authStore = loadAuthStore();
+    const authStore = await loadAuthStore();
     const content = await getSiteContentFull();
     const pubMap = await getPublishedSchedulesMap();
     const pubDaysCount = pubMap && pubMap.days ? Object.keys(pubMap.days).length : 0;

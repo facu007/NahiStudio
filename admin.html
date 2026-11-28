@@ -821,11 +821,11 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <div class="space-y-1 sm:col-span-2">
                 <label class="text-[11px] font-bold uppercase text-[#F1ECE5]">Nombre del Remitente (cómo lo ve la clienta)</label>
-                <input type="text" id="smtp-sender-name-input" value="Mica Lashes" placeholder="Mica Lashes" class="w-full bg-[#111111] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#C7C7C7]">
+                <input type="text" id="smtp-sender-name-input" value="Nahi Studio" placeholder="Nahi Studio" class="w-full bg-[#111111] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#C7C7C7]">
               </div>
               <div class="space-y-1">
                 <label class="text-[11px] font-bold uppercase text-[#F1ECE5]">Tu Correo Gmail / Usuario SMTP</label>
-                <input type="email" id="smtp-user-input" placeholder="micalashes.estudio@gmail.com" class="w-full bg-[#111111] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#C7C7C7]">
+                <input type="email" id="smtp-user-input" placeholder="nahistudio@gmail.com" class="w-full bg-[#111111] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#C7C7C7]">
               </div>
               <div class="space-y-1">
                 <label class="text-[11px] font-bold uppercase text-[#F1ECE5]">Contraseña de Aplicación Gmail</label>
@@ -841,7 +841,7 @@
               </div>
               <div class="space-y-1 sm:col-span-2">
                 <label class="text-[11px] font-bold uppercase text-gray-400">Email del Admin (para recibir alertas de reservas)</label>
-                <input type="email" id="smtp-admin-email-input" placeholder="micalashart@gmail.com" class="w-full bg-[#111111] border border-white/15 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C7C7C7]">
+                <input type="email" id="smtp-admin-email-input" placeholder="admin@nahistudio.com" class="w-full bg-[#111111] border border-white/15 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#C7C7C7]">
               </div>
             </div>
 
@@ -2117,7 +2117,7 @@
           cancelled: { label: 'Cancelado', color: 'bg-red-500/20 text-red-400 border-red-500/40' }
         };
         const st = statusMap[app.status] || statusMap.pending;
-        const serviceName = app.service?.name || (app.clientNotes && app.clientNotes.includes('Tratamiento:') ? app.clientNotes.split('Tratamiento:')[1].split('\n')[0].trim() : 'Tratamiento de Pestañas');
+        const serviceName = app.service?.name || (app.clientNotes && app.clientNotes.includes('Tratamiento:') ? app.clientNotes.split('Tratamiento:')[1].split('\n')[0].trim() : 'Servicio Nahi Studio');
         const phoneClean = (app.clientPhone || '').replace(/\D/g, '');
 
         return `
@@ -2380,9 +2380,9 @@
       }
 
       container.innerHTML = filtered.map(photo => {
-        const safeTitle = (photo.title || 'Trabajo de Pestañas').replace(/"/g, '&quot;');
+        const safeTitle = (photo.title || 'Obra de Nahi Studio').replace(/"/g, '&quot;');
         const safeDesc = (photo.description || '').replace(/"/g, '&quot;');
-        const safeBadge = (photo.badge || 'Look Más Pedido').replace(/"/g, '&quot;');
+        const safeBadge = (photo.badge || 'Cara A · Nail Art').replace(/"/g, '&quot;');
         const safeImg = photo.imageUrl || 'fotos/imgi_25_539976307_17854872333514079_3988514524600607766_n.webp';
 
         return `
@@ -3662,7 +3662,7 @@
         document.getElementById('tpl-notify-admin').checked = t.notifyAdmin !== false;
 
         const extractedSender = p.emailFrom ? (p.emailFrom.match(/^"([^"]+)"/) || [])[1] : '';
-        document.getElementById('smtp-sender-name-input').value = extractedSender || 'Mica Lashes';
+        document.getElementById('smtp-sender-name-input').value = extractedSender || 'Nahi Studio';
         document.getElementById('smtp-user-input').value = p.smtpUser || '';
         document.getElementById('smtp-pass-input').value = p.hasSmtpPass ? '••••••••' : '';
         document.getElementById('smtp-host-input').value = p.smtpHost || 'smtp.gmail.com';
@@ -3698,7 +3698,7 @@
 
     async function saveSmtpConfiguration() {
       const fb = document.getElementById('smtp-save-feedback');
-      const senderName = (document.getElementById('smtp-sender-name-input')?.value || 'Mica Lashes').trim().replace(/"/g, '') || 'Mica Lashes';
+      const senderName = (document.getElementById('smtp-sender-name-input')?.value || 'Nahi Studio').trim().replace(/"/g, '') || 'Nahi Studio';
       const smtpUser = document.getElementById('smtp-user-input').value.trim();
       const smtpPass = document.getElementById('smtp-pass-input').value.trim();
       const smtpHost = document.getElementById('smtp-host-input').value.trim() || 'smtp.gmail.com';
@@ -3711,7 +3711,7 @@
           smtpPort,
           smtpUser,
           smtpPass,
-          emailFrom: smtpUser ? `"${senderName}" <${smtpUser}>` : `"${senderName}" <micalashes@gmail.com>`,
+          emailFrom: smtpUser ? `"${senderName}" <${smtpUser}>` : `"${senderName}" <nahistudio@gmail.com>`,
           adminEmail
         });
         updateEmailProviderBadges(res.provider);
@@ -3952,9 +3952,9 @@
       const services = adminSiteContent.services || [];
 
       const catLabels = {
-        lifting: 'Lifting & Botox',
-        clasicas: 'Pelo a Pelo Clásicas',
-        volumen: 'Volumen & Cejas'
+        nails: '01 — Nail Art',
+        tattoo: '02 — Tattoo Art',
+        flash: '02 — Flash Book'
       };
 
       container.innerHTML = services.map((s, idx) => `

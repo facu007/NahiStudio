@@ -241,6 +241,19 @@
       background-color: #8B2635 !important;
       color: #FFFDFB !important;
     }
+    html[data-side="nails"] #auth-status-container button {
+      background-color: #EFE5DA !important;
+      color: #4A1C24 !important;
+      border: 1px solid #DFD1C4 !important;
+    }
+    html[data-side="nails"] #auth-status-container button:hover {
+      background-color: #8B2635 !important;
+      color: #FFFDFB !important;
+    }
+    html[data-side="nails"] .neon-card-glow {
+      border-color: rgba(139, 38, 53, 0.35) !important;
+      box-shadow: 0 18px 40px rgba(74, 48, 42, 0.12) !important;
+    }
     .font-display {
       font-family: var(--turnos-font-display, 'Cormorant Garamond', serif) !important;
     }
@@ -708,65 +721,71 @@
     const vascaBooking = {
       services: [
         {
-          id: 'clasicas',
-          name: 'Extensiones Clásicas 1:1 (Pelo a Pelo)',
-          duration: 90,
-          price: 24000,
-          desc: 'Aislación milimétrica individual para una mirada abierta, ordenada y elegante.',
-          badge: 'Efecto Rímel',
-          icon: '👁️'
-        },
-        {
-          id: 'hibridas',
-          name: 'Volumen Híbrido Glam',
+          id: '22222222-2222-2222-2222-222222222201',
+          name: 'Esculpidas & Nail Art Editorial',
           duration: 120,
-          price: 34000,
-          desc: 'Mix perfecto de clásica y abanicos livianos, densidad suave aterciopelada.',
-          badge: '★ Look Más Pedido',
-          icon: '✨'
-        },
-        {
-          id: 'ruso',
-          name: 'Volumen Ruso / Mega Volumen',
-          duration: 135,
-          price: 39000,
-          desc: 'Abanicos artesanales hechos a mano 2D a 6D, máxima tupidez y retención.',
-          badge: '👑 Máximo Volumen',
+          price: 28000,
+          desc: 'Construcción escultural a medida con diseño personalizado: efectos cromo, relieve 3D, perlas o french editorial.',
+          badge: '01 — NAIL ART',
+          category: 'nails',
           icon: '💎'
         },
         {
-          id: 'lifting',
-          name: 'Lifting de Pestañas + Keratina Botox',
-          duration: 60,
-          price: 18500,
-          desc: 'Curvatura natural desde la raíz con nutrición profunda y tinte negro azabache.',
-          badge: '🌿 100% Natural',
-          icon: '🤍'
-        },
-        {
-          id: 'laminado',
-          name: 'Laminado & Diseño de Cejas',
-          duration: 50,
-          price: 16000,
-          desc: 'Alisado de vello rebelde con visagismo y perfilado orgánico simétrico.',
-          badge: '🦋 Simetría Orgánica',
-          icon: '🌸'
-        },
-        {
-          id: 'combo_vip',
-          name: 'Combo Total Mirada VIP (Lifting + Cejas)',
+          id: '22222222-2222-2222-2222-222222222202',
+          name: 'Kapping / Capping Gel + Diseño',
           duration: 90,
-          price: 32000,
-          desc: 'Lifting completo con nutrición botox + laminado y perfilado de cejas.',
-          badge: '🎀 Promo Estrella',
-          icon: '👑'
+          price: 24000,
+          desc: 'Baño de gel fortificador sobre el largo de tu uña natural para máxima resistencia, nivelación perfecta y nail art a elección.',
+          badge: '01 — NAIL ART',
+          category: 'nails',
+          icon: '✨'
+        },
+        {
+          id: '22222222-2222-2222-2222-222222222203',
+          name: 'Esmaltado Semipermanente + Nail Art',
+          duration: 75,
+          price: 20000,
+          desc: 'Manicuría combinada de alta precisión con esmaltado de larga duración, french, glitter reflectivo o detalles cromados.',
+          badge: '01 — NAIL ART',
+          category: 'nails',
+          icon: '🖤'
+        },
+        {
+          id: '22222222-2222-2222-2222-222222222204',
+          name: 'Service / Mantenimiento Nail Art',
+          duration: 90,
+          price: 22000,
+          desc: 'Balance de estructura, retiro de crecimiento y renovación completa del diseño (recomendado cada 21 días).',
+          badge: '01 — NAIL ART',
+          category: 'nails',
+          icon: '🔄'
+        },
+        {
+          id: '22222222-2222-2222-2222-222222222205',
+          name: 'Tattoo Fine Line / Mini & Flash',
+          duration: 90,
+          price: 35000,
+          desc: 'Tatuajes delicados de trazo fino, caligrafía, botánicos, micro-tattoos o diseños seleccionados del Flash Book del estudio.',
+          badge: '02 — TATTOO ART',
+          category: 'tattoo',
+          icon: '🖋️'
+        },
+        {
+          id: '22222222-2222-2222-2222-222222222206',
+          name: 'Tattoo Blackwork & Diseño Custom',
+          duration: 150,
+          price: 55000,
+          desc: 'Sesión de tatuaje personalizado en tinta negra, puntillismo, lettering experimental u ornamental a medida.',
+          badge: '02 — TATTOO ART',
+          category: 'tattoo',
+          icon: '🩸'
         }
       ],
 
       professional: {
-        id: 'mica',
+        id: 'nahi',
         name: 'Nahiara Ciamprone',
-        role: 'Master Lash Artist & Creadora',
+        role: 'Nail Artist & Tattoo Artist • Espacio Muna',
         location: 'Espacio Muna'
       },
 
@@ -1589,7 +1608,7 @@
         container.innerHTML = bulkClearHtml + appointments.map(apt => {
           const calStart = apt.date ? `${apt.date.replace(/-/g, '')}T${apt.time.replace(':', '')}00` : '';
           const calEnd = apt.date && apt.endTime ? `${apt.date.replace(/-/g, '')}T${apt.endTime.replace(':', '')}00` : '';
-          const serviceName = apt.service?.name || apt.service || 'Tratamiento de Pestañas';
+          const serviceName = apt.service?.name || apt.service || 'Servicio Nahi Studio';
           const calText = encodeURIComponent(`Turno: ${serviceName} - Nahi Studio`);
           const calDetails = encodeURIComponent(`Turno agendado en Nahi Studio para ${apt.clientName || ''}.`);
           const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${calText}&dates=${calStart}/${calEnd}&details=${calDetails}&location=${encodeURIComponent('Espacio Muna')}`;

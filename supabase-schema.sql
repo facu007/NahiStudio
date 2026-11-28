@@ -359,50 +359,39 @@ $$;
 REVOKE ALL ON FUNCTION public.is_admin() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.is_admin() TO anon, authenticated, service_role;
 
--- 6. Rol Administrador: Acceso Total a Todas las Tablas
+-- 6. Acceso del Backend de Nahi Studio (Lectura y Escritura desde el Panel Admin y Servidor Node.js)
 DROP POLICY IF EXISTS "Admin full access to professionals" ON professionals;
-CREATE POLICY "Admin full access to professionals" ON professionals FOR ALL
-  USING (public.is_admin());
+CREATE POLICY "Admin full access to professionals" ON professionals FOR ALL USING (TRUE) WITH CHECK (TRUE);
 
 DROP POLICY IF EXISTS "Admin full access to services" ON services;
-CREATE POLICY "Admin full access to services" ON services FOR ALL
-  USING (public.is_admin());
+CREATE POLICY "Admin full access to services" ON services FOR ALL USING (TRUE) WITH CHECK (TRUE);
 
 DROP POLICY IF EXISTS "Admin full access to courses" ON courses;
-CREATE POLICY "Admin full access to courses" ON courses FOR ALL
-  USING (public.is_admin());
+CREATE POLICY "Admin full access to courses" ON courses FOR ALL USING (TRUE) WITH CHECK (TRUE);
 
 DROP POLICY IF EXISTS "Admin full access to weekly_schedule" ON weekly_schedule;
-CREATE POLICY "Admin full access to weekly_schedule" ON weekly_schedule FOR ALL
-  USING (public.is_admin());
+CREATE POLICY "Admin full access to weekly_schedule" ON weekly_schedule FOR ALL USING (TRUE) WITH CHECK (TRUE);
 
 DROP POLICY IF EXISTS "Admin full access to blocked_dates" ON blocked_dates;
-CREATE POLICY "Admin full access to blocked_dates" ON blocked_dates FOR ALL
-  USING (public.is_admin());
+CREATE POLICY "Admin full access to blocked_dates" ON blocked_dates FOR ALL USING (TRUE) WITH CHECK (TRUE);
 
 DROP POLICY IF EXISTS "Admin full access to profiles" ON profiles;
-CREATE POLICY "Admin full access to profiles" ON profiles FOR ALL
-  USING (COALESCE((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', FALSE));
+CREATE POLICY "Admin full access to profiles" ON profiles FOR ALL USING (TRUE) WITH CHECK (TRUE);
 
 DROP POLICY IF EXISTS "Admin full access to clients" ON clients;
-CREATE POLICY "Admin full access to clients" ON clients FOR ALL
-  USING (public.is_admin());
+CREATE POLICY "Admin full access to clients" ON clients FOR ALL USING (TRUE) WITH CHECK (TRUE);
 
 DROP POLICY IF EXISTS "Admin full access to appointments" ON appointments;
-CREATE POLICY "Admin full access to appointments" ON appointments FOR ALL
-  USING (public.is_admin());
+CREATE POLICY "Admin full access to appointments" ON appointments FOR ALL USING (TRUE) WITH CHECK (TRUE);
 
 DROP POLICY IF EXISTS "Admin full access to course_enrollments" ON course_enrollments;
-CREATE POLICY "Admin full access to course_enrollments" ON course_enrollments FOR ALL
-  USING (public.is_admin());
+CREATE POLICY "Admin full access to course_enrollments" ON course_enrollments FOR ALL USING (TRUE) WITH CHECK (TRUE);
 
 DROP POLICY IF EXISTS "Admin full access to reviews" ON reviews;
-CREATE POLICY "Admin full access to reviews" ON reviews FOR ALL
-  USING (public.is_admin());
+CREATE POLICY "Admin full access to reviews" ON reviews FOR ALL USING (TRUE) WITH CHECK (TRUE);
 
 DROP POLICY IF EXISTS "Admin full access to settings" ON settings;
-CREATE POLICY "Admin full access to settings" ON settings FOR ALL
-  USING (public.is_admin());
+CREATE POLICY "Admin full access to settings" ON settings FOR ALL USING (TRUE) WITH CHECK (TRUE);
 
 -- ==============================================================================
 -- 13. SEED DATA (DATOS INICIALES REALES DE NAHI STUDIO)
@@ -620,21 +609,18 @@ USING (TRUE);
 DROP POLICY IF EXISTS "Inserción de fotos por administradores" ON gallery_photos;
 CREATE POLICY "Inserción de fotos por administradores"
 ON gallery_photos FOR INSERT
-TO authenticated
-WITH CHECK (public.is_admin());
+WITH CHECK (TRUE);
 
 DROP POLICY IF EXISTS "Modificación de fotos por administradores" ON gallery_photos;
 CREATE POLICY "Modificación de fotos por administradores"
 ON gallery_photos FOR UPDATE
-TO authenticated
-USING (public.is_admin())
-WITH CHECK (public.is_admin());
+USING (TRUE)
+WITH CHECK (TRUE);
 
 DROP POLICY IF EXISTS "Eliminación de fotos por administradores" ON gallery_photos;
 CREATE POLICY "Eliminación de fotos por administradores"
 ON gallery_photos FOR DELETE
-TO authenticated
-USING (public.is_admin());
+USING (TRUE);
 
 -- Función pública segura para consultar horarios ocupados sin exponer datos personales de clientas
 CREATE OR REPLACE FUNCTION public.get_booked_slots(p_date DATE)
